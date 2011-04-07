@@ -1,0 +1,5 @@
+syntax: glob
+TestProject/TestProject/bin/
+TestProject/TestProject/obj/
+*.suo
+*.sln

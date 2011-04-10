@@ -4,6 +4,10 @@ using System.Reflection;
 
 // TODO: support fields instead of just properties?
 
+// other ideas:
+// add optional methods, etc. for supporting a node graph editing UI?
+//   (e.g. functions for user feedback, attributes for realtime previewing, etc.)
+
 namespace ThereBeMonsters.Back_end
 {
   /// <summary>
@@ -21,7 +25,7 @@ namespace ThereBeMonsters.Back_end
     /// </summary>
     public class Parameter : Attribute
     {
-      public enum IOType
+      public enum IODirection
       {
         /// <summary>
         /// Default; the Module class will automatically replace the type with appropriate value
@@ -48,12 +52,23 @@ namespace ThereBeMonsters.Back_end
       /// <summary>
       /// Indicates the input/output disposition of this parameter.
       /// </summary>
-      public IOType Type { get; set; }
+      public IODirection Direction { get; set; }
 
       /// <summary>
       /// A description for the user about this parameter.
       /// </summary>
       public string Description { get; private set; }
+
+      /// <summary>
+      /// The type of the parameter.
+      /// </summary>
+      public Type Type
+      {
+        get
+        {
+          return this.Property.PropertyType;
+        }
+      }
 
       /// <summary>
       /// Indicates whether this parameter needs to have a value specified.
@@ -72,26 +87,42 @@ namespace ThereBeMonsters.Back_end
       /// <param name="desc">The description.</param>
       /// <param name="optional">If false (or left to default), the module will not run
       /// without a value specified for this parameter.</param>
-      /// <param name="type">Input/output disposition (defaults to Auto).</param>
-      public Parameter(string desc, bool optional = false, IOType type = IOType.AUTO)
+      /// <param name="direction">Input/output disposition (defaults to Auto).</param>
+      public Parameter(string desc, bool optional = false, IODirection direction = IODirection.AUTO)
       {
         this.Description = desc;
         this.Optional = optional;
-        this.Type = type;
+        this.Direction = direction;
       }
 
       /// <summary>
       /// Used by the Module base class when a property does not have a Parameter attribute associated with it.
       /// </summary>
-      /// <param name="type">Input/output disposition.</param>
+      /// <param name="dir">Input/output disposition.</param>
       /// <param name="prop">The property.</param>
-      public Parameter(IOType type, PropertyInfo prop)
+      public Parameter(IODirection dir, PropertyInfo prop)
       {
-        this.Type = type;
+        this.Direction = dir;
         this.Property = prop;
       }
     }
 
+    public class ModuleAttribute : Attribute
+    {
+      /// <summary>
+      /// Description of the module.
+      /// </summary>
+      public string Description { get; private set; }
+
+      public ModuleAttribute(string desc)
+      {
+        this.Description = desc;
+      }
+    }
+
+    /// <summary>
+    /// Default constructor; runs Setup() to detect what runtime properties are module parameters.
+    /// </summary>
     protected Module()
     {
       Setup();
@@ -101,6 +132,18 @@ namespace ThereBeMonsters.Back_end
     /// A dictionary of this module's parameters, by name.
     /// </summary>
     public Dictionary<string, Parameter> Parameters { get; protected set; }
+
+    /// <summary>
+    /// Retrieves the description of the module, if any.
+    /// </summary>
+    public string Description
+    {
+      get
+      {
+        ModuleAttribute attrib = Attribute.GetCustomAttribute(this.GetType(), typeof(ModuleAttribute)) as ModuleAttribute;
+        return attrib != null ? attrib.Description : string.Empty;
+      }
+    }
 
     /// <summary>
     /// Gets or sets a module parameter by name.
@@ -134,13 +177,13 @@ namespace ThereBeMonsters.Back_end
     /// <summary>
     /// Scans this instance's properties and constructs the parameter list.
     /// </summary>
-    public virtual void Setup()
+    private void Setup()
     {
       this.Parameters = new Dictionary<string, Parameter>();
 
       Type instanceType = GetType();
       Parameter param;
-      Parameter.IOType iotype;
+      Parameter.IODirection iodir;
       foreach (PropertyInfo property in instanceType.GetProperties())
       {
         if (property.DeclaringType == typeof(Module)
@@ -154,38 +197,38 @@ namespace ThereBeMonsters.Back_end
         {
           param.Property = property;
           this.Parameters[param.Name] = param;
-          if (param.Type != Parameter.IOType.AUTO)
+          if (param.Direction != Parameter.IODirection.AUTO)
           {
             continue;
           }
         }
 
         // Auto-detection
-        iotype = Parameter.IOType.NONE;
+        iodir = Parameter.IODirection.NONE;
         switch (property.GetAccessors().Length)
         {
           case 1:
             if (property.GetGetMethod() != null)
             {
-              iotype = Parameter.IOType.OUTPUT;
+              iodir = Parameter.IODirection.OUTPUT;
             }
             else
             {
-              iotype = Parameter.IOType.INPUT;
+              iodir = Parameter.IODirection.INPUT;
             }
             break;
           case 2:
-            iotype = Parameter.IOType.INOUT;
+            iodir = Parameter.IODirection.INOUT;
             break;
         }
 
         if (param != null)
         {
-          param.Type = iotype;
+          param.Direction = iodir;
         }
         else
         {
-          this.Parameters[property.Name] = new Parameter(iotype, property);
+          this.Parameters[property.Name] = new Parameter(iodir, property);
         }
       }
     }

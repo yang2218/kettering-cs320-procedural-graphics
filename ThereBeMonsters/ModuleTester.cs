@@ -8,18 +8,9 @@ namespace ThereBeMonsters
   {
     public static void Main()
     {
-      Module m = new TestModule();
-      /*
-      int i = 1;
-      foreach (Module.Parameter p in m.Parameters.Values)
-      {
-        //System.Console.WriteLine(p);
-        if (p.Type == Module.Parameter.IOType.INPUT)
-        {
-          p.Property.SetValue(m, i++, null);
-        }
-      }
-      */
+      Module m = new ExampleModule();
+
+      System.Console.WriteLine(m.Description);
 
       m["A"] = 2;
       m["B"] = 2;
@@ -27,16 +18,19 @@ namespace ThereBeMonsters
       m.Run();
 
       System.Console.WriteLine(m["C"]);
-
-      /*
-      foreach (Module.Parameter p in m.Parameters.Values)
-      {
-        if (p.Type == Module.Parameter.IOType.OUTPUT)
-        {
-          System.Console.WriteLine(p.Property.GetValue(m, null));
-        }
+      
+      foreach(string param in m.Parameters.Keys) // names of all parameters
+      { 
+        System.Console.WriteLine(string.Format(@"
+Parameter: {0}
+ParamType: {1}
+Description: {2}
+Input/Output Dir: {3}",
+          param,
+          m.Parameters[param].Type,
+          m.Parameters[param].Description,
+          m.Parameters[param].Direction));
       }
-      */
 
       System.Console.ReadLine();
     }

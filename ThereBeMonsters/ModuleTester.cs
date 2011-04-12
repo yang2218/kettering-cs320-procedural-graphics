@@ -25,11 +25,13 @@ namespace ThereBeMonsters
 Parameter: {0}
 ParamType: {1}
 Description: {2}
-Input/Output Dir: {3}",
+Input/Output Dir: {3}
+Optional: {4}",
           param,
           m.Parameters[param].Type,
           m.Parameters[param].Description,
-          m.Parameters[param].Direction));
+          m.Parameters[param].Direction,
+          m.Parameters[param].Optional));
       }
 
       System.Console.ReadLine();

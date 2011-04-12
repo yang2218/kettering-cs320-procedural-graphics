@@ -47,10 +47,13 @@
       <HintPath>.\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Compile Include="Back-end\Generator.cs" />
     <Compile Include="Back-end\Module.cs" />
+    <Compile Include="Back-end\ModuleGraph.cs" />
     <Compile Include="Back-end\Modules\ExampleModule.cs" />
     <Compile Include="ModuleTester.cs" />
   </ItemGroup>

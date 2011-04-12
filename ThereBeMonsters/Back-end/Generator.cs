@@ -34,6 +34,8 @@ namespace ThereBeMonsters.Back_end
       Queue<string> runQueue;
       Dictionary<string, int> paramReferences;
       Dictionary<string, object> outputCache = new Dictionary<string,object>();
+      List<ParameterWireup> paramWireups;
+      List<ValueWireup> valueWireups;
       
       AnalyzeGraph(out runQueue, out paramReferences);
 
@@ -43,19 +45,25 @@ namespace ThereBeMonsters.Back_end
       {
         module = GetModuleInstance(this.Graph.moduleNodes[id].moduleType);
 
-        foreach (ValueWireup vw in this.Graph.valueWireups[id])
+        if (this.Graph.valueWireups.TryGetValue(id, out valueWireups))
         {
-          module[vw.parameterName] = vw.value;
+          foreach (ValueWireup vw in valueWireups)
+          {
+            module[vw.parameterName] = vw.value;
+          }
         }
 
-        foreach (ParameterWireup pw in this.Graph.parameterWireups[id])
+        if (this.Graph.parameterWireups.TryGetValue(id, out paramWireups))
         {
-          module[pw.parameterName] = outputCache[pw.srcIdDotParam];
-          paramReferences[pw.srcIdDotParam]--;
-          if (paramReferences[pw.srcIdDotParam] == 0)
-          { // free the output result as soon as we know we don't need it anymore.
-            outputCache.Remove(pw.srcIdDotParam);
-            paramReferences.Remove(pw.srcIdDotParam);
+          foreach (ParameterWireup pw in paramWireups)
+          {
+            module[pw.parameterName] = outputCache[pw.srcIdDotParam];
+            paramReferences[pw.srcIdDotParam]--;
+            if (paramReferences[pw.srcIdDotParam] == 0)
+            { // free the output result as soon as we know we don't need it anymore.
+              outputCache.Remove(pw.srcIdDotParam);
+              paramReferences.Remove(pw.srcIdDotParam);
+            }
           }
         }
 
@@ -141,11 +149,15 @@ namespace ThereBeMonsters.Back_end
     private void DFSVisit(string id, HashSet<string> visited, Dictionary<string, string[]> dependancies, Queue<string> runQueue)
     {
       visited.Add(id);
-      foreach (string dependee in dependancies[id])
+      string[] dependeeList;
+      if (dependancies.TryGetValue(id, out dependeeList))
       {
-        if (visited.Contains(dependee) == false)
+        foreach (string dependee in dependeeList)
         {
-          DFSVisit(dependee, visited, dependancies, runQueue);
+          if (visited.Contains(dependee) == false)
+          {
+            DFSVisit(dependee, visited, dependancies, runQueue);
+          }
         }
       }
 

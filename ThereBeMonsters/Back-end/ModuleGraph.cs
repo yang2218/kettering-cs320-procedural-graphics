@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Reflection;
 using System.Xml;
 using System.Xml.XPath;
@@ -91,7 +92,7 @@ namespace ThereBeMonsters.Back_end
           description = description
         };
 
-        wireupLoadQueue.Enqueue(it.Current);
+        wireupLoadQueue.Enqueue(it.Current.Clone());
       }
 
       while (wireupLoadQueue.Count > 0)
@@ -105,7 +106,9 @@ namespace ThereBeMonsters.Back_end
     private void LoadWireupsFromXml(XPathNodeIterator it, string id)
     {
       string param, value, srcId, srcParam;
+      object valueObject = null;
       Dictionary<string, Module.Parameter> validParameters = null;
+      TypeConverter converter;
       if (Module.UsesDynamicParameters(moduleNodes[id].moduleType) == false)
       {
         validParameters = Module.GetModuleParameters(moduleNodes[id].moduleType);
@@ -126,20 +129,35 @@ namespace ThereBeMonsters.Back_end
 
         if (GetAttribute(it, "value", out value, null))
         {
-          if (valueWireups[id] == null)
+          if (valueWireups.ContainsKey(id) == false)
           {
             valueWireups[id] = new List<ValueWireup>();
           }
 
+          if (validParameters != null) // implies param is a key
+          {
+            converter = TypeDescriptor.GetConverter(validParameters[param].Type);
+            if (converter.CanConvertFrom(typeof(string)))
+            {
+              valueObject = converter.ConvertFromString(value);
+            }
+            else
+            {
+              LogError("Warning: cannot convert value to parameter type (a string will be passed in)", it);
+            }
+          }
+          // TODO: support a type attribute so the user can specify a type for
+          // inputs to modules using dynamic parameters
+
           valueWireups[id].Add(new ValueWireup {
             parameterName = param,
-            value = value
+            value = valueObject ?? value
           });
         }
         else if (GetAttribute(it, "srcId", out srcId, null)
           && GetAttribute(it, "srcParam", out srcParam, null))
         {
-          if (parameterWireups[id] == null)
+          if (parameterWireups.ContainsKey(id) == false)
           {
             parameterWireups[id] = new List<ParameterWireup>();
           }

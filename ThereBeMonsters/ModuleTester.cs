@@ -2,10 +2,21 @@
 using ThereBeMonsters.Back_end;
 using ThereBeMonsters.Back_end.Modules;
 
+using System.ComponentModel;
+
 namespace ThereBeMonsters
 {
   public class ModuleTester
   {
+    public static void Main()
+    {
+      Generator g = new Generator("TestGraph.xml");
+      g.RunGraph();
+
+      System.Console.ReadLine();
+    }
+
+    /*
     public static void Main()
     {
       Module m = new ExampleModule();
@@ -36,5 +47,6 @@ Optional: {4}",
 
       System.Console.ReadLine();
     }
+    */
   }
 }

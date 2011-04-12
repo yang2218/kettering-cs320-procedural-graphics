@@ -49,12 +49,17 @@
     <Reference Include="System" />
     <Reference Include="System.XML" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="TestGraph.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="Back-end\Generator.cs" />
     <Compile Include="Back-end\Module.cs" />
     <Compile Include="Back-end\ModuleGraph.cs" />
     <Compile Include="Back-end\Modules\ExampleModule.cs" />
+    <Compile Include="Back-end\Modules\WriteToConsole.cs" />
     <Compile Include="ModuleTester.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

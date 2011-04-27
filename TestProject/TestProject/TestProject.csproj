@@ -20,7 +20,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>TestProject.Lab2.CS33</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="OpenTK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -42,18 +45,51 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="OpenTK.dll.config">
+    <None Include="Lab2\dino.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Lab2\house.dat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="OpenTK.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Hello.cs" />
+    <Compile Include="Lab1\HW235.cs" />
+    <Compile Include="Lab1\HW234.cs" />
+    <Compile Include="Lab1\HW231.cs" />
+    <Compile Include="Lab2\CS33.cs" />
+    <Compile Include="Objects\Texture.cs" />
+    <Compile Include="Objects\VertexPosUVData.cs" />
+    <Compile Include="Objects\Entity.cs" />
+    <Compile Include="Objects\Material.cs" />
+    <Compile Include="Objects\MovingEntity.cs" />
+    <Compile Include="Objects\Transform.cs" />
+    <Compile Include="Objects\VertexData.cs" />
+    <Compile Include="Objects\VertexPosData.cs" />
+    <Compile Include="Objects\Viewport.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenTK.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Data\LiberationSans-Regular.ttf_sdf.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Data\LiberationSans-Regular.ttf_sdf.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Lab2\numbers.png" />
+    <Content Include="Lab2\score.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

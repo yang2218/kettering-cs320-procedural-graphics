@@ -29,7 +29,7 @@ namespace TestProject.Lab1
       vertexData.LoadTestModel(); // temp code: loads a square into system memory
       vertexData.Update(); // uploads the model to a vertex buffer on the GPU
       
-      Material material = Material.GetMaterial("test.mat"); // loads a material (currently just hardcoded)
+      Material material = Material.GetMaterial("Default"); // loads a material (currently just hardcoded)
       
       square = new Entity();
       square.VertexData = vertexData;

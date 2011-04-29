@@ -38,7 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenTK.dll.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -46,21 +46,32 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\OpenTK.dll</HintPath>
     </Reference>
+    <Reference Include="OpenTKGUI">
+      <HintPath>.\OpenTKGUI.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TestGraph.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Back-end\EditorControl.cs" />
     <Compile Include="Back-end\Generator.cs" />
+    <Compile Include="Back-end\BlendDelegate.cs" />
     <Compile Include="Back-end\Module.cs" />
     <Compile Include="Back-end\ModuleGraph.cs" />
     <Compile Include="Back-end\Modules\ExampleModule.cs" />
+    <Compile Include="Back-end\Modules\ExtrudeCirclesToHeight.cs" />
     <Compile Include="Back-end\Modules\WriteToConsole.cs" />
     <Compile Include="ModuleTester.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="OpenTKGUI.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

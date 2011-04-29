@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using OpenTKGUI;
 
 namespace ThereBeMonsters.Back_end
 {
@@ -278,9 +279,27 @@ namespace ThereBeMonsters.Back_end
       public bool Optional { get; set; }
 
       /// <summary>
+      /// Indicates whether this parameter should be hidden from the editor (e.g. a custom
+      /// editor for another parameter also changes this parameter).
+      /// </summary>
+      public bool Hidden { get; set; }
+
+      /// <summary>
+      /// Specifies a custom editor GUI control for this parameter.
+      /// </summary>
+      // TODO: check to make sure type is an EditorControl decendant
+      // TODO: should this stay as a Type or a factory pattern? (lamda expression?)
+      public Type Editor { get; set; }
+
+      /// <summary>
       /// The PropertyInfo associated with this parameter. Set by the Module base class.
       /// </summary>
       public PropertyInfo Property { get; set; }
+
+      public Parameter()
+      {
+        this.Direction = IODirection.AUTO;
+      }
 
       /// <summary>
       /// Specifies a description for this parameter. The type of parameter will be auto-detected
@@ -290,7 +309,6 @@ namespace ThereBeMonsters.Back_end
       public Parameter(string description)
       {
         this.Description = description;
-        this.Optional = false;
         this.Direction = IODirection.AUTO;
       }
 

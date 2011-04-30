@@ -58,7 +58,8 @@ namespace ThereBeMonsters.Back_end
         {
           _functions = new List<Blend8bppDelegate>()
           { // Add functions here
-            Add
+            Additive,
+            DestinationOnly
           };
         }
 
@@ -66,7 +67,7 @@ namespace ThereBeMonsters.Back_end
       }
     }
 
-    public static void Add(byte[,] src, byte[,] dst, float srcFactor = 1f, float dstFactor = 1f)
+    public static void Additive(byte[,] src, byte[,] dst, float srcFactor = 1f, float dstFactor = 1f)
     {
       Debug.Assert(src.Length == dst.Length, "Source and Destination arrays are not the same size!");
       int result;
@@ -92,6 +93,12 @@ namespace ThereBeMonsters.Back_end
           }
         }
       }
+    }
+
+    public static void DestinationOnly(byte[,] src, byte[,] dst, float srcFactor = 1f, float dstFactor = 1f)
+    {
+      return; // Destination is already in the destination
+      // TODO: if dstFactor != 1f multiply destination pixels
     }
   }
 }

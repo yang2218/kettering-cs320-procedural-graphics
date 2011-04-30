@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using ThereBeMonsters.Back_end;
 using ThereBeMonsters.Back_end.Modules;
+using OpenTK;
 
 using System.ComponentModel;
 
@@ -10,8 +12,35 @@ namespace ThereBeMonsters
   {
     public static void Main()
     {
-      Generator g = new Generator("TestGraph.xml");
+      /*Generator g = new Generator("TestGraph.xml");
       g.RunGraph();
+      */
+
+      byte[,] hm = new byte[32, 32];
+      List<Vector3> c = new List<Vector3>() {
+        new Vector3(0.5f, 0.5f, 0.4f)};
+
+      ExtrudeCirclesToHeight m = new ExtrudeCirclesToHeight();
+      m.Cap = ExtrudeCirclesToHeight.CapType.Hemisphere;
+      m.Circles = c;
+      m.HeightMap = hm;
+      m.BlendFunc = Blend8bppFunctions.Additive;
+      m.BlendFuncSrcFactor = 1f;
+      m.BlendFuncDstFactor = 1f;
+
+      m.Run();
+
+      hm = m.HeightMap;
+      int i = 0;
+      foreach (byte b in hm)
+      {
+        if (i++ % 32 == 0)
+        {
+          Console.WriteLine();
+        }
+        
+        Console.Write(string.Format("{0,2}", b / 10));
+      }
 
       System.Console.ReadLine();
     }

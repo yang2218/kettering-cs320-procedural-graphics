@@ -2,21 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using ThereBeMonsters.Back_end;
+using OpenTK;
 
 namespace ThereBeMonsters.Back_end.Modules
 {
-    //Defining a point
-    public class Point
-    {
-        public Point(double x, double y)
-        {
-            this.x = x;
-            this.y = y;
-        }
-
-        public double x;
-        public double y;
-    }
 
     // This attribute is optional and just for adding metadata
     [Module("Apollonian Gasket",  // Adds a description to this module's metadata
@@ -24,15 +13,15 @@ namespace ThereBeMonsters.Back_end.Modules
     public class Gasket : Module
     {
         //Gets the points from the file
-        public static List<Point> getPoints()
+        public static List<Vector2> getPoints()
         {
-            List<Point> listOfPoints = new List<Point>();
+            List<Vector2> listOfPoints = new List<Vector2>();
 
             for (int i = 0; i < file.Length; i++)
             {
-                Point point = new Point(0,0);
-                point.x = Int32.Parse(file[i].Split(' ')[0]);
-                point.y = Int32.Parse(file[i].Split(' ')[1]);
+                Vector2 point = new Vector2(0,0);
+                point.X = Int32.Parse(file[i].Split(' ')[0]);
+                point.Y = Int32.Parse(file[i].Split(' ')[1]);
 
                 listOfPoints.Add(point);
             }
@@ -40,85 +29,85 @@ namespace ThereBeMonsters.Back_end.Modules
             return listOfPoints;
         }
 
-        public static Point findCentroid(List<Point> points)
+        public static Vector2 findCentroid(List<Vector2> points)
         {
-            Point centroid = new Point(0,0);
-            double area = 0;
+            Vector2 centroid = new Vector2(0,0);
+            float area = 0;
 
             //Calculate the Area 
             for (int i = 0; i < points.Count - 1; i++)
             {
-                area += ((points[i].x * points[i + 1].y) - (points[i + 1].x * points[i].y));
+                area += ((points[i].X * points[i + 1].Y) - (points[i + 1].X * points[i].Y));
             }
             area = area / 2;
 
             //Calculate x value
             for (int i = 0; i < points.Count - 1; i++)
             {
-                centroid.x += (points[i].x + points[i + 1].x *
-                    (points[i].x * points[i + 1].y) - 
-                    (points[i + 1].x * points[i].y));
+                centroid.X += (points[i].X + points[i + 1].X *
+                    (points[i].X * points[i + 1].Y) - 
+                    (points[i + 1].X * points[i].Y));
             }
-            centroid.x = (1 / (6 * area)) * centroid.x;
+            centroid.X = (1 / (6 * area)) * centroid.X;
 
             //Calculate y value
             for (int i = 0; i < points.Count - 1; i++)
             {
-                centroid.y += (points[i].y + points[i + 1].y *
-                    (points[i].x * points[i + 1].y) -
-                    (points[i + 1].x * points[i].y));
+                centroid.Y += (points[i].Y + points[i + 1].Y *
+                    (points[i].X * points[i + 1].Y) -
+                    (points[i + 1].X * points[i].Y));
             }
-            centroid.y = (1 / (6 * area)) * centroid.y;
+            centroid.Y = (1 / (6 * area)) * centroid.Y;
 
             return centroid;
         }
 
-        public double y1(double x, double ss, Point centroid)
+        public float y1(float x, float ss, Vector2 centroid)
         {
-            return ((x - centroid.x) * (-1/ss) + centroid.y);
+            return ((x - centroid.X) * (-1/ss) + centroid.Y);
         }
 
-        public double distance(Point one, Point two)
+        /*public float distance(Vector2 one, Vector2 two)
         {
-            return Math.Sqrt(Math.Pow((one.x - two.x), 2) + Math.Pow((one.y - two.y) , 2));
-        }
+            return (float)Math.Sqrt(Math.Pow((one.X - two.X), 2) + Math.Pow((one.Y - two.Y) , 2));
+        }*/
 
-        public double findRadius(List<Point> vertices, Point centroid)
+        public float findRadius(List<Vector2> vertices, Vector2 centroid)
         {
-            double radius = 0;
-            double slope_s = 0;
-            Point edgeInt = new Point(0, 0);
-            List<double> radii = new List<double>();
+            float radius = 0f;
+            float slope_s = 0f;
+            Vector2 edgeInt = new Vector2(0, 0);
+            List<float> radii = new List<float>();
 
             //Go through every edge and calculate distance to it
             for (int i = 0; i < vertices.Count - 1; i++)
             {
                 //Calculate the intersection of the radius and the edge
-                slope_s = Math.Abs((vertices[i].y - vertices[i + 1].y) / 
-                    (vertices[i].x - vertices[i + 1].x));
+                slope_s = Math.Abs((vertices[i].Y - vertices[i + 1].Y) / 
+                    (vertices[i].X - vertices[i + 1].X));
 
-                edgeInt.x = ((1 / slope_s) * centroid.y + centroid.y +
-                    slope_s * vertices[i].x - vertices[i].y) /
+                edgeInt.X = ((1 / slope_s) * centroid.Y + centroid.Y +
+                    slope_s * vertices[i].X - vertices[i].Y) /
                     (slope_s + 1 / slope_s);
 
-                edgeInt.y = y1(edgeInt.x, slope_s, centroid);
+                edgeInt.Y = y1(edgeInt.X, slope_s, centroid);
 
                 //Calculate the distance between the center and the edgeInt
-                double dist = distance(centroid, edgeInt);
+                float dist = (centroid - edgeInt).Length; //distance(centroid, edgeInt);
                 radii.Add(dist);
             }
 
             //Add the last edge (between n and 0)
-            slope_s = Math.Abs((vertices[vertices.Count - 1].y - vertices[0].y) /
-                (vertices[vertices.Count - 1].x - vertices[0].x));
+            slope_s = Math.Abs((vertices[vertices.Count - 1].Y - vertices[0].Y) /
+                (vertices[vertices.Count - 1].X - vertices[0].X));
 
-            edgeInt.x = ((1 / slope_s) * centroid.y + centroid.y +
-                slope_s * vertices[vertices.Count - 1].x - vertices[vertices.Count - 1].y) /
+            edgeInt.X = ((1 / slope_s) * centroid.Y + centroid.Y +
+                slope_s * vertices[vertices.Count - 1].X - vertices[vertices.Count - 1].Y) /
                 (slope_s + 1 / slope_s);
 
-            edgeInt.y = y1(edgeInt.x, slope_s, centroid);
+            edgeInt.Y = y1(edgeInt.X, slope_s, centroid);
 
-            double l_dist = distance(centroid, edgeInt);
+            float l_dist = (centroid - edgeInt).Length;
             radii.Add(l_dist);
 
             //Find the smallest of the radii
@@ -140,13 +129,13 @@ namespace ThereBeMonsters.Back_end.Modules
         public override void Run()
         {
             //Get points from file
-            List<Point> points = getPoints();
+            List<Vector2> points = getPoints();
 
             //Find centroid
-            Point centroid = findCentroid(points);
+            Vector2 centroid = findCentroid(points);
 
             //Calculate radius
-            double radius = findRadius(points, centroid);
+            float radius = findRadius(points, centroid);
 
             
         }

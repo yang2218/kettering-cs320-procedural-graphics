@@ -46,10 +46,88 @@ namespace TestProject.Objects
           return DefaultMaterial();
         case "DefaultTextured":
           return DefaultTexturedMaterial();
+        case "TweenLines":
+          return TweenLinesMaterial();
         default:
           // load from file
           throw new NotImplementedException();
       }
+    }
+
+    private static Material TweenLinesMaterial()
+    {
+      Material mat;
+      if (materialCache.TryGetValue("TweenLines", out mat))
+      {
+        return mat;
+      }
+
+      mat = new Material();
+      // TODO: replace three matrixes with one MVP (do multiplication on client-side)
+      string vertShaderSource = @"
+#version 140
+
+uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 modelMatrix;
+
+in vec3 position1;
+in vec3 position2;
+in float tween;
+
+void main(void)
+{
+  gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position1 + tween * (position2 - position1), 1.0);
+}
+";
+      string fragShaderSource = @"
+#version 140
+
+uniform vec3 color;
+
+out vec4 out_Color;
+
+void main(void)
+{
+  out_Color = vec4(color, 1.0);
+}
+";
+
+      mat.MaterialName = "Test Material";
+
+      // TODO: move to a compile function
+      // TODO: check the cache for these shaders first
+
+      mat.vertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
+      mat.fragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
+
+      GL.ShaderSource(mat.vertexShaderHandle, vertShaderSource);
+      GL.CompileShader(mat.vertexShaderHandle);
+      ValidateShader(mat.vertexShaderHandle, "test vertex shader");
+
+      GL.ShaderSource(mat.fragmentShaderHandle, fragShaderSource);
+      GL.CompileShader(mat.fragmentShaderHandle);
+      ValidateShader(mat.fragmentShaderHandle, "test fragmenmt shader");
+
+      // TODO: optionally compile a geometry shader
+
+
+      mat.shaderProgramHandle = GL.CreateProgram();
+      GL.AttachShader(mat.shaderProgramHandle, mat.vertexShaderHandle);
+      GL.AttachShader(mat.shaderProgramHandle, mat.fragmentShaderHandle);
+      // TODO: optionally attach geometry shader
+
+      // we need to make sure the indices map to the same number across all VertexData subclasses
+      // for more exotic data, I need to add in custom vertex array support
+      GL.BindAttribLocation(mat.shaderProgramHandle, 0, "position1");
+      GL.BindAttribLocation(mat.shaderProgramHandle, 1, "position2");
+      GL.BindAttribLocation(mat.shaderProgramHandle, 2, "tween");
+
+      GL.LinkProgram(mat.shaderProgramHandle);
+      ValidateProgram(mat.shaderProgramHandle);
+
+      materialCache["TweenLines"] = mat;
+      return mat;
     }
 
     private static Material DefaultMaterial()
@@ -230,6 +308,11 @@ void main(void)
         GL.Uniform1(location, 0);
         GL.ActiveTexture(TextureUnit.Texture0);
         GL.BindTexture(TextureTarget.Texture2D, texid);
+      }
+      if (UniformParameters.TryGetValue("tween", out value))
+      {
+        location = GL.GetUniformLocation(shaderProgramHandle, "tween");
+        GL.Uniform1(location, (float)value);
       }
       
       /*

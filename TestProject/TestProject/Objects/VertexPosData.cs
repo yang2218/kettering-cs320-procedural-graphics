@@ -16,6 +16,11 @@ namespace TestProject.Objects
       {
         this.position = pos;
       }
+
+      public VertexLayout(ref Vector3 pos)
+      {
+        this.position = pos;
+      }
     }
 
     private VertexLayout[] data;
@@ -119,6 +124,64 @@ namespace TestProject.Objects
 
           vertices.Add(new VertexLayout(new Vector3(x, y, 0f)));
         }
+      }
+
+      data = vertices.ToArray();
+      PrimitiveType = BeginMode.LineStrip;
+
+      return true;
+    }
+
+    public bool LoadFromLineDrawFile(string filePath)
+    {
+      string[] lines;
+      using (StreamReader sr = new StreamReader(filePath))
+      {
+        lines = sr.ReadToEnd().Split(new char[]{'\n','\r'}, StringSplitOptions.RemoveEmptyEntries);
+      }
+
+      int numPrims = lines.Length;
+      firsts = new int[numPrims];
+      counts = new int[numPrims];
+      List<VertexLayout> vertices = new List<VertexLayout>();
+      string[] tokens;
+      Vector3 initPos, curPos;
+      int i;
+      float x = 0f, y = 0f;
+      for (int prim = 0; prim < numPrims; prim++)
+      {
+        firsts[prim] = vertices.Count;
+        tokens = lines[prim].Split(new char[]{' ', ','}, StringSplitOptions.RemoveEmptyEntries);
+        i = 0;
+        if ((tokens[i++] == "m"
+          && float.TryParse(tokens[i++], out x)
+          && float.TryParse(tokens[i++], out y)) == false)
+        {
+          return false;
+        }
+
+        initPos = curPos = new Vector3(x, y, 0f);
+        vertices.Add(new VertexLayout(ref initPos));
+        while (i < tokens.Length)
+        {
+          if (tokens[i] == "z")
+          {
+            vertices.Add(new VertexLayout(ref initPos));
+            break;
+          }
+
+          if ((float.TryParse(tokens[i++], out x)
+            && float.TryParse(tokens[i++], out y)) == false)
+          {
+            return false;
+          }
+
+          curPos.X += x;
+          curPos.Y += y;
+          vertices.Add(new VertexLayout(ref curPos));
+        }
+
+        counts[prim] = vertices.Count - firsts[prim];
       }
 
       data = vertices.ToArray();

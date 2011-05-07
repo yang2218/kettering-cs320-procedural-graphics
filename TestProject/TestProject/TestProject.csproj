@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>TestProject.Lab2.CS33</StartupObject>
+    <StartupObject>TestProject.Hello2</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="OpenTK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
@@ -51,16 +51,26 @@
     <None Include="Lab2\house.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Lab3\dog.rel">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Lab3\qb.rel">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="OpenTK.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Hello2.cs" />
     <Compile Include="Hello.cs" />
     <Compile Include="Lab1\HW235.cs" />
     <Compile Include="Lab1\HW234.cs" />
     <Compile Include="Lab1\HW231.cs" />
     <Compile Include="Lab2\CS33.cs" />
+    <Compile Include="Lab3\CS41.cs" />
+    <Compile Include="Objects\FloatExtensions.cs" />
+    <Compile Include="Objects\VertexTweenData.cs" />
     <Compile Include="Objects\Texture.cs" />
     <Compile Include="Objects\VertexPosUVData.cs" />
     <Compile Include="Objects\Entity.cs" />
@@ -86,6 +96,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Data\bulldog.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Lab2\numbers.png" />
     <Content Include="Lab2\score.png" />
   </ItemGroup>

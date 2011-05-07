@@ -12,11 +12,14 @@ namespace ThereBeMonsters
   {
     public static void Main()
     {
+
+      Gasket cookie = new Gasket();
+      cookie.Run();
       /*Generator g = new Generator("TestGraph.xml");
       g.RunGraph();
       */
 
-      byte[,] hm = new byte[32, 32];
+      /*byte[,] hm = new byte[32, 32];
       List<Vector3> c = new List<Vector3>() {
         new Vector3(0.5f, 0.5f, 0.4f)};
 
@@ -42,7 +45,7 @@ namespace ThereBeMonsters
         Console.Write(string.Format("{0,2}", b / 10));
       }
 
-      System.Console.ReadLine();
+      System.Console.ReadLine();*/
     }
 
     /*

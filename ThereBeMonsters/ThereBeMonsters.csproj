@@ -65,7 +65,7 @@
     <Compile Include="Back-end\BlendDelegate.cs" />
     <Compile Include="Back-end\Module.cs" />
     <Compile Include="Back-end\ModuleGraph.cs" />
-    <Compile Include="Back-end\Modules\Class1.cs" />
+    <Compile Include="Back-end\Modules\gasket.cs" />
     <Compile Include="Back-end\Modules\ExampleModule.cs" />
     <Compile Include="Back-end\Modules\ExtrudeCirclesToHeight.cs" />
     <Compile Include="Back-end\Modules\WriteToConsole.cs" />

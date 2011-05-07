@@ -8,10 +8,18 @@ namespace TestProject
 {
   public class Hello2 : GameWindow
   {
-    private int textureID;
-    Matrix4 orthoMatrix, lookMatrix, projectionMatrix;
+    // The handle for the bulldog texture.
+    private int bulldogTextureID;
+
+    // Transform matrix for the camera.
+    Matrix4 lookMatrix;
+    
+    // Transform matrix for the bulldog (which is just a textured square)
+    Matrix4 bulldogTransformMatrix;
+
+    // Some extra variables for keeping track of the state of things
     Vector3 eyePos, lookTarget;
-    Vector3 objRotation;
+    Vector3 bulldogRotation;
 
     /// <summary>
     /// Invoked when window is loaded; setup OpenGL and stuff here.
@@ -23,26 +31,23 @@ namespace TestProject
 
       GL.ClearColor(Color.Black);
 
+      GL.MatrixMode(MatrixMode.Projection);
+      GL.Ortho(-0.6, 0.6, -0.6, 0.6, -10, 10);
+
+      // Initialize the camera's transform and some state variables
       eyePos = new Vector3(0f, 0f, 2f);
       lookTarget = new Vector3(0f, 0f, 0f);
-      Matrix4.CreateOrthographic(1.1f, 1.1f, -10f, 10f, out orthoMatrix);
       lookMatrix = Matrix4.LookAt(eyePos, lookTarget, Vector3.UnitY);
-      
-      // The multiplication operation can also be written as:
-      // projectionMatrix = lookMatrix * orthoMatrix;
-      // However, structs, such as Matrix4, are value types, and are normally passed by value,
-      // in method parameters or in operator overloads. Using the static method Matrix4.Mult
-      // with the ref and out parameters passes the parameters by reference, which is more
-      // efficient.
-      Matrix4.Mult(ref lookMatrix, ref orthoMatrix, out projectionMatrix);
-      GL.MatrixMode(MatrixMode.Projection);
-      GL.LoadMatrix(ref projectionMatrix);
+
+      // Initialize the bulldog's transform and some state variables
+      bulldogTransformMatrix = Matrix4.Identity;
+      bulldogRotation = Vector3.Zero;
       
       // It's a good idea to use an image that's square with a side length a power of 2
       // e.g. 128x128, 256x256, 1024x1024, etc.
       // This image is a PNG, which also has an alpha channel. This channel is included
       // in the texture, and can be used for various things (blending, cutouts, etc.)
-      textureID = LoadBitmapTexture("Data/bulldog.png");
+      bulldogTextureID = LoadBitmapTexture("Data/bulldog.png");
     }
 
     /// <summary>
@@ -87,73 +92,130 @@ namespace TestProject
         Exit();
       }
 
-      float panSpeed = 1f;
+      //
+      // Process input for moving camera
+      //
+      const float panSpeed = 1f;
+      bool updated = false;
 
       if (Keyboard[OpenTK.Input.Key.Up])
       {
         lookTarget.Y += panSpeed * frameTime;
+        updated = true;
       }
       if (Keyboard[OpenTK.Input.Key.Down])
       {
         lookTarget.Y -= panSpeed * frameTime;
+        updated = true;
       }
       if (Keyboard[OpenTK.Input.Key.Left])
       {
         lookTarget.X -= panSpeed * frameTime;
+        updated = true;
       }
       if (Keyboard[OpenTK.Input.Key.Right])
       {
         lookTarget.X += panSpeed * frameTime;
+        updated = true;
       }
 
-      lookMatrix = Matrix4.LookAt(eyePos, lookTarget, Vector3.UnitY);
+      if (updated)
+      {
+        lookMatrix = Matrix4.LookAt(eyePos, lookTarget, Vector3.UnitY);
+      }
 
-      Matrix4.Mult(ref lookMatrix, ref orthoMatrix, out projectionMatrix);
-      GL.MatrixMode(MatrixMode.Projection);
-      GL.LoadMatrix(ref projectionMatrix);
-
-
-      float rotSpeed = 5f;
+      //
+      // Process input for moving the square
+      //
+      const float rotSpeed = 5f;
+      updated = false;
 
       if (Keyboard[OpenTK.Input.Key.W])
       {
-        objRotation.X += rotSpeed * frameTime;
+        bulldogRotation.X += rotSpeed * frameTime;
+        updated = true;
       }
       if (Keyboard[OpenTK.Input.Key.S])
       {
-        objRotation.X -= rotSpeed * frameTime;
+        bulldogRotation.X -= rotSpeed * frameTime;
+        updated = true;
       }
       if (Keyboard[OpenTK.Input.Key.A])
       {
-        objRotation.Y -= rotSpeed * frameTime;
+        bulldogRotation.Y -= rotSpeed * frameTime;
+        updated = true;
       }
       if (Keyboard[OpenTK.Input.Key.D])
       {
-        objRotation.Y += rotSpeed * frameTime;
+        bulldogRotation.Y += rotSpeed * frameTime;
+        updated = true;
       }
 
-      Matrix4 xrotMatrix, yrotMatrix, modelViewMatrix;
-      Matrix4.CreateRotationX(objRotation.X, out xrotMatrix);
-      Matrix4.CreateRotationY(objRotation.Y, out yrotMatrix);
-      Matrix4.Mult(ref xrotMatrix, ref yrotMatrix, out modelViewMatrix);
-      GL.MatrixMode(MatrixMode.Modelview);
-      GL.LoadMatrix(ref modelViewMatrix);
+      if (updated)
+      {
+        Matrix4 xrotMatrix, yrotMatrix;
+        Matrix4.CreateRotationX(bulldogRotation.X, out xrotMatrix);
+        Matrix4.CreateRotationY(bulldogRotation.Y, out yrotMatrix);
+
+        // The multiplication operation can also be written as:
+        // projectionMatrix = lookMatrix * orthoMatrix;
+        // However, structs, such as Matrix4, are value types, and are normally passed by value,
+        // in method parameters or in operator overloads. Using the static method Matrix4.Mult
+        // with the ref and out parameters passes the parameters by reference, which is more
+        // efficient.
+        Matrix4.Mult(ref xrotMatrix, ref yrotMatrix, out bulldogTransformMatrix);
+      }
     }
 
     protected override void OnRenderFrame(FrameEventArgs e)
     {
       GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
       GL.Enable(EnableCap.DepthTest);
+
+      GL.MatrixMode(MatrixMode.Modelview);
+
+      SetupCamera();
+
+      GL.PushMatrix();
+      GL.MultMatrix(ref bulldogTransformMatrix);
+      DrawBulldog();
+      GL.PopMatrix();
+
+      // This just draws a second bulldog just behind the first one.
+      // If you uncomment this code, you'll see as the first bulldog rotates,
+      // the parts that go behind this one clipped and removed.
+      // However, if you also disable DepthTest, you'll notice the second
+      // bulldog is always drawn on top.
+      /*GL.PushMatrix();
+      GL.Translate(0f, 0f, -0.1f);
+      DrawBulldog();
+      GL.PopMatrix();*/
+      
+      this.SwapBuffers();
+    }
+
+    /// <summary>
+    /// Load's the camera's transform matrix; MatrixMode should be set to ModelView
+    /// before calling this method.
+    /// </summary>
+    private void SetupCamera()
+    {
+      GL.LoadMatrix(ref lookMatrix);
+    }
+
+    /// <summary>
+    /// Draws a square with the bulldog texture.
+    /// </summary>
+    private void DrawBulldog()
+    {
+      GL.Enable(EnableCap.Texture2D);
+      GL.BindTexture(TextureTarget.Texture2D, bulldogTextureID);
 
       // Doesn't render pixels with alpha < 0.5
       // If you comment out this line, the texture's alpha channel is ignored,
       // and you'll see a white square background (and maybe something else)
       GL.Enable(EnableCap.AlphaTest);
       GL.AlphaFunc(AlphaFunction.Greater, 0.5f);
-
-      GL.Enable(EnableCap.Texture2D);
-      GL.BindTexture(TextureTarget.Texture2D, textureID);
 
       GL.Color3(1.0, 1.0, 1.0);
       GL.Begin(BeginMode.Polygon);
@@ -162,26 +224,6 @@ namespace TestProject
         GL.TexCoord2(1.0, 0.0); GL.Vertex3(0.5f, 0.5f, 0.0);
         GL.TexCoord2(0.0, 0.0); GL.Vertex3(-0.5f, 0.5f, 0.0);
       GL.End();
-
-      // This just draws a second bulldog just behind the first one.
-      // If you uncomment this code, you'll see as the first bulldog rotates,
-      // the parts that go behind this one clipped and removed.
-      // However, if you also disable DepthTest, you'll notice the second
-      // bulldog is always drawn on top.
-      /*
-      GL.MatrixMode(MatrixMode.Modelview);
-      GL.PushMatrix();
-      GL.LoadIdentity();
-      GL.Begin(BeginMode.Polygon);
-        GL.TexCoord2(0.0, 1.0); GL.Vertex3(-0.5f, -0.5f, 0.1);
-        GL.TexCoord2(1.0, 1.0); GL.Vertex3(0.5f, -0.5f, 0.1);
-        GL.TexCoord2(1.0, 0.0); GL.Vertex3(0.5f, 0.5f, 0.1);
-        GL.TexCoord2(0.0, 0.0); GL.Vertex3(-0.5f, 0.5f, 0.1);
-      GL.End();
-      GL.PopMatrix();
-      */
-
-      this.SwapBuffers();
     }
 
     /// <summary>

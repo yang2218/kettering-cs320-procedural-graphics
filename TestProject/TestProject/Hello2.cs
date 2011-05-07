@@ -158,7 +158,7 @@ namespace TestProject
         Matrix4.CreateRotationY(bulldogRotation.Y, out yrotMatrix);
 
         // The multiplication operation can also be written as:
-        // projectionMatrix = lookMatrix * orthoMatrix;
+        // bulldogTransformMatrix = xrotMatrix * yrotMatrix;
         // However, structs, such as Matrix4, are value types, and are normally passed by value,
         // in method parameters or in operator overloads. Using the static method Matrix4.Mult
         // with the ref and out parameters passes the parameters by reference, which is more

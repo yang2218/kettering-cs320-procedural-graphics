@@ -19,19 +19,29 @@ namespace TestProject
     /// <param name="e">Not used.</param>
     protected override void OnLoad(EventArgs e)
     {
-      GL.Viewport(0, 0, 250, 250);
+      GL.Viewport(0, 0, ClientSize.Width, ClientSize.Height);
 
       GL.ClearColor(Color.Black);
 
       eyePos = new Vector3(0f, 0f, 2f);
       lookTarget = new Vector3(0f, 0f, 0f);
-      Matrix4.CreateOrthographic(2f, 2f, -10f, 10f, out orthoMatrix);
+      Matrix4.CreateOrthographic(1.1f, 1.1f, -10f, 10f, out orthoMatrix);
       lookMatrix = Matrix4.LookAt(eyePos, lookTarget, Vector3.UnitY);
       
+      // The multiplication operation can also be written as:
+      // projectionMatrix = lookMatrix * orthoMatrix;
+      // However, structs, such as Matrix4, are value types, and are normally passed by value,
+      // in method parameters or in operator overloads. Using the static method Matrix4.Mult
+      // with the ref and out parameters passes the parameters by reference, which is more
+      // efficient.
       Matrix4.Mult(ref lookMatrix, ref orthoMatrix, out projectionMatrix);
       GL.MatrixMode(MatrixMode.Projection);
       GL.LoadMatrix(ref projectionMatrix);
       
+      // It's a good idea to use an image that's square with a side length a power of 2
+      // e.g. 128x128, 256x256, 1024x1024, etc.
+      // This image is a PNG, which also has an alpha channel. This channel is included
+      // in the texture, and can be used for various things (blending, cutouts, etc.)
       textureID = LoadBitmapTexture("Data/bulldog.png");
     }
 
@@ -70,6 +80,8 @@ namespace TestProject
     {
       base.OnUpdateFrame(e);
 
+      float frameTime = (float)e.Time;
+
       if (Keyboard[OpenTK.Input.Key.Escape])
       {
         Exit();
@@ -79,19 +91,19 @@ namespace TestProject
 
       if (Keyboard[OpenTK.Input.Key.Up])
       {
-        lookTarget.Y += panSpeed * (float)e.Time;
+        lookTarget.Y += panSpeed * frameTime;
       }
       if (Keyboard[OpenTK.Input.Key.Down])
       {
-        lookTarget.Y -= panSpeed * (float)e.Time;
+        lookTarget.Y -= panSpeed * frameTime;
       }
       if (Keyboard[OpenTK.Input.Key.Left])
       {
-        lookTarget.X -= panSpeed * (float)e.Time;
+        lookTarget.X -= panSpeed * frameTime;
       }
       if (Keyboard[OpenTK.Input.Key.Right])
       {
-        lookTarget.X += panSpeed * (float)e.Time;
+        lookTarget.X += panSpeed * frameTime;
       }
 
       lookMatrix = Matrix4.LookAt(eyePos, lookTarget, Vector3.UnitY);
@@ -105,19 +117,19 @@ namespace TestProject
 
       if (Keyboard[OpenTK.Input.Key.W])
       {
-        objRotation.X += rotSpeed * (float)e.Time;
+        objRotation.X += rotSpeed * frameTime;
       }
       if (Keyboard[OpenTK.Input.Key.S])
       {
-        objRotation.X -= rotSpeed * (float)e.Time;
+        objRotation.X -= rotSpeed * frameTime;
       }
       if (Keyboard[OpenTK.Input.Key.A])
       {
-        objRotation.Y -= rotSpeed * (float)e.Time;
+        objRotation.Y -= rotSpeed * frameTime;
       }
       if (Keyboard[OpenTK.Input.Key.D])
       {
-        objRotation.Y += rotSpeed * (float)e.Time;
+        objRotation.Y += rotSpeed * frameTime;
       }
 
       Matrix4 xrotMatrix, yrotMatrix, modelViewMatrix;
@@ -135,6 +147,8 @@ namespace TestProject
       GL.Enable(EnableCap.DepthTest);
 
       // Doesn't render pixels with alpha < 0.5
+      // If you comment out this line, the texture's alpha channel is ignored,
+      // and you'll see a white square background (and maybe something else)
       GL.Enable(EnableCap.AlphaTest);
       GL.AlphaFunc(AlphaFunction.Greater, 0.5f);
 
@@ -179,10 +193,10 @@ namespace TestProject
       using (Hello2 window = new Hello2())
       {
         window.Title = "Hello Texture and Camera Control";
-        window.Size = new Size(250, 250);
+        window.ClientSize = new Size(250, 250);
         window.X = 500;
         window.Y = 500;
-        window.Run(30.0, 0.0);
+        window.Run(30.0, 30.0);
       }
     }
   }

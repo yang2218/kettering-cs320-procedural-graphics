@@ -1,0 +1,1958 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OpenTKGUI</name>
+    </assembly>
+    <members>
+        <member name="T:OpenTKGUI.AlignSurface">
+            <summary>
+            A surface that aligns a fixed surface to make a resizable surface.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Surface">
+            <summary>
+            A static 2D image that can be rendered with a render context without causing interference to future render calls.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Surface.Render(OpenTKGUI.Rectangle,OpenTKGUI.GUIRenderContext)">
+            <summary>
+            Renders the surface to an area on the given context.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Surface.CreateControl">
+            <summary>
+            Creates a control that displays this surface.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Surface.OnDispose">
+            <summary>
+            Called when the surface is disposed. The surface may not be used after this.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Surface.AsTexture(System.Int32,System.Int32)">
+            <summary>
+            Creates a texture surface representation of this surface.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.AlignSurface.Source">
+            <summary>
+            Gets the fixed surface drawn by this align surface.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.AlignSurface.Horizontal">
+            <summary>
+            Gets or sets the horizontal alignment of the source surface.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.AlignSurface.Vertical">
+            <summary>
+            Gets or sets the vertical alignment of the source surface.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.BorderContainer">
+            <summary>
+            A container that applies a border around its client. The border thickness may be specified in any direction seperately.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Control">
+            <summary>
+            The basic unit of TKGUI. Describes a gui component that can be drawn and receive events.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Control.WithBorder(System.Double)">
+            <summary>
+            A convenience function for wrapping the control in a BorderContainer with a uniformly-sized black border.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Control.WithBorder(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            A convenience function for wrapping the control in a BorderContainer and applying a black border.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Control.WithBorder(OpenTKGUI.Color,System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            A convenience function for wrapping the control in a BorderContainer and applying a border.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Control.WithMargin(System.Double)">
+            <summary>
+            A convenience function for wrapping the control in a MarginContainer, applying a uniform margin to the control.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Control.WithAlign(OpenTKGUI.Point,OpenTKGUI.Align,OpenTKGUI.Align)">
+            <summary>
+            A convenience function for wrapping the control in an AlignContainer, giving it a target size and aligning it in
+            its container.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Control.WithCenterAlign(OpenTKGUI.Point)">
+            <summary>
+            A convenience function for wrapping the control in an AlignContainer, giving it a target size and aligning it in the center of
+            its container.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Control.Render(OpenTKGUI.GUIRenderContext)">
+            <summary>
+            Renders the control with the given context.
+            </summary>
+            <remarks>Rendering, when the given context is current, should be done from (0.0, 0.0) to (Size.X, Size.Y).</remarks>
+        </member>
+        <member name="M:OpenTKGUI.Control.Update(OpenTKGUI.GUIControlContext,System.Double)">
+            <summary>
+            Updates the state of the control after the specified amount of time elapses.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Control.Update(OpenTKGUI.GUIContext,System.Double)">
+            <summary>
+            Updates the state of the control as a root control.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Control.ForceResize(OpenTKGUI.Point)">
+            <summary>
+            Resizes this control in a not very nice way that may cause problems. Do not use the function unless
+            you know what you are doing.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Control.ResizeChild(OpenTKGUI.Control,OpenTKGUI.Point)">
+            <summary>
+            Resizes a child control.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Control.OnResize(OpenTKGUI.Point)">
+            <summary>
+            Called when the size of the control is forcibly changed.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Control.OnDispose">
+            <summary>
+            Called when the control is cleaning up it's used resources. The control will not be used
+            after this. 
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Control.Dispose">
+            <summary>
+            Disposes of all resources this control is using along with all its current child controls.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Control.Size">
+            <summary>
+            Gets the size (in pixels) of this panel when rendered.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.BorderContainer.Set(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Sets all the independant border parts at once to avoid recalculation.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.BorderContainer.Color">
+            <summary>
+            Gets or sets the border color.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.BorderContainer.Uniform">
+            <summary>
+            Sets the thickness of a uniform border.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.BorderContainer.Left">
+            <summary>
+            Gets or sets the thickness of the left part of the border.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.BorderContainer.Right">
+            <summary>
+            Gets or sets the thickness of the right part of the border.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.BorderContainer.Top">
+            <summary>
+            Gets or sets the thickness of the top part of the border.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.BorderContainer.Bottom">
+            <summary>
+            Gets or sets the thickness of the bottom part of the border.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Textbox">
+            <summary>
+            A single-lined control a user can use to input text.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Textbox.ValidChar(System.Char)">
+            <summary>
+            Gets if the specified character is valid in a textbox.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Textbox._SelectedIndex(OpenTKGUI.Point)">
+            <summary>
+            Gets the index of the selected text at the specified relative position.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Textbox._SelectedIndex(OpenTKGUI.Rectangle[],System.Double,System.Int32,System.Int32)">
+            <summary>
+            Gets the selection index of a position with an x coordinate of X relative to the inner region of the textbox assuming that the selection is somewhere
+            in the given text region.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Textbox.SelectionX(OpenTKGUI.Rectangle[],System.Int32)">
+            <summary>
+            Gets the x coordinate of the selection when its at the specified index.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Textbox._TryChangeText(System.String)">
+            <summary>
+            Tries changing the text to the specified new string. Returns true if sucsessful.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Textbox.Text">
+            <summary>
+            Gets or sets the text in this textbox.
+            </summary>
+        </member>
+        <member name="E:OpenTKGUI.Textbox.TextChanged">
+            <summary>
+            An event that is fired whenever the text shown on the textbox is changed.
+            </summary>
+        </member>
+        <member name="E:OpenTKGUI.Textbox.TextEntered">
+            <summary>
+            An event that is fired whenever the user enters a new text string into the textbox. (After they press enter or take keyboard focus.)
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.TextSelection">
+            <summary>
+            Represents a selection of text given by the user.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.TextSelection.Order(System.Int32@,System.Int32@)">
+            <summary>
+            Gets the ordered start and end indices of the selection.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.TextSelection.Start">
+            <summary>
+            The character the start (the first point selected, not the first index) of the selection is before.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.TextSelection.End">
+            <summary>
+            The character the end of the selection is before.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.TextboxStyle">
+            <summary>
+            Gives styling options for a textbox.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Popup">
+            <summary>
+            A hovering control that shows possible options in vertically descending order. (A context menu). Note that the popups created
+            directly by the constructor will not be immediately active. Use the static call method instead to create and display a popup properly.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.LayerControl">
+            <summary>
+            A hovering control showing in the front layer of a layer container.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.LayerControl.RenderShadow(OpenTKGUI.Point,OpenTKGUI.GUIRenderContext)">
+            <summary>
+            Renders a shadow for the hovering control. The context given will not be translated or clipped from
+            the layer container.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.LayerControl.Size">
+            <summary>
+            Gets or sets the size of the layer control. This size is independant of any other control.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.LayerControl.Container">
+            <summary>
+            Gets the layer container this hovering control is in.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.LayerControl.Position">
+            <summary>
+            Gets or sets the position of the layer control within its container.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Popup.Call(OpenTKGUI.LayerContainer,OpenTKGUI.Point,OpenTKGUI.Popup)">
+            <summary>
+            Calls up a precreated popup in the given container at the offset (which becomes the topleft point).
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Popup.Call(OpenTKGUI.LayerContainer,OpenTKGUI.Point,System.Collections.Generic.IEnumerable{OpenTKGUI.MenuItem},OpenTKGUI.PopupStyle)">
+            <summary>
+            Calls up a popup in the container at the offset (which becomes the topleft point). 
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Popup.Call(OpenTKGUI.LayerContainer,OpenTKGUI.Point,System.Collections.Generic.IEnumerable{OpenTKGUI.MenuItem})">
+            <summary>
+            Calls up a popup in the container at the offset, using the default popup style.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Popup._ItemRect(OpenTKGUI.Rectangle,OpenTKGUI.Popup._Item)">
+            <summary>
+            Gets the item rectangle for an item, given the inner rectangle.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Popup._Select(OpenTKGUI.Popup._Item)">
+            <summary>
+            Sets the specified item as active. Returns if the selection is new.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Popup._UpdateSubmenu(OpenTKGUI.Rectangle)">
+            <summary>
+            Creates a submenu, if needed
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Popup._CreateSubmenu(System.Collections.Generic.IEnumerable{OpenTKGUI.MenuItem},OpenTKGUI.Rectangle)">
+            <summary>
+            Creates a submenu with the specified items.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Popup._Click">
+            <summary>
+            Clicks on the active item.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Popup._DismissFull">
+            <summary>
+            Dismisses this popup and all ancestors.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Popup.Dismiss">
+            <summary>
+            Dismisses the popup, deallocating all resources it uses and removing it form its parent container.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Popup.MinWidth">
+            <summary>
+            Sets the minimum width this popup can have.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Popup._Item">
+            <summary>
+            Information about a item.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.Popup._Item.Source">
+            <summary>
+            The menuitem associated with this item.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.Popup._Item.Y">
+            <summary>
+            The location of the top of the item not accounting for padding.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.Popup._Item.Size">
+            <summary>
+            The size of the item.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.Popup._Item.Sample">
+            <summary>
+            The text sample, if any, associated with this item.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Popup._Item.Render(OpenTKGUI.GUIRenderContext,OpenTKGUI.PopupStyle,OpenTKGUI.Rectangle)">
+            <summary>
+            Renders the item to the specified location.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Popup._Item.Selectable">
+            <summary>
+            Gets if this item can be selected.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.PopupStyle">
+            <summary>
+            Gives styling options for a popup.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.PopupContainer">
+            <summary>
+            A container that allows a child control to display popups, either actively by a command, or passively by right click.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.SingleContainer">
+            <summary>
+            A container of a single control that produces some effect or modification on it.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.SingleContainer.Client">
+            <summary>
+            Gets the control that is affected or modified by this container.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.PopupContainer.Call(OpenTKGUI.Point)">
+            <summary>
+            Calls the popup described in the container at the given offset from the container.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.PopupContainer.CallAtMouse">
+            <summary>
+            Calls the popup described in the container at the current mouse position.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.PopupContainer.Style">
+            <summary>
+            Gets or sets the style future popups will be created with.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.PopupContainer.Items">
+            <summary>
+            Gets or sets the items future popups will contain.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.PopupContainer.ShowOnRightClick">
+            <summary>
+            Gets or sets wether the popup menu is shown on right click (as a context menu).
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Button">
+            <summary>
+            A clickable button with text.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Button.GetFullSize(OpenTKGUI.Point)">
+            <summary>
+            Gets the full size of the button needed to have the specified client size.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Button.Text">
+            <summary>
+            Gets or sets the text in the middle of the button. This may only be done if the client of the button is a label.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Button.Client">
+            <summary>
+            Gets the client control that appears in the middle of the button.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Button.ClientSize">
+            <summary>
+            Gets the size of the client in the middle of the button.
+            </summary>
+        </member>
+        <member name="E:OpenTKGUI.Button.Click">
+            <summary>
+            An event fired whenever this button is clicked.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.ButtonStyle">
+            <summary>
+            Gives styling options for a button.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.ButtonStyle.CreateSolid(OpenTKGUI.Skin)">
+            <summary>
+            Creates a button style for a solid button.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.SplitContainer">
+            <summary>
+            A container that splits an area into two rectangular parts that together make up the whole area of the container.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.SplitContainer.NearSize">
+            <summary>
+            Gets or sets the size of the near control in the direction of the split container.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Progressbar">
+            <summary>
+            A control to display the progress of an operation
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Progressbar.Value">
+            <summary>
+            Gets or sets the value of the progreesbar, between 0.0 and 1.0.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.ProgressbarStyle">
+            <summary>
+            Gives styling options for a progress bar.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Form">
+            <summary>
+            A floating, draggable control that can be used in a layer container.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Form.AddTitlebarItem(OpenTKGUI.Control,System.Double)">
+            <summary>
+            Adds an item to the right of the titlebar of the form.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Form.AddTitlebarButton(OpenTKGUI.ButtonStyle,OpenTKGUI.Control)">
+            <summary>
+            Adds a button the the right of the titlebar of the form. Buttons will have no text on them and will be distinguishable only by style.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Form.Dismiss">
+            <summary>
+            Makes the form go away and be disposed.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Form.AddCloseButton">
+            <summary>
+            Adds a close button on the titlebar of the form.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Form.Client">
+            <summary>
+            Gets the control that is inside the form.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Form.ClientRectangle">
+            <summary>
+            Gets the rectangle in relation to the form for the client of the form.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Form.ClientSize">
+            <summary>
+            Gets or sets the client size of the form, which is the size allocated to the client.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Form.Text">
+            <summary>
+            Gets or sets the text in the titlebar of the form.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.FormStyle">
+            <summary>
+            Gives styling options for a form.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.TextAlign">
+            <summary>
+            Represents an alignment of a text in a direction.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.TextWrap">
+            <summary>
+            Represents a method of wrapping text that is too large for its container.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.TextWrap.Clip">
+            <summary>
+            Text that does not fit in its line is cut.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.TextWrap.Ellipsis">
+            <summary>
+            Text that does not fit will be replaced with an ellipsis.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.TextWrap.Wrap">
+            <summary>
+            If text does not fit on a line, it is cut and moved to the next line.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Label">
+            <summary>
+            A control containing text (with no background).
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Label.GetHeight(System.Double)">
+            <summary>
+            Gets the height required for the label if the width is known.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Label.Text">
+            <summary>
+            Gets or sets the text on the label.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Label.Wrap">
+            <summary>
+            Gets the wrapping mode of this label.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Label.HorizontalAlign">
+            <summary>
+            Gets the horizontal align mode on the label.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Label.VerticalAlign">
+            <summary>
+            Gets the vertical align mode on the label.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Label.SuggestSize">
+            <summary>
+            Suggests the size of the label so that no text overflows.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.LabelStyle">
+            <summary>
+            Gives styling options for a label.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Skin">
+            <summary>
+            An image containing many related, flexible, subimages that can be used to draw controls.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Skin.GetSurface(OpenTKGUI.SkinArea)">
+            <summary>
+            Gets a skin surface for the given region in the skin. No stretching or resizing is applied to the surface.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Skin.GetSurface(OpenTKGUI.SkinArea,OpenTKGUI.Point)">
+            <summary>
+            Gets a skin surface for the given region in the skin. The surface will be stretched at the midline to get the target size.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Skin.GetStretchableSurface(OpenTKGUI.SkinArea)">
+            <summary>
+            Gets a surface that displays by stretching the given rectangle at its midline.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Skin.GetStretchableSurface(OpenTKGUI.SkinArea,System.Int32,System.Int32)">
+            <summary>
+            Gets a surface that displays by stretching on the defined lines (relative to the source rectangle).
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Skin.GetSurface(OpenTKGUI.SkinArea,System.Int32,System.Int32,OpenTKGUI.Point)">
+            <summary>
+            Gets a skin surface for the given region in the skin. The surface will be stretched at the stretch lines to get the target size.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Skin.GetSurface(System.Collections.Generic.List{OpenTKGUI.SkinSurface.Stop},System.Collections.Generic.List{OpenTKGUI.SkinSurface.Stop})">
+            <summary>
+            Gets a skin surface for the given region in the skin. Stretching and resizing is to be manually specified with stops. Lists
+            must be discarded after being supplied.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Skin.Default">
+            <summary>
+            Gets the default skin.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Skin.Texture">
+            <summary>
+            Gets the id for the texture of the skin.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Skin.Width">
+            <summary>
+            Gets the width of the texture for the skin.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Skin.Height">
+            <summary>
+            Gets the height of the texture for the skin.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Skin._StretchableSurface">
+            <summary>
+            A surface from a skin that can be stretched.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.SkinArea">
+            <summary>
+            A source area for a skin.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.SkinSurface">
+            <summary>
+            A surface that renders part of a skin, with optional modifications.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.FixedSurface">
+            <summary>
+            A surface with a fixed a size.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.FixedSurface.WithAlign(OpenTKGUI.Align,OpenTKGUI.Align)">
+            <summary>
+            Creates a resizable surface by aliging this fixed surface in the resizable area.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.FixedSurface.AsTexture">
+            <summary>
+            Creates a texture surface representation of this surface.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.FixedSurface.Render(OpenTKGUI.Point,OpenTKGUI.GUIRenderContext)">
+            <summary>
+            Renders the surface to a context with the given point at the upper-left corner of the rendered surface.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.FixedSurface.Size">
+            <summary>
+            Gets the size of the surface.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.SkinSurface._MultiplyTextureOffsets(System.Collections.Generic.List{OpenTKGUI.SkinSurface.Stop},System.Double)">
+            <summary>
+            Applies the texture offsets in a list of stops by applying an offset and a multipler.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.SkinSurface.Stop">
+            <summary>
+            Represents a line on an axis that correlates an offset when rendered to an offset from the source texture. Using multiple stops can create
+            stretching effects.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.SkinSurface.Stop.TextureOffset">
+            <summary>
+            The offset of the stop from the source texture region.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.SkinSurface.Stop.RenderOffset">
+            <summary>
+            The offset of the stop from the begining of the rendered surface.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.SunkenContainer">
+            <summary>
+            A simple container that uses shading to give the client a sunken appearance. The client should be bordered on all sides for this to look right.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.SunkenContainerStyle">
+            <summary>
+            Gives styling options for a sunken container.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Color">
+            <summary>
+            Represents a color including alpha. Contains methods for color manipulation.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Color.RGBA(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Creates a color from its RGBA representation. Values should be between
+            0.0 and 1.0.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Color.RGB(System.Double,System.Double,System.Double)">
+            <summary>
+            Creates a color from its RGB reprsentation with a completely
+            opaque alpha.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Color.Mix(OpenTKGUI.Color,OpenTKGUI.Color,System.Double)">
+            <summary>
+            Mixes two colors based on the specified amount. If the amount is 0.0,
+            the resulting color will be A. If the amount is 1.0, the resulting color
+            will be B. Values in between will cause the color to be interpolated.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Color.HLSA(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Creates a color from its HLSA representation.
+            </summary>
+            <param name="H">Hue in degrees.</param>
+            <param name="L">Lumination between 0.0 and 1.0.</param>
+            <param name="S">Saturation between 0.0 and 1.0.</param>
+            <param name="A">Alpha between 0.0 and 1.0.</param>
+        </member>
+        <member name="M:OpenTKGUI.Color.op_Implicit(OpenTKGUI.Color)~OpenTK.Graphics.Color4">
+            <summary>
+            Converts this color into a color usable by opentk.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Color.Render">
+            <summary>
+            Sends the color to the current GL context.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Color.Desaturate(System.Double,System.Double)">
+            <summary>
+            Brings all color units to the specified value in the color.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.Color.Transparent">
+            <summary>
+            Gets a completely transparent color.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Gradient">
+            <summary>
+            A mapping of values between 0.0 and 1.0 to colors.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Gradient.GetColor(System.Double)">
+            <summary>
+            Gets a color for the specified value.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Gradient.Stop">
+            <summary>
+            A sample point of the gradient.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.Gradient.Stop.Color">
+            <summary>
+            The color at the stop.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.Gradient.Stop.Value">
+            <summary>
+            The value the stop is at.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Menu">
+            <summary>
+            A control that arranges menu items horizontally and optionally allows popups for compound menu items (requires the menu to
+            be embedded directly or indirectly in a layer container).
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Menu._Click(OpenTKGUI.Rectangle,OpenTKGUI.Menu._Item,OpenTKGUI.GUIControlContext)">
+            <summary>
+            Called when an item is clicked.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Menu._Select(OpenTKGUI.Rectangle,OpenTKGUI.Menu._Item,OpenTKGUI.GUIControlContext)">
+            <summary>
+            Selects an item.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Menu._MakePopup(OpenTKGUI.Rectangle,System.Collections.Generic.IEnumerable{OpenTKGUI.MenuItem},OpenTKGUI.GUIControlContext)">
+            <summary>
+            Creates a popup for an item.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Menu._Item">
+            <summary>
+            An item in the menu.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.Menu._Item.X">
+            <summary>
+            The x location of the item in relation to the menu.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.Menu._Item.Width">
+            <summary>
+            The width of the item.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.Menu._Item.Sample">
+            <summary>
+            The text sample, if any, for the item.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.Menu._Item.Item">
+            <summary>
+            The item.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Menu._Item.Render(OpenTKGUI.GUIRenderContext,OpenTKGUI.MenuStyle,OpenTKGUI.Rectangle)">
+            <summary>
+            Renders the contents of the item to the specified rectangle.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.MenuStyle">
+            <summary>
+            Gives styling options for a menu.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.MenuItem">
+            <summary>
+            An item on a menu or popup.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.MenuItem.Create(System.String,OpenTKGUI.ClickHandler)">
+            <summary>
+            Creates a command menu item.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.MenuItem.Create(System.String,System.Collections.Generic.IEnumerable{OpenTKGUI.MenuItem})">
+            <summary>
+            Creates a compound menu item.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.MenuItem.Create(System.String)">
+            <summary>
+            Creates a command menu item that doesn't do anything.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.MenuItem.Selectable">
+            <summary>
+            Gets if the menu item can be selected.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.MenuItem.Seperator">
+            <summary>
+            Gets a seperator menu item.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.TextMenuItem">
+            <summary>
+            A menu item that displays text.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.TextMenuItem.Text">
+            <summary>
+            Gets the text for this menu item.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.CommandMenuItem">
+            <summary>
+            A menu item that calls an event on click.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.CompoundMenuItem">
+            <summary>
+            A menu item that when selected, opens a submenu with a new set of items.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.CompoundMenuItem.Items">
+            <summary>
+            Gets or sets the subordinate items in the compound menu item.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.SeperatorMenuItem">
+            <summary>
+            A menu item that seperates items before and after it. Can be used to group together logically related items.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.SeperatorMenuItem.Singleton">
+            <summary>
+            The only instance of this menu item, since it contains no data anyway.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.GUIContext">
+            <summary>
+            Context used to update controls. This context is not intended for any specific control and gives absolute positions and values
+            for all parameters.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.GUIContext.CreateRootControlContext(OpenTKGUI.Control,OpenTKGUI.Point)">
+            <summary>
+            Creates a control context based on this context for a top-level control.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.GUIContext.KeyboardFocus">
+            <summary>
+            Gets or sets the control that currently has keyboard focus, or null if there is no such control.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.GUIContext.MouseFocus">
+            <summary>
+            Gets or sets the control that currently has mouse focus, or null if there is no such control.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.GUIContext.MouseState">
+            <summary>
+            Gets the state of the mouse, if possible.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.GUIContext.KeyboardState">
+            <summary>
+            Gets the state of the keyboard, if possible.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.GUIControlContext">
+            <summary>
+            Context used to update a control. This control provides information specific to a single control.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.GUIControlContext.CaptureMouse">
+            <summary>
+            Captures mouse focus.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.GUIControlContext.ReleaseMouse">
+            <summary>
+            Releases mouse focus, if this control currently has it.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.GUIControlContext.CaptureKeyboard">
+            <summary>
+            Captures keyboard focus.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.GUIControlContext.ReleaseKeyboard">
+            <summary>
+            Releases keyboard focus, if this control currently has it.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.GUIControlContext.FindAncestor``1(``0@,OpenTKGUI.Point@)">
+            <summary>
+            Searches for the closest ancestor of the specified type. Returns true on sucsess and false on failure.
+            </summary>
+            <param name="Offset">The current controls's offset from the ancestor.</param>
+        </member>
+        <member name="M:OpenTKGUI.GUIControlContext._Inside(OpenTKGUI.Point)">
+            <summary>
+            Gets if the specified absolute point is inside the control.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.GUIControlContext.CreateChildContext(OpenTKGUI.Control,OpenTKGUI.Point)">
+            <summary>
+            Creates a control context for a child control of this control.
+            </summary>
+            <param name="Control">The child control.</param>
+            <param name="Offset">The offset of the child control.</param>
+        </member>
+        <member name="M:OpenTKGUI.GUIControlContext.CreateChildContext(OpenTKGUI.Control,OpenTKGUI.Point,System.Boolean)">
+            <summary>
+            Creates a control context for a child control of this control. If DisableMouse is true, the child context will not 
+            be able to access the mouse unless it has mouse focus.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.GUIControlContext.Control">
+            <summary>
+            Gets the control this context is intended for.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.GUIControlContext.Offset">
+            <summary>
+            Gets the offset of this control from the root update context.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.GUIControlContext.HasMouse">
+            <summary>
+            Gets if this control has mouse focus.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.GUIControlContext.HasKeyboard">
+            <summary>
+            Gets if this control has keyboard focus.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.GUIControlContext.MouseState">
+            <summary>
+            Gets the mouse state for the control.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.GUIControlContext.KeyboardState">
+            <summary>
+            Gets the keyboard state for the control.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.GUIControlContext.SimpleKeyboardState">
+            <summary>
+            Gets a keyboard state for the control that doesn't require keyboard focus. This should not be
+            used for keyboard-intensive tasks such as typing as it may confuse the user. This would best be used
+            for modifiers to a mouse action.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.MouseState">
+            <summary>
+            The state of the mouse at one time.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.MouseState.IsButtonDown(OpenTK.Input.MouseButton)">
+            <summary>
+            Gets if the specified mouse button is down.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.MouseState.HasPushedButton(OpenTK.Input.MouseButton)">
+            <summary>
+            Gets if the mouse button has been pushed since the last update.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.MouseState.HasReleasedButton(OpenTK.Input.MouseButton)">
+            <summary>
+            Gets if the mouse button has been released since the last update.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.MouseState.Position">
+            <summary>
+            Gets the current position of the mouse.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.MouseState.Scroll">
+            <summary>
+            Gets the amount (in "pixels") the mouse has scrolled since the last update. Positive numbers indicate
+            upward scrolling and negative numbers indicate downard scrolling.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.KeyboardState">
+            <summary>
+            The state of the keyboard during an update, keeping track of changes since the last update.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.KeyboardState.IsKeyDown(OpenTK.Input.Key)">
+            <summary>
+            Gets if the specified keyboard key is down.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.KeyboardState.Events">
+            <summary>
+            Gets the keys events that were generated since the last update.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.KeyboardState.Presses">
+            <summary>
+            Gets the characters that where typed since the last update.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.ButtonEventType">
+            <summary>
+            A type of event for a bottom.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.ButtonEventType.Down">
+            <summary>
+            The button is pushed down.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.ButtonEventType.Up">
+            <summary>
+            The button is released.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.KeyEvent">
+            <summary>
+            An event for a key.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.KeyEvent.Key">
+            <summary>
+            The key that is the subject of the event.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.KeyEvent.Type">
+            <summary>
+            The type of event this is.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.WindowMouseState">
+            <summary>
+            A mouse state for a game window.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.WindowMouseState.Update">
+            <summary>
+            Updates the mouse state with new information produced by its associated device.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.WindowKeyboardState">
+            <summary>
+            A keyboard state for a game window.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.WindowKeyboardState.PostUpdate">
+            <summary>
+            Updates the keyboard state by replacing old information used in an update.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Font">
+            <summary>
+            Represents a font, an interface that can be used for converting text into textures.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Font.CreateSample(System.String)">
+            <summary>
+            Gets a text sample for the specified text when drawn with this font. Note that multiple lines can be created with '\n'.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:OpenTKGUI.Font.CreateSample(System.String,System.Nullable{OpenTKGUI.Point},OpenTKGUI.TextAlign,OpenTKGUI.TextAlign,OpenTKGUI.TextWrap)" -->
+        <member name="M:OpenTKGUI.Font.OnDispose">
+            <summary>
+            Called when the font is no longer needed.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Font.Default">
+            <summary>
+            Gets or sets the default font used for controls.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Font.EstimateCharacterSize">
+            <summary>
+            Gets an estimate of the size of a character drawn with this font.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.TextSample">
+            <summary>
+            Information and methods for a text when drawn with font. TextSample's may be rendered directly, or preferably, from
+            a GUIRenderContext. TextSample's that need to be rendered repeatedly should be saved and used until they are no longer needed, as opposed to
+            being discarded and recreated on each render.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.TextSample.Render(OpenTKGUI.Color,OpenTKGUI.Point)">
+            <summary>
+            Renders the text sample to the current graphics context with the specified color and offset.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.TextSample.OnDispose">
+            <summary>
+            Called when the sample is no longer needed.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.TextSample.Text">
+            <summary>
+            Gets the text used in the sample.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.TextSample.CharacterBounds">
+            <summary>
+            Gets an array of rectangles where each rectangle corresponds to a the bounding region the character at the same index occupies.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.TextSample.Font">
+            <summary>
+            Gets the font the text sample is drawn with.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.TextSample.Size">
+            <summary>
+            Gets the size, in pixels, of the text sample.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.TextSample.HorizontalAlign">
+            <summary>
+            Gets the horizontal alignment of the text in the text sample.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.TextSample.VerticalAlign">
+            <summary>
+            Gets the vertical alignment of the text in the text sample.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.SystemFont">
+            <summary>
+            A font identified by a name installed on the current system.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.SystemFont.GDIFont">
+            <summary>
+            Gets a GDI-usable version of this font.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.SystemFont.Antialias">
+            <summary>
+            Gets if this font is antialias'd.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.SystemFont._TextSample">
+            <summary>
+            A text sample for this kind of font.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.SystemFont._TextSample._Format">
+            <summary>
+            Gets the string format used for drawing or measuring text.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.MessageBox">
+            <summary>
+            Contains function related to the creation and display of modal message boxes.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.MessageBox.Show(OpenTKGUI.LayerContainer,OpenTKGUI.MessageBoxOptions)">
+            <summary>
+            Shows a messagebox with the specified options.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.MessageBox.ShowOKCancel(OpenTKGUI.LayerContainer,System.String,System.String,OpenTKGUI.ClickHandler,OpenTKGUI.MessageBoxStyle)">
+            <summary>
+            Shows a messagebox with the OK and cancel options. Action is only performed on OK.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.MessageBox.ShowOKCancel(OpenTKGUI.LayerContainer,System.String,System.String,OpenTKGUI.ClickHandler)">
+            <summary>
+            Shows a messagebox with the default style with the OK and cancel options. Action is only performed on OK. 
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.MessageBoxOptions">
+            <summary>
+            Options for showing a message box.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.MessageBoxOptions.AddButton(System.String,OpenTKGUI.ClickHandler)">
+            <summary>
+            Adds a button to the message box.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.MessageBoxOptions.Style">
+            <summary>
+            Gets or sets the style of the message box.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.MessageBoxOptions.Title">
+            <summary>
+            Gets or sets the title of the message box.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.MessageBoxOptions.Message">
+            <summary>
+            Gets or sets the message of the message box.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.MessageBoxStyle">
+            <summary>
+            Gives styling options for a message box.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.HostWindow">
+            <summary>
+            A window hosting a TKGUI Panel.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.HostWindow.Control">
+            <summary>
+            Gets or sets the control displayed by the host window. This can not be null during an update or render.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.HostWindow.ViewSize">
+            <summary>
+            Gets the size of the area rendered on this window.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.HostWindow.KeyboardState">
+            <summary>
+            Gets the keyboard state for the window.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.HostWindow.MouseState">
+            <summary>
+            Gets the mouse state for the window.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.HostWindow._GUIContext">
+            <summary>
+            The top-level gui context when using a host window.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.BuildControlHandler">
+            <summary>
+            A function that creates a control hierarchy when controls are needed. This allows the construction of controls to be delayed until
+            the graphics context is set up.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.VariableContainer">
+            <summary>
+            A container of a control that can be replaced in place.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.VariableContainer.Client">
+            <summary>
+            Gets or sets the client control. Note that when setting, the previous control will be disposed.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.TextureSurface">
+            <summary>
+            A surface that displays a texture.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.TextureSurface.Create(OpenTKGUI.Surface,System.Int32,System.Int32)">
+            <summary>
+            Creates a texture representation of the given surface (using render to texture).
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.TextureSurface.Create(OpenTKGUI.FixedSurface)">
+            <summary>
+            Creates a texture representation of the given fixed surface.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.TextureSurface.ID">
+            <summary>
+            Gets the id for this surface. Note that the texture is delete when this surface is disposed.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.FlowContainer">
+            <summary>
+            A container of controls that arranges child controls one by one in a line.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.FlowContainer.AddChild(OpenTKGUI.Control,System.Double)">
+            <summary>
+            Adds a child to the end of the flow container. Size is the size of the child on the axis of the flow container.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.FlowContainer.SuggestLength">
+            <summary>
+            Gets a suggestion for the length (size along the direction of the flow container) of the container such that all children
+            will fit.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.LayerContainer">
+            <summary>
+            A container that allows hovering controls (such as context menus or forms) to be placed over a
+            background control.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.LayerContainer.AddControl(OpenTKGUI.LayerControl,OpenTKGUI.Point)">
+            <summary>
+            Adds a hovering layer control to the top of the layer container (above all other controls). The added control must not
+            be used by any other layer containers.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.LayerContainer.RemoveControl(OpenTKGUI.LayerControl)">
+            <summary>
+            Removes a hovering layer control from this container.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.LayerContainer.BringToTop(OpenTKGUI.LayerControl)">
+            <summary>
+            Brings the specified control to the top level of the layer container (above all other controls).
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.LayerContainer.Modal">
+            <summary>
+            Gets or sets the current modal mode. If set to null, there is no modal control.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.LayerContainer.Style">
+            <summary>
+            Gets the style for the layer container.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.LayerContainer.Background">
+            <summary>
+            Gets or sets the background control. The background control will always be behind all visible hovering controls.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.ModalOptions">
+            <summary>
+            Options given to a layer container when creating a modal mode (where higher level hovering controls are brought to the attention of the user).
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.ModalOptions.LowestModal">
+            <summary>
+            The lowest (or furthest to the back) control that is modal.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.ModalOptions.MouseFallthrough">
+            <summary>
+            Determines wether controls behind the modal hovering controls can still receive mouse input.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.ModalOptions.Lightbox">
+            <summary>
+            Determines wether the space behind the modal hovering controls is darkened.
+            </summary>
+        </member>
+        <member name="E:OpenTKGUI.ModalOptions.BackgroundClick">
+            <summary>
+            An event fired when the background area (behind the modal controls) is clicked.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.LayerContainerStyle">
+            <summary>
+            Gives styling options for a layer container.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.ShadowStyle">
+            <summary>
+            Gives styling options for the default shadow on hovering controls.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Rectangle">
+            <summary>
+            An orthagonal rectangle defined by a point and a size (described as a point offset).
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Rectangle.Margin(System.Double)">
+            <summary>
+            Creates a rectangle from this rectangle with a margin applied.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Rectangle.In(OpenTKGUI.Point)">
+            <summary>
+            Gets if the specified point is inside the rectangle.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Rectangle.Intersects(OpenTKGUI.Rectangle)">
+            <summary>
+            Gets if this rectangle intersects another.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Rectangle.Intersection(OpenTKGUI.Rectangle)">
+            <summary>
+            Gets the intersecting area between this rectangle and another.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Rectangle.ToRelative(OpenTKGUI.Point)">
+            <summary>
+            Gets the relative offset of the given absolute point in this rectangle.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Rectangle.ToRelative(OpenTKGUI.Rectangle)">
+            <summary>
+            Gets the relative offset of the given rectangle in this rectangle.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Rectangle.Scale(OpenTKGUI.Point)">
+            <summary>
+            Scales this rectangle by a point multiplier.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.Rectangle.Location">
+            <summary>
+            The location of the top-left corner of the rectangle.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.Rectangle.Size">
+            <summary>
+            The size of the rectangle.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Rectangle.TopLeft">
+            <summary>
+            Gets or sets the position of the top-left corner of the rectangle.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Rectangle.BottomRight">
+            <summary>
+            Gets or sets the position of the bottom-right corner of the rectangle.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Align">
+            <summary>
+            An alignment of content on an axis.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.AlignContainer">
+            <summary>
+            A container that aligns a fixed-sized control in an area.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.ScrollContainer">
+            <summary>
+            A container that uses scrollbars to allow a limited area of a larger control to be shown by controlling a window container. The window container can
+            be created automatically or specified manually. Note that the window (the window container that shows the targer content) and the view (the control in the
+            center of the scroll container) need not be the same size, or even in the same area.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.ScrollContainer.SetClientSize(System.Nullable{System.Double},System.Nullable{System.Double})">
+            <summary>
+            Sets the ClientWidth and ClientHeight properties at the same time to avoid excessive size updating.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.ScrollContainer.ClientWidth">
+            <summary>
+            Gets or sets the client width, or null to indicate that it is fixed to the width of the scroll container and there is
+            no horizontal scrollbar.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.ScrollContainer.ClientHeight">
+            <summary>
+            Gets or sets the client height, or null to indicate that it is fixed to the height of the scroll container and there is
+            no vertical scrollbar.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.ScrollContainerStyle">
+            <summary>
+            Gives styling options for a scroll container.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Pane">
+            <summary>
+            A simple immobile container control that can be used in a layer container.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Pane.Dismiss">
+            <summary>
+            Makes the pane go away and be disposed.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Pane.Client">
+            <summary>
+            Gets the control that is inside the pane.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Pane.ClientRectangle">
+            <summary>
+            Gets the rectangle in relation to the pane for the client of the pane.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Pane.ClientSize">
+            <summary>
+            Gets or sets the client size of the pane, which is the size allocated to the client.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.PaneStyle">
+            <summary>
+            Gives styling options for a form.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Blank">
+            <summary>
+            A solid-color control that may never receive input or focus.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Blank.Color">
+            <summary>
+            Gets or sets the color of the control.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Checkbox">
+            <summary>
+            A control to display the progress of an operation
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Checkbox.Checked">
+            <summary>
+            Gets or sets the value of the checkbox
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Checkbox.Text">
+            <summary>
+            Gets or sets the lables text on the checkbox
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.CheckboxStyle">
+            <summary>
+            Gives styling options for a checkbox.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.ManualContainer">
+            <summary>
+            A container of controls where the positions and sizes of child controls are static and specified
+            manually.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.ManualContainer.AddChild(OpenTKGUI.Control,OpenTKGUI.Rectangle)">
+            <summary>
+            Adds a child control at the specified position and size.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.TextChangedHandler">
+            <summary>
+            Handler for a text changed event from a textbox.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.TextEnteredHandler">
+            <summary>
+            Handler for a text entered event from a textbox.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.ValueChangedHandeler">
+            <summary>
+            Value has changed
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.ClickHandler">
+            <summary>
+            Handles a click event from a button.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.CheckboxClickHandler">
+            <summary>
+            Handles a click event from a checkbox.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.PopupCreatedHandler">
+            <summary>
+            Handles a popup created event from a popup container.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.DismissedHandler">
+            <summary>
+            Handles a dismissed event from a form or other layer control.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Render3DControl">
+            <summary>
+            A control that displays a 3D scene.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Render3DControl.SetupProjection(OpenTKGUI.Point)">
+            <summary>
+            Sets up the projection matrix for the 3D scene.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Render3DControl.RenderScene">
+            <summary>
+            Renders the scene for the control. This may use calls outside of a GUI render context, as long as it
+            resets the GL state to how it was before the render.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Render3DControl.OverRender(OpenTKGUI.GUIRenderContext)">
+            <summary>
+            Performs 2D rendering over the scene, for HUDs or overlays.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Scrollbar">
+            <summary>
+            An elongated control that allows a user to pick a value within a range by moving a slider.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Scrollbar.Value">
+            <summary>
+            Gets or sets the value of the scrollbar, between 0.0 and 1.0.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Scrollbar.SliderSize">
+            <summary>
+            Gets or sets the size of the slider on the scrollbar, in relation to the size of the scrollable area.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Scrollbar.MinorIncrement">
+            <summary>
+            Gets or sets the amount added or subtracted to value when one of the small adjustment buttons is pressed.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Scrollbar.MajorIncrement">
+            <summary>
+            Gets or sets the amount added or subtracted to value when the empty area on one side of the slider is pressed.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Scrollbar.Enabled">
+            <summary>
+            Gets or sets if the scrollbar is enabled and can be used.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.ScrollbarStyle">
+            <summary>
+            Gives styling options for a button.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.MarginContainer">
+            <summary>
+            A container that applies a margin to a single control.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.MarginContainer.GetSize(OpenTKGUI.Point)">
+            <summary>
+            Gets the size this container needs to be for the child to have the specified size.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Render3DSurface">
+            <summary>
+            A surface that renders a 3D scene.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Render3DSurface.SetupProjection(OpenTKGUI.Point)">
+            <summary>
+            Sets up the projection matrix for the 3D scene.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Render3DSurface.RenderScene">
+            <summary>
+            Renders the scene for the syrface. This may use calls outside of a GUI render context, as long as it
+            resets the GL state to how it was before the render.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.SurfaceControl">
+            <summary>
+            A control that draws a resizable surface.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.SurfaceControl.Surface">
+            <summary>
+            Gets the surface drawn by the surface control.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.WindowContainer">
+            <summary>
+            A container that shows only a small portion of a larger client control at a time.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.WindowContainer.Client">
+            <summary>
+            Gets the client control.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.WindowContainer.Offset">
+            <summary>
+            Gets or sets the point on the client that the top-left corner of the window container is currently showing.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.WindowContainer.FullSize">
+            <summary>
+            Gets or sets the full size of the client.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Res">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Res.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Res.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Point">
+            <summary>
+            A two-dimensional floating point position or offset (vector).
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Point.Unit(System.Double)">
+            <summary>
+            Creates a unit vector (point offset) for the specified angle.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Point.Scale(OpenTKGUI.Point)">
+            <summary>
+            Scales the point by the given point.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Point.SwapIf(System.Boolean)">
+            <summary>
+            Swaps the two components of the point if condition is true.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Point.Dot(OpenTKGUI.Point,OpenTKGUI.Point)">
+            <summary>
+            Gets the dot product of two points (representing offsets).
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Point.Rotate(OpenTKGUI.Rotation)">
+            <summary>
+            Rotates the point by an increment of 90 degrees about the origin.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.Point.Rotate(OpenTKGUI.Point,OpenTKGUI.Rotation)">
+            <summary>
+            Rotates the point by an increment of 90 degrees about the pivot.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Point.SquareLength">
+            <summary>
+            Gets the square of the length of this point offset (vector). This function is quicker to compute than the actual length
+            because it avoids a square root, which may be costly.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Point.Length">
+            <summary>
+            Gets the length of the vector.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Point.AspectRatio">
+            <summary>
+            The width divided by the height of the size represented by this point.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Point.Swap">
+            <summary>
+            Gets a point that has its components swapped from this point.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Point.Round">
+            <summary>
+            Rounds the point to the nearest integer components.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Point.Ceiling">
+            <summary>
+            Rounds the point to the next highest integer components. Useful for sizes.
+            </summary>
+        </member>
+        <member name="P:OpenTKGUI.Point.Angle">
+            <summary>
+            Gets the angle of this point (representing an offset).
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Axis">
+            <summary>
+            An axis.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.Rotation">
+            <summary>
+            Represents a rotation in increments of 90 degrees.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.Rotation.None">
+            <summary>
+            No rotation.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.Rotation.CounterClockwise">
+            <summary>
+            Rotation of 90 degrees counterclockwise.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.Rotation.Half">
+            <summary>
+            Rotation of 180 degrees.
+            </summary>
+        </member>
+        <member name="F:OpenTKGUI.Rotation.Clockwise">
+            <summary>
+            Rotation of 90 degrees clockwise.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.GUIRenderContext">
+            <summary>
+            Context given to a control for render that prevents controls from interfering with each other by setting GL states directly.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.GUIRenderContext.Setup">
+            <summary>
+            Sets up the render context on the current GL context.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.GUIRenderContext.DrawSolid(OpenTKGUI.Color,OpenTKGUI.Rectangle)">
+            <summary>
+            Draws a solid-colored rectangle at the specified location, with the specified color.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.GUIRenderContext.DrawTexture(System.Int32,OpenTKGUI.Color,OpenTKGUI.Rectangle)">
+            <summary>
+            Draws a textured rectangle at the specified location.
+            </summary>
+            <param name="Modulate">A color to multiply the texture by.</param>
+        </member>
+        <member name="M:OpenTKGUI.GUIRenderContext.DrawSurface(OpenTKGUI.Surface,OpenTKGUI.Rectangle)">
+            <summary>
+            Draws a surface at the specified area.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.GUIRenderContext.DrawSurface(OpenTKGUI.FixedSurface,OpenTKGUI.Point)">
+            <summary>
+            Draws a fixed surface to the specified point.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.GUIRenderContext.DrawSurface(OpenTKGUI.FixedSurface,OpenTKGUI.Align,OpenTKGUI.Align,OpenTKGUI.Rectangle)">
+            <summary>
+            Draws a fixed surface to an area with the given alignment.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.GUIRenderContext.DrawText(OpenTKGUI.Color,OpenTKGUI.TextSample,OpenTKGUI.Point)">
+            <summary>
+            Draws text to the specified location.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.GUIRenderContext.DrawText(OpenTKGUI.Color,OpenTKGUI.TextSample,OpenTKGUI.Rectangle,OpenTKGUI.TextAlign,OpenTKGUI.TextAlign)">
+            <summary>
+            Draws text to the specified region, overriding its layout parameters.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.GUIRenderContext.DrawText(OpenTKGUI.Color,OpenTKGUI.TextSample,OpenTKGUI.Rectangle)">
+            <summary>
+            Draws text to the specified region using the layout parameters it was supplied with.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.GUIRenderContext.Draw3D(OpenTKGUI.SetupProjectionHandler,OpenTKGUI.SceneRenderHandler,OpenTKGUI.Point)">
+            <summary>
+            Draws a 3D scene.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.GUIRenderContext.PushClip(OpenTKGUI.Rectangle)">
+            <summary>
+            Pushes an effect on the stack that will cause all rendering not the specified region defined by a rectangle to be
+            ignored. The rectangle is in the current coordinate space of the context.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.GUIRenderContext.PushTranslate(OpenTKGUI.Point)">
+            <summary>
+            Pushes an effect that translates the coordinate space by the specified amount.
+            </summary>
+        </member>
+        <member name="M:OpenTKGUI.GUIRenderContext.Pop">
+            <summary>
+            Undoes the most recent command/effect given to the context.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.SetupProjectionHandler">
+            <summary>
+            When called, multiplies the current matrix on the current GL matrix to reflect a projection.
+            </summary>
+        </member>
+        <member name="T:OpenTKGUI.SceneRenderHandler">
+            <summary>
+            When called, renders a 3D scene on the current GL context.
+            </summary>
+        </member>
+    </members>
+</doc>

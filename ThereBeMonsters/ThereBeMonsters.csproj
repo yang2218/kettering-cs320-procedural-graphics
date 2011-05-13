@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>ThereBeMonsters.Front_end.MainWindow</StartupObject>
+    <StartupObject>ThereBeMonsters.ModuleTester</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <None Include="OpenTK.dll" />
@@ -49,6 +49,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\OpenTK.dll</HintPath>
     </Reference>
+    <Reference Include="OpenTKGUI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\OpenTKGUI.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.XML" />
@@ -61,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Back-end\Modules\gasket.cs" />
+    <Compile Include="Back-end\Modules\TexturePreview.cs" />
     <Compile Include="Front-end\EditorControl.cs" />
     <Compile Include="Back-end\Generator.cs" />
     <Compile Include="Back-end\BlendDelegate.cs" />
@@ -88,12 +93,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="OpenTKGUI.dll" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\opentkgui\OpenTKGUI.csproj">
-      <Project>{D78F7DC8-1193-483A-8530-C373A3D99422}</Project>
-      <Name>OpenTKGUI</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using OpenTKGUI;
 
-namespace ThereBeMonsters.Back_end
+namespace ThereBeMonsters.Front_end
 {
   public abstract class EditorControl : Control
   {
     // TODO: reference to the ModuleGraph this control is inside of
     protected string parameterName;
+
+    public abstract double PreferredHeight { get; }
 
     public EditorControl(string paramName)
     {

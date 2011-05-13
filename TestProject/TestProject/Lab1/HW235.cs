@@ -40,7 +40,7 @@ namespace TestProject.Lab1
       vertexData.Update(); // uploads the model to a vertex buffer on the GPU
       squareVertexData = vertexData;
 
-      material = Material.GetMaterial("Default"); // loads a material (currently just hardcoded)
+      material = Material.LoadMaterial("Default"); // loads a material (currently just hardcoded)
       material["color"] = Vector3.One;
       
       diamonds = new List<Entity>(100);

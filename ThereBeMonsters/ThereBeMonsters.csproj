@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>ThereBeMonsters.Front_end.MainWindow</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <None Include="OpenTK.dll" />
   </ItemGroup>
@@ -46,9 +49,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\OpenTK.dll</HintPath>
     </Reference>
-    <Reference Include="OpenTKGUI">
-      <HintPath>.\OpenTKGUI.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.XML" />
@@ -60,19 +60,40 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Back-end\EditorControl.cs" />
+    <Compile Include="Back-end\Modules\gasket.cs" />
+    <Compile Include="Front-end\EditorControl.cs" />
     <Compile Include="Back-end\Generator.cs" />
     <Compile Include="Back-end\BlendDelegate.cs" />
     <Compile Include="Back-end\Module.cs" />
     <Compile Include="Back-end\ModuleGraph.cs" />
-    <Compile Include="Back-end\Modules\Class1.cs" />
     <Compile Include="Back-end\Modules\ExampleModule.cs" />
     <Compile Include="Back-end\Modules\ExtrudeCirclesToHeight.cs" />
     <Compile Include="Back-end\Modules\WriteToConsole.cs" />
+    <Compile Include="Front-end\Entity.cs" />
+    <Compile Include="FloatExtensions.cs" />
+    <Compile Include="Front-end\Main.cs" />
+    <Compile Include="Front-end\Material.cs" />
+    <Compile Include="Front-end\ModuleGraphControl.cs" />
+    <Compile Include="Front-end\ModuleNodeControl.cs" />
+    <Compile Include="Front-end\Scene.cs" />
+    <Compile Include="Front-end\TestEntity.cs" />
+    <Compile Include="Front-end\Texture.cs" />
+    <Compile Include="Front-end\Transform.cs" />
+    <Compile Include="Front-end\VertexData.cs" />
+    <Compile Include="Front-end\VertexPosData.cs" />
+    <Compile Include="Front-end\VertexPosUVData.cs" />
+    <Compile Include="Front-end\Viewport.cs" />
+    <Compile Include="Front-end\ViewportPlaceholder.cs" />
     <Compile Include="ModuleTester.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="OpenTKGUI.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\opentkgui\OpenTKGUI.csproj">
+      <Project>{D78F7DC8-1193-483A-8530-C373A3D99422}</Project>
+      <Name>OpenTKGUI</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

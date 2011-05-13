@@ -62,6 +62,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Objects\Materials\FontMaterial.cs" />
+    <Compile Include="Objects\Shader.cs" />
+    <Compile Include="Objects\ShaderProgram.cs" />
+    <Compile Include="Objects\Shaders\Simple1MVPShader.cs" />
+    <Compile Include="TextTest.cs" />
     <Compile Include="Hello2.cs" />
     <Compile Include="Hello.cs" />
     <Compile Include="Lab1\HW235.cs" />

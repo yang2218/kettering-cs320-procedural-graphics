@@ -19,7 +19,7 @@ namespace ThereBeMonsters
       g.RunGraph();
       */
 
-      byte[,] hm = new byte[32, 32];
+      byte[,] hm = new byte[512, 512];
       List<Vector3> c = new List<Vector3>() {
         new Vector3(0.5f, 0.5f, 0.4f)};
 
@@ -33,7 +33,7 @@ namespace ThereBeMonsters
 
       m.Run();
 
-      hm = m.HeightMap;
+      /*hm = m.HeightMap;
       int i = 0;
       foreach (byte b in hm)
       {
@@ -45,7 +45,11 @@ namespace ThereBeMonsters
         Console.Write(string.Format("{0,2}", b / 10));
       }
 
-      System.Console.ReadLine();
+      System.Console.ReadLine();*/
+
+      TexturePreview preview = new TexturePreview();
+      preview.HeightMap = m.HeightMap;
+      preview.Run();
     }
 
     /*

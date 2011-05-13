@@ -21,7 +21,7 @@ namespace TestProject.Objects.Shaders
       }
 
       Shader vertShader = ModifyShader(sp.VertexShader);
-
+      return null;
     }
 
     private Shader ModifyShader(Shader s)
@@ -33,9 +33,12 @@ namespace TestProject.Objects.Shaders
         return ret;
       }
 
-      ret = new Shader(newName, ShaderType.VertexShader);
+      //ret = new Shader(newName, ShaderType.VertexShader);
+      //ret.Functions = new Dictionary<string, Shader.Function>(s.Functions);
+      //ret.Functions.
+      return null;
     }
-
+    /*
     public override void Compile()
     {
       if (this.IsCompiled)
@@ -83,6 +86,6 @@ void main(void)
           this.Name,
           message));
       }
-    }
+    }*/
   }
 }

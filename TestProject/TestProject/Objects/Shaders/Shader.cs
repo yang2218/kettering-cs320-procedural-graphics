@@ -241,12 +241,14 @@ namespace TestProject.Objects
 
     private int? _handle;
 
-    public Shader(string name, ShaderType type)
+    public Shader(string name, ShaderType type,
+      Dictionary<string, Parameter> parameters,
+      Dictionary<string, Function> functions)
     {
       this.Name = name;
       this.Type = type;
-      this.Parameters = new Dictionary<string, Parameter>();
-      this.Functions = new Dictionary<string, Function>();
+      this.Parameters = parameters;
+      this.Functions = functions;
     }
 
     public string GenerateSource()

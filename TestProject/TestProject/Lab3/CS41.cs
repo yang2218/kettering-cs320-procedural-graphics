@@ -43,7 +43,7 @@ namespace TestProject.Lab3
 
       qbVertexData.Update(); // uploads the model to a vertex buffer on the GPU
 
-      Material material = Material.LoadMaterial("TweenLines");
+      Material material = Material.Cache["TweenLines"];
       material["color"] = Vector3.One;
 
       kyubei = new Entity();

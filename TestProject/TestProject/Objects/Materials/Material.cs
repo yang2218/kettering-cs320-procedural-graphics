@@ -43,6 +43,11 @@ namespace TestProject.Objects
           materialCache[name] = value;
         }
       }
+
+      public bool TryGet(string name, out Material mat)
+      {
+        return materialCache.TryGetValue(name, out mat);
+      }
     }
 
     private static MaterialCache _cache = new MaterialCache();
@@ -81,7 +86,7 @@ namespace TestProject.Objects
     private static Material TweenLinesMaterial()
     {
       Material mat;
-      if (materialCache.TryGetValue("TweenLines", out mat))
+      if (Cache.TryGet("TweenLines", out mat))
       {
         return mat;
       }
@@ -121,7 +126,7 @@ void main(void)
 
       // TODO: move to a compile function
       // TODO: check the cache for these shaders first
-
+      /*
       mat.vertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
       mat.fragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
 
@@ -150,14 +155,14 @@ void main(void)
       GL.LinkProgram(mat.shaderProgramHandle);
       ValidateProgram(mat.shaderProgramHandle);
 
-      materialCache["TweenLines"] = mat;
+      materialCache["TweenLines"] = mat;*/
       return mat;
     }
 
     private static Material DefaultMaterial()
     {
       Material mat;
-      if (materialCache.TryGetValue("Default", out mat))
+      if (Cache.TryGet("Default", out mat))
       {
         return mat;
       }
@@ -195,7 +200,7 @@ void main(void)
 
       // TODO: move to a compile function
       // TODO: check the cache for these shaders first
-
+      /*
       mat.vertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
       mat.fragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
 
@@ -222,14 +227,14 @@ void main(void)
       GL.LinkProgram(mat.shaderProgramHandle);
       ValidateProgram(mat.shaderProgramHandle);
 
-      materialCache["Default"] = mat;
+      materialCache["Default"] = mat;*/
       return mat;
     }
 
     private static Material DefaultTexturedMaterial()
     {
       Material mat;
-      if (materialCache.TryGetValue("DefaultTextured", out mat))
+      if (Cache.TryGet("DefaultTextured", out mat))
       {
         return mat;
       }
@@ -273,7 +278,7 @@ void main(void)
 ";
 
       mat.Name = "Test Material";
-
+      /*
       // TODO: move to a compile function
       // TODO: check the cache for these shaders first
 
@@ -304,14 +309,14 @@ void main(void)
       GL.LinkProgram(mat.shaderProgramHandle);
       ValidateProgram(mat.shaderProgramHandle);
 
-      materialCache["DefaultTextured"] = mat;
+      materialCache["DefaultTextured"] = mat;*/
       return mat;
     }
 
     private static Material UberTextMaterial()
     {
       Material mat;
-      if (materialCache.TryGetValue("DefaultTextured", out mat))
+      if (Cache.TryGet("DefaultTextured", out mat))
       {
         return mat;
       }
@@ -434,13 +439,14 @@ void main(void)
       // TODO: move to a compile function
       // TODO: check the cache for these shaders first
 
-      materialCache["DefaultTextured"] = mat;
+      Cache["DefaultTextured"] = mat;
       return mat;
     }
 
     
     public void Use(ref Matrix4 modelMatrix) // TODO: maybe a better way to assign the model matrix?
     {
+      /*
       GL.UseProgram(shaderProgramHandle);
 
       int location;
@@ -471,7 +477,7 @@ void main(void)
         location = GL.GetUniformLocation(shaderProgramHandle, "tween");
         GL.Uniform1(location, (float)value);
       }
-      
+      */
       /*
       // TODO: set global uniforms
       int location;

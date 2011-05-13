@@ -48,7 +48,7 @@ namespace TestProject.Lab2
       houseVertexData.LoadFromPolylineFile("Lab2/house.dat");
       houseVertexData.Update();
 
-      material = Material.LoadMaterial("Default"); // loads a material (currently just hardcoded)
+      material = Material.Cache["Default"]; // loads a material (currently just hardcoded)
       material["color"] = Vector3.One;
 
       redmat = material.CloneInstance();

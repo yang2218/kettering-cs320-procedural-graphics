@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>TestProject.Hello2</StartupObject>
+    <StartupObject>TestProject.TeapotDemo</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="OpenTK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
@@ -63,9 +63,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Objects\Materials\FontMaterial.cs" />
-    <Compile Include="Objects\Shader.cs" />
-    <Compile Include="Objects\ShaderProgram.cs" />
-    <Compile Include="Objects\Shaders\Simple1MVPShader.cs" />
+    <Compile Include="Objects\Shaders\Shader.cs" />
+    <Compile Include="Objects\Shaders\ShaderModifier.cs" />
+    <Compile Include="Objects\Shaders\ShaderProgram.cs" />
+    <Compile Include="Objects\Shaders\Simple1MVPShaderModifier.cs" />
+    <Compile Include="Teapot.cs" />
+    <Compile Include="TeapotDemo.cs" />
     <Compile Include="TextTest.cs" />
     <Compile Include="Hello2.cs" />
     <Compile Include="Hello.cs" />
@@ -75,15 +78,15 @@
     <Compile Include="Lab2\CS33.cs" />
     <Compile Include="Lab3\CS41.cs" />
     <Compile Include="Objects\FloatExtensions.cs" />
-    <Compile Include="Objects\VertexTweenData.cs" />
-    <Compile Include="Objects\Texture.cs" />
-    <Compile Include="Objects\VertexPosUVData.cs" />
+    <Compile Include="Objects\Data\VertexTweenData.cs" />
+    <Compile Include="Objects\Data\Texture.cs" />
+    <Compile Include="Objects\Data\VertexPosUVData.cs" />
     <Compile Include="Objects\Entity.cs" />
-    <Compile Include="Objects\Material.cs" />
+    <Compile Include="Objects\Materials\Material.cs" />
     <Compile Include="Objects\MovingEntity.cs" />
     <Compile Include="Objects\Transform.cs" />
-    <Compile Include="Objects\VertexData.cs" />
-    <Compile Include="Objects\VertexPosData.cs" />
+    <Compile Include="Objects\Data\VertexData.cs" />
+    <Compile Include="Objects\Data\VertexPosData.cs" />
     <Compile Include="Objects\Viewport.cs" />
   </ItemGroup>
   <ItemGroup>

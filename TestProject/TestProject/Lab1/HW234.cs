@@ -58,7 +58,7 @@ namespace TestProject.Lab1
       vertexData.Load(data, BeginMode.LineStrip, firsts, counts);
       vertexData.Update(); // uploads the model to a vertex buffer on the GPU
       
-      Material material = Material.LoadMaterial("Default"); // loads a material (currently just hardcoded)
+      Material material = Material.Cache["Default"]; // loads a material (currently just hardcoded)
       
       house = new Entity();
       house.VertexData = vertexData;

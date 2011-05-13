@@ -33,7 +33,7 @@ namespace TestProject
       texId = LoadBitmapTexture("Data/LiberationSans-Regular.ttf_sdf.png");
       //texId = LoadBitmapTexture("Data/bulldog.png");
 
-      Material material = Material.LoadMaterial("DefaultTextured");
+      Material material = Material.Cache["DefaultTextured"];
       material["color"] = Vector3.One;
       material["textureMap"] = texId;
 

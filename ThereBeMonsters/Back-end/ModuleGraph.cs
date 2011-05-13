@@ -41,6 +41,11 @@ namespace ThereBeMonsters.Back_end
     public ModuleGraph(string filePath)
       : this()
     {
+      LoadFromXml(filePath);
+    }
+
+    public void LoadFromXml(string filePath)
+    {
       LoadFromXml(new XPathDocument(filePath).CreateNavigator());
     }
 

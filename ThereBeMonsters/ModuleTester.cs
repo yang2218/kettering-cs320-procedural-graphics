@@ -12,6 +12,9 @@ namespace ThereBeMonsters
   {
     public static void Main()
     {
+      /*
+      Gasket cookie = new Gasket();
+      cookie.Run();*/
       /*Generator g = new Generator("TestGraph.xml");
       g.RunGraph();
       */
@@ -21,7 +24,7 @@ namespace ThereBeMonsters
         new Vector3(0.5f, 0.5f, 0.4f)};
 
       ExtrudeCirclesToHeight m = new ExtrudeCirclesToHeight();
-      m.Cap = ExtrudeCirclesToHeight.CapType.Hemisphere;
+      m.Cap = ExtrudeCirclesToHeight.CapType.Flat;
       m.Circles = c;
       m.HeightMap = hm;
       m.BlendFunc = Blend8bppFunctions.Additive;

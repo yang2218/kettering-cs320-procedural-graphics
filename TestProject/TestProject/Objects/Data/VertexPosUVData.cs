@@ -45,10 +45,11 @@ namespace TestProject.Objects
       
       // Associate a buffer and instructions for reading it to an attribute index
       // vertex attribute 0 = position
+      int stride = Vector3.SizeInBytes * 2;
       GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferHandle);
-      GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6, 0);
+      GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, stride, 0);
       GL.EnableVertexAttribArray(0);
-      GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 6, 3);
+      GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, stride, Vector3.SizeInBytes);
       GL.EnableVertexAttribArray(1);
 
       // TODO: also setup an element array, but too much work for drawing a... square
@@ -60,10 +61,10 @@ namespace TestProject.Objects
     public void LoadTestModel()
     {
       data = new VertexLayout[] {
-        new VertexLayout(new Vector3( 1f, -1f,  0.0f), new Vector2(1f, 0f)),
-        new VertexLayout(new Vector3(-1f, -1f,  0.0f), new Vector2(0f, 0f)),
-        new VertexLayout(new Vector3( 1f,  1f,  0.0f), new Vector2(1f, 1f)),
-        new VertexLayout(new Vector3(-1f,  1f,  0.0f), new Vector2(0f, 1f))
+        new VertexLayout(new Vector3( 1f, -1f,  0.0f), new Vector2(1f, 1f)),
+        new VertexLayout(new Vector3(-1f, -1f,  0.0f), new Vector2(0f, 1f)),
+        new VertexLayout(new Vector3( 1f,  1f,  0.0f), new Vector2(1f, 0f)),
+        new VertexLayout(new Vector3(-1f,  1f,  0.0f), new Vector2(0f, 0f))
       };
 
       PrimitiveType = BeginMode.TriangleStrip;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-namespace TestProject.Objects
+namespace ThereBeMonsters.Front_end
 {
   public class Material
   {

@@ -36,6 +36,8 @@ namespace ThereBeMonsters.Back_end
 
     #region Properties
 
+    public static Random rng = new Random();
+
     /// <summary>
     /// Retrieves the description of the module (from the [Module] attribute), if any.
     /// </summary>

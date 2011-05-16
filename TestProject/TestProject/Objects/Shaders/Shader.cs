@@ -115,7 +115,39 @@ namespace TestProject.Objects
       public InterpolationQualifier interpolation;
       public StorageQualifier storage;
       public GLSLType type;
+      public VertexData.Attribute attribute;
       public string name;
+
+      public bool IsInputAttribute
+      {
+        get
+        {
+          return attribute != VertexData.Attribute.None;
+          /*
+          return storage == StorageQualifier.In
+              || storage == StorageQualifier.CentroidIn
+              || storage == StorageQualifier.PatchIn
+              || storage == StorageQualifier.SampleIn;
+          */
+        }
+      }
+
+      public bool IsUniform
+      {
+        get
+        {
+          return storage == StorageQualifier.Uniform;
+        }
+      }
+
+      public static Parameter Void = new Parameter()
+      {
+        interpolation = InterpolationQualifier.None,
+        storage = StorageQualifier.None,
+        type = GLSLType.Void,
+        name = string.Empty,
+        attribute = VertexData.Attribute.None
+      };
 
       public Parameter(
         InterpolationQualifier interp,
@@ -127,6 +159,19 @@ namespace TestProject.Objects
         this.storage = stor;
         this.type = type;
         this.name = name;
+        this.attribute = VertexData.Attribute.None;
+      }
+
+      public Parameter(
+        VertexData.Attribute attribute,
+        GLSLType type,
+        string name)
+      {
+        this.interpolation = InterpolationQualifier.None;
+        this.storage = StorageQualifier.In;
+        this.type = type;
+        this.name = name;
+        this.attribute = attribute;
       }
 
       public string TypeToString()
@@ -150,9 +195,10 @@ namespace TestProject.Objects
           sb.Append(" ");
         }
 
-        string type = TypeToString();
+        sb.Append(TypeToString());
         sb.Append(" ");
         sb.Append(name);
+        sb.Append(";");
 
         return sb.ToString();
       }
@@ -210,8 +256,64 @@ namespace TestProject.Objects
     private static Shader LoadShader(string name)
     {
       // TODO: load shader from disk
-      throw new ApplicationException(string.Format("Could not load shader {0}", name));
-      //Cache[name] = shader;
+      // for now, just use this switch stmt
+      Shader s;
+      switch (name)
+      {
+        case "Pos":
+          s = new Shader(
+            "Pos",
+            ShaderType.VertexShader,
+            new Dictionary<string, Parameter>()
+            {
+              {"position", new Parameter(
+                VertexData.Attribute.Position,
+                Parameter.GLSLType.Vec3,
+                "position")}
+            },
+            new Dictionary<string, Function>()
+            {
+              {"pos_main", new Function(
+                Parameter.Void,
+                "pos_main",
+                new Parameter[]{},
+                "gl_Position = vec4(position, 1.0);")}
+            },
+            "pos_main");
+          break;
+        case "FlatCol":
+          s = new Shader(
+            "FlatCol",
+            ShaderType.FragmentShader,
+            new Dictionary<string, Parameter>()
+            {
+              {"color", new Parameter(
+                Parameter.InterpolationQualifier.None,
+                Parameter.StorageQualifier.Uniform,
+                Parameter.GLSLType.Vec3,
+                "color")},
+                {"out_Color", new Parameter(
+                  Parameter.InterpolationQualifier.None,
+                  Parameter.StorageQualifier.Out,
+                  Parameter.GLSLType.Vec4,
+                  "out_Color")}
+            },
+            new Dictionary<string, Function>()
+            {
+              {"flatcol_main", new Function(
+                Parameter.Void,
+                "flatcol_main",
+                new Parameter[]{},
+                "out_Color = vec4(color, 1.0);")}
+            },
+            "flatcol_main");
+          break;
+        default:
+          throw new ApplicationException(string.Format("Could not load shader {0}", name));
+      }
+
+      Cache[name] = s;
+      return s;
     }
 
     // TODO: setup for xml deserialization
@@ -243,12 +345,42 @@ namespace TestProject.Objects
 
     public Shader(string name, ShaderType type,
       Dictionary<string, Parameter> parameters,
-      Dictionary<string, Function> functions)
+      Dictionary<string, Function> functions,
+      string entryFunction)
     {
       this.Name = name;
       this.Type = type;
       this.Parameters = parameters;
       this.Functions = functions;
+      this.EntryFunction = entryFunction;
+    }
+
+    public IEnumerable<Parameter> InputAttributes
+    {
+      get
+      {
+        foreach (Parameter p in Parameters.Values)
+        {
+          if (p.IsInputAttribute)
+          {
+            yield return p;
+          }
+        }
+      }
+    }
+
+    public IEnumerable<Parameter> Uniforms
+    {
+      get
+      {
+        foreach (Parameter p in Parameters.Values)
+        {
+          if (p.IsUniform)
+          {
+            yield return p;
+          }
+        }
+      }
     }
 
     public string GenerateSource()
@@ -291,6 +423,7 @@ namespace TestProject.Objects
     public void Delete()
     {
       GL.DeleteShader(this.Handle);
+      this._handle = null;
     }
   }
 }

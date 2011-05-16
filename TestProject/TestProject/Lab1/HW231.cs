@@ -21,7 +21,7 @@ namespace TestProject.Lab1
       Matrix4.CreateOrthographicOffCenter(0f, 8f, 0f, 8f, -1f, 1f, out viewport.projectionMatrix);
       viewport.viewMatrix = Matrix4.LookAt(Vector3.UnitZ, Vector3.Zero, Vector3.UnitY);
 
-      viewport.Draw();
+      viewport.SetActive();
 
       VertexPosData.Setup();
 
@@ -46,7 +46,7 @@ namespace TestProject.Lab1
 
       // this is supposed to also draw the scene it's attached to, but I haven't created a Scene object yet,
       // plus, the point of the assignment is to do something like the loop I have below anyway...
-      viewport.Draw();
+      viewport.SetActive();
 
       Matrix4 originalMatrix = square.transform.matrix;
       

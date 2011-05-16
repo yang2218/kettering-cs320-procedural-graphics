@@ -40,8 +40,19 @@ namespace TestProject.Objects
     private static ShaderProgram LoadShaderProgram(string name)
     {
       // TODO: load from disk
-      throw new NotImplementedException();
-      //Cache[name] = prog;
+      // for now, use this switch
+      ShaderProgram sp;
+      switch (name)
+      {
+        case "Pos_FlatCol":
+          sp = new ShaderProgram(name, "Pos", "FlatCol");
+          break;
+        default:
+          throw new NotImplementedException();
+      }
+
+      Cache[name] = sp;
+      return sp;
     }
 
     public string Name { get; protected set; }
@@ -49,6 +60,9 @@ namespace TestProject.Objects
     public Shader GeometryShader { get; protected set; }
     public Shader FragmentShader { get; protected set; }
     public bool IsCompiled { get { return this._handle.HasValue; } }
+
+    public Dictionary<string, Shader.Parameter> Uniforms { get; private set; }
+
     public int Handle
     {
       get
@@ -63,6 +77,8 @@ namespace TestProject.Objects
 
     private int? _handle;
 
+    #region Constructors
+
     public ShaderProgram(string name, Shader vertex, Shader fragment)
       : this(name, vertex, null, fragment)
     {
@@ -74,6 +90,9 @@ namespace TestProject.Objects
       this.VertexShader = vertex;
       this.GeometryShader = geometry;
       this.FragmentShader = fragment;
+
+      Uniforms = new Dictionary<string, Shader.Parameter>();
+      GatherUniforms();
     }
 
     public ShaderProgram(string name, string vertexShaderName, string fragmentShaderName)
@@ -87,6 +106,8 @@ namespace TestProject.Objects
       Shader.Cache[fragmentShaderName])
     {
     }
+
+    #endregion
 
     public void Compile()
     {
@@ -110,7 +131,12 @@ namespace TestProject.Objects
         GL.AttachShader(Handle, this.GeometryShader.Handle);
       }
 
-      BindAttributes();
+      foreach (Shader.Parameter p in VertexShader.InputAttributes)
+      {
+        GL.BindAttribLocation(Handle, (int)p.attribute, p.name);
+      }
+
+      // TODO: bind output attributes
 
       GL.LinkProgram(Handle);
 
@@ -121,18 +147,25 @@ namespace TestProject.Objects
       {
         string message = GL.GetShaderInfoLog(Handle);
         throw new ApplicationException(string.Format(
-          "Error linking shader program \"{0}\":\n{1}",
+          "Error linking shader program '{0}':\n{1}",
           this.Name,
           message));
       }
     }
 
-    protected virtual void BindAttributes()
+    private void GatherUniforms()
     {
-      // we need to make sure the indices map to the same number across all VertexData subclasses
-      // for more exotic data, I need to add in custom vertex array support
-      GL.BindAttribLocation(Handle, 0, "position");
-      GL.BindAttribLocation(Handle, 1, "uv");
+      Uniforms.Clear();
+      Shader[] shaders = (GeometryShader == null
+        ? new Shader[] { VertexShader, FragmentShader }
+        : new Shader[] { VertexShader, GeometryShader, FragmentShader });
+      foreach (Shader shader in shaders)
+      {
+        foreach (Shader.Parameter uniform in shader.Uniforms)
+        {
+          Uniforms[uniform.name] = uniform;
+        }
+      }
     }
 
     public void Use()

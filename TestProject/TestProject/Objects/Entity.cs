@@ -6,11 +6,40 @@ namespace TestProject.Objects
 {
   public class Entity
   {
-    public VertexData VertexData { get; set; }
-    public Material Material { get; set; }
+    // TODO:
+    // add heiarchy mechanism
+    // design for inheritance?
+    // use event model for... stuff
+
+    #region Properties and Fields
 
     // public fields can be passd as ref parameters
     public Transform transform;
+
+    protected VertexData _vertexData;
+    public VertexData VertexData
+    {
+      get
+      {
+        return _vertexData;
+      }
+      set
+      {
+        if (_vertexData != null)
+        {
+          _vertexData.RemoveEntity(this);
+        }
+
+        value.AddEntity(this);
+        _vertexData = value;
+      }
+    }
+
+    public Material Material { get; set; }
+
+    public bool Visible { get; set; }
+
+    public uint Layers { get; set; }
 
     public object this[string uniform]
     {
@@ -20,9 +49,21 @@ namespace TestProject.Objects
       }
       set
       {
-        // TODO: clone the material if it's a global material
+        if (Material.IsShared)
+        {
+          Material = Material.CloneInstance();
+        }
+
         Material[uniform] = value;
       }
+    }
+
+    #endregion
+
+    public Entity()
+    {
+      Visible = true;
+      Layers = 1; // default layer
     }
 
     public void Draw()

@@ -31,9 +31,20 @@ namespace TestProject.Objects
 
     private static int vertexArrayHandle;
     private static int vertexBufferHandle;
+    private static bool isSetup = false;
+
+    public override string DefaultVertexShader
+    {
+      get { return "Pos"; }
+    }
 
     public static void Setup()
     {
+      if (isSetup)
+      {
+        return;
+      }
+
       // Create the vertex array object (defines how to read various vertex attributes from the data buffer(s))
       GL.GenVertexArrays(1, out vertexArrayHandle);
       GL.BindVertexArray(vertexArrayHandle);
@@ -45,15 +56,13 @@ namespace TestProject.Objects
       GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(262144), IntPtr.Zero, BufferUsageHint.StaticDraw);
       
       // Associate a buffer and instructions for reading it to an attribute index
-      // vertex attribute 0 = position
       GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferHandle);
-      GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
-      GL.EnableVertexAttribArray(0);
-
-      // TODO: also setup an element array, but too much work for drawing a... square
-
+      BindAttribute(Attribute.Position, 3, VertexAttribPointerType.Float, false, 0, 0);
+      
       GL.BindVertexArray(0);
       GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+
+      isSetup = true;
     }
 
     public void LoadTestModel()
@@ -192,6 +201,11 @@ namespace TestProject.Objects
 
     public override void Update()
     {
+      if (isSetup == false)
+      {
+        Setup();
+      }
+
       if (uploaded == false)
       {
         offset = lastOffset;
@@ -218,11 +232,14 @@ namespace TestProject.Objects
       throw new NotImplementedException();
     }
 
-    public override void Draw()
+    public override void BindVAO()
     {
       GL.BindVertexArray(vertexArrayHandle);
+    }
+
+    public override void Draw()
+    {
       GL.MultiDrawArrays(PrimitiveType, firsts, counts, firsts.Length);
-      GL.BindVertexArray(0);
     }
   }
 }

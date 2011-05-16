@@ -298,7 +298,7 @@ namespace TestProject.Lab2
 
       viewport.viewMatrix.M41 += (viewportXTarget - viewport.viewMatrix.M41) * viewportSmoothFactor * (float)e.Time;
 
-      viewport.Draw(); // right now just makes the viewport active
+      viewport.SetActive(); // right now just makes the viewport active
 
       dino.Draw();
       foreach (Entity obj in squishableObjects)

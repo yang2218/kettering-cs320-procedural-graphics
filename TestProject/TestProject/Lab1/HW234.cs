@@ -24,7 +24,7 @@ namespace TestProject.Lab1
       Matrix4.CreateOrthographicOffCenter(-2f, 2f, -2f, 2f, -1f, 1f, out viewport.projectionMatrix);
       viewport.viewMatrix = Matrix4.LookAt(Vector3.UnitZ, Vector3.Zero, Vector3.UnitY);
 
-      viewport.Draw();
+      viewport.SetActive();
 
       VertexPosData.Setup();
 
@@ -57,13 +57,13 @@ namespace TestProject.Lab1
       VertexPosData vertexData = new VertexPosData();
       vertexData.Load(data, BeginMode.LineStrip, firsts, counts);
       vertexData.Update(); // uploads the model to a vertex buffer on the GPU
-      
-      Material material = Material.Cache["Default"]; // loads a material (currently just hardcoded)
+
+      Material material = Material.Cache["Default"];
+      material["color"] = Vector3.One;
       
       house = new Entity();
       house.VertexData = vertexData;
       house.Material = material;
-      material["color"] = Vector3.One;
 
       house.transform = new Transform(Matrix4.Identity);
 
@@ -81,7 +81,7 @@ namespace TestProject.Lab1
 
       // this is supposed to also draw the scene it's attached to, but I haven't created a Scene object yet,
       // plus, the point of the assignment is the DrawHouse function anyway...
-      viewport.Draw();
+      viewport.SetActive();
 
       if (t > 1f)
       {

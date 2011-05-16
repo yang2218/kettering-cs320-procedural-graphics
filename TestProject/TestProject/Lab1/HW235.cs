@@ -9,7 +9,6 @@ namespace TestProject.Lab1
 {
   public class HW235 : GameWindow
   {
-    // Normally, Entitys would be in a Scene class, but for now...
     private List<Entity> diamonds;
     private VertexData squareVertexData;
     private Material material;
@@ -103,13 +102,13 @@ namespace TestProject.Lab1
     {
       GL.Clear(ClearBufferMask.ColorBufferBit);
 
-      // this is supposed to also draw the scene it's attached to, but I haven't created a Scene object yet,
-      // plus, the point of the assignment is to do something like the loop I have below anyway...
-      viewport.Draw();
+      viewport.SetActive();
+
+      VertexData.DrawAllVertexData();
 
       foreach (Entity diamond in diamonds)
       {
-        diamond.Draw();
+        //diamond.Draw();
         diamond.transform.PosY -= (minFallingSpeed +
           fallingSpeedFactor * diamond.transform.ScaleX) * (float)e.Time;
         if (diamond.transform.PosY  < -height/2f - 1f)

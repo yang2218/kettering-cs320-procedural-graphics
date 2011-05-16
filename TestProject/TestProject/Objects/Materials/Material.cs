@@ -2,26 +2,16 @@
 using System.Collections.Generic;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using TestProject.Objects.Shaders;
 
 namespace TestProject.Objects
 {
+  /// <summary>
+  /// Represents a way to draw objects; usually, a shader program and a set
+  /// of uniform values, as well as potentially other GL state (blending, etc.).
+  /// </summary>
   public class Material
   {
-    // represents a shader program, some gl state flags (blending, etc.) and a set of uniforms.
-    // cache shader handles so programs can be shared by several materials
-    // changing a material parameter via an entity will clone the material (if not already a dedicated instace),
-    // so the change will not affect other entities sharing the same material.
-
-    // properties: corespond to the shader uniforms/samplers
-    // an indexer to assign values directly to the parameter by name
-    // TODO: how to map vertex attributes to data? specifically, how to cache/manage vertex array objects
-
-    // compile: compiles shaders  and upload if needed
-    // BindVertexAttributes: bind given vao or manually bind using the given vertexdata
-    // GetVAO: generates or retrieves from cache a vao for binding with the given vertexdata
-    // Use: use for next draw call(s)
-    // Unload: detaches, deletes shaders&program
-    
     public sealed class MaterialCache
     {
       private Dictionary<string, Material> materialCache = new Dictionary<string, Material>();
@@ -56,15 +46,13 @@ namespace TestProject.Objects
     public string Name { get; private set; }
     public ShaderProgram Program { get; protected set; }
 
-    private bool loaded, global;
+    public bool IsShared {  get; private set; }
     
     private Dictionary<string, object> UniformParameters = new Dictionary<string, object>();
-    // any global uniforms like projection, view, time are set at runtime.
-
-    // TODO: cache any compiled shaders, as well as programs
-
+    
     protected Material()
     {
+      IsShared = true;
     }
     
     private static Material LoadMaterial(string name)
@@ -166,9 +154,10 @@ void main(void)
       {
         return mat;
       }
-
+      
       mat = new Material();
       // TODO: replace three matrixes with one MVP (do multiplication on client-side)
+      /*
       string vertShaderSource = @"
 #version 140
 
@@ -195,8 +184,15 @@ void main(void)
   out_Color = vec4(color, 1.0);
 }
 ";
-
+      */
       mat.Name = "Test Material";
+
+      // TODO: this part, now that I actually use it, seems really kludgy
+      // redesign somehow?
+      Simple1MVPShaderModifier mod = new Simple1MVPShaderModifier();
+      mat.Program = mod.DeriveProgram(ShaderProgram.Cache["Pos_FlatCol"]);
+
+      mat.Program.Compile();
 
       // TODO: move to a compile function
       // TODO: check the cache for these shaders first
@@ -502,10 +498,12 @@ void main(void)
       // TOOD: mapping output parameters... if I ever use those
     }
 
+    
+    
     public virtual Material CloneInstance()
     {
       Material clone = (Material)MemberwiseClone();
-      clone.global = false;
+      clone.IsShared = false;
       clone.UniformParameters = new Dictionary<string, object>(this.UniformParameters);
       return clone;
     }
@@ -522,5 +520,237 @@ void main(void)
       }
     }
 
+
+    public void DrawEntities(LinkedList<Entity> list)
+    {
+      // TODO: these entity lists should go to the shared instance of the material,
+      // so instacing across any varying uniforms can be performed
+
+      Program.Use();
+      SetMaterialUniforms();
+
+      foreach (Entity e in list)
+      {
+        SetEntityTransform(e);
+        e.VertexData.Draw();
+      }
+    }
+
+    private void SetEntityTransform(Entity e)
+    {
+      // TODO: figure out how we're gonna figure out how to get transform data to the shader
+      // for now, just assume there's one transform matrix
+      Matrix4 transform;
+      Matrix4.Mult(ref Viewport.Active.vpMatrix, ref e.transform.matrix, out transform);
+      int location = GL.GetUniformLocation(Program.Handle, "in_mvpMatrix");
+      GL.UniformMatrix4(location, false, ref transform);
+    }
+
+    protected void SetMaterialUniforms()
+    {
+      Dictionary<string, Shader.Parameter> uniforms = Program.Uniforms;
+      Shader.Parameter parameter;
+      int programHandle = Program.Handle;
+      int location;
+      foreach (string paramName in UniformParameters.Keys)
+      {
+        if (uniforms.TryGetValue(paramName, out parameter) == false)
+        {
+          continue;
+        }
+
+        location = GL.GetUniformLocation(programHandle, paramName);
+        // TODO: do we need to test if location = -1 (for inactive uniforms)?
+        object value = UniformParameters[paramName];
+
+        #region Ungodly switch block
+        switch (parameter.type)
+        {
+          case Shader.Parameter.GLSLType.Void:
+            break;
+          case Shader.Parameter.GLSLType.Bool:
+            GL.Uniform1(location, (bool)value ? 1 : 0);
+            break;
+          case Shader.Parameter.GLSLType.Int:
+            GL.Uniform1(location, (int)value);
+            break;
+          case Shader.Parameter.GLSLType.Uint:
+            GL.Uniform1(location, (uint)value);
+            break;
+          case Shader.Parameter.GLSLType.Float:
+          case Shader.Parameter.GLSLType.Double:
+            GL.Uniform1(location, (float)value);
+            break;
+          case Shader.Parameter.GLSLType.Vec2:
+          case Shader.Parameter.GLSLType.Dvec2:
+            GL.Uniform2(location, (Vector2)value);
+            break;
+          case Shader.Parameter.GLSLType.Bvec2:
+          case Shader.Parameter.GLSLType.Ivec2:
+            GL.Uniform2(location, (int)((Vector2)value).X, (int)((Vector2)value).Y);
+            break;
+          case Shader.Parameter.GLSLType.Uvec2:
+            GL.Uniform2(location, (uint)((Vector2)value).X, (uint)((Vector2)value).Y);
+            break;
+          case Shader.Parameter.GLSLType.Vec3:
+          case Shader.Parameter.GLSLType.Dvec3:
+            GL.Uniform3(location, (Vector3)value);
+            break;
+          case Shader.Parameter.GLSLType.Bvec3:
+          case Shader.Parameter.GLSLType.Ivec3:
+            GL.Uniform3(location, (int)((Vector3)value).X,
+              (int)((Vector3)value).Y, (int)((Vector3)value).Z);
+            break;
+          case Shader.Parameter.GLSLType.Uvec3:
+            GL.Uniform3(location, (uint)((Vector3)value).X,
+              (uint)((Vector3)value).Y, (uint)((Vector3)value).Z);
+            break;
+          case Shader.Parameter.GLSLType.Vec4:
+          case Shader.Parameter.GLSLType.Dvec4:
+            GL.Uniform4(location, (Vector4)value);
+            break;
+          case Shader.Parameter.GLSLType.Bvec4:
+          case Shader.Parameter.GLSLType.Ivec4:
+            GL.Uniform4(location, (int)((Vector4)value).X,
+              (int)((Vector4)value).Y, (int)((Vector4)value).Z,
+              (int)((Vector4)value).W);
+            break;
+          case Shader.Parameter.GLSLType.Uvec4:
+            GL.Uniform4(location, (uint)((Vector4)value).X,
+              (uint)((Vector4)value).Y, (uint)((Vector4)value).Z,
+              (uint)((Vector4)value).W);
+            break;
+          case Shader.Parameter.GLSLType.Mat2:
+            break;
+          case Shader.Parameter.GLSLType.Mat3:
+            break;
+          case Shader.Parameter.GLSLType.Mat4:
+            {
+              Matrix4 mat = (Matrix4)value;
+              GL.UniformMatrix4(location, false, ref mat);
+            }
+            break;
+          case Shader.Parameter.GLSLType.Mat2x2:
+            break;
+          case Shader.Parameter.GLSLType.Mat3x2:
+            break;
+          case Shader.Parameter.GLSLType.Mat4x2:
+            break;
+          case Shader.Parameter.GLSLType.Mat2x3:
+            break;
+          case Shader.Parameter.GLSLType.Mat3x3:
+            break;
+          case Shader.Parameter.GLSLType.Mat4x3:
+            break;
+          case Shader.Parameter.GLSLType.Mat2x4:
+            break;
+          case Shader.Parameter.GLSLType.Mat3x4:
+            break;
+          case Shader.Parameter.GLSLType.Mat4x4:
+            break;
+          case Shader.Parameter.GLSLType.Dmat2:
+            break;
+          case Shader.Parameter.GLSLType.Dmat3:
+            break;
+          case Shader.Parameter.GLSLType.Dmat4:
+            break;
+          case Shader.Parameter.GLSLType.Dmat2x2:
+            break;
+          case Shader.Parameter.GLSLType.Dmat3x2:
+            break;
+          case Shader.Parameter.GLSLType.Dmat4x2:
+            break;
+          case Shader.Parameter.GLSLType.Dmat2x3:
+            break;
+          case Shader.Parameter.GLSLType.Dmat3x3:
+            break;
+          case Shader.Parameter.GLSLType.Dmat4x3:
+            break;
+          case Shader.Parameter.GLSLType.Dmat2x4:
+            break;
+          case Shader.Parameter.GLSLType.Dmat3x4:
+            break;
+          case Shader.Parameter.GLSLType.Dmat4x4:
+            break;
+          case Shader.Parameter.GLSLType.Sampler1D:
+            break;
+          case Shader.Parameter.GLSLType.Sampler2D:
+            break;
+          case Shader.Parameter.GLSLType.Sampler3D:
+            break;
+          case Shader.Parameter.GLSLType.SamplerCube:
+            break;
+          case Shader.Parameter.GLSLType.Sampler2DRect:
+            break;
+          case Shader.Parameter.GLSLType.Sampler1DShadow:
+            break;
+          case Shader.Parameter.GLSLType.Sampler2DShadow:
+            break;
+          case Shader.Parameter.GLSLType.Sampler2DRectShadow:
+            break;
+          case Shader.Parameter.GLSLType.Sampler1DArray:
+            break;
+          case Shader.Parameter.GLSLType.Sampler2DArray:
+            break;
+          case Shader.Parameter.GLSLType.SamplerBuffer:
+            break;
+          case Shader.Parameter.GLSLType.Sampler2DMS:
+            break;
+          case Shader.Parameter.GLSLType.Sampler2DMSArray:
+            break;
+          case Shader.Parameter.GLSLType.SamplerCubeArray:
+            break;
+          case Shader.Parameter.GLSLType.SamplerCubeArrayShadow:
+            break;
+          case Shader.Parameter.GLSLType.Isampler1D:
+            break;
+          case Shader.Parameter.GLSLType.Isampler2D:
+            break;
+          case Shader.Parameter.GLSLType.Isampler3D:
+            break;
+          case Shader.Parameter.GLSLType.IsamplerCube:
+            break;
+          case Shader.Parameter.GLSLType.Isampler2DRect:
+            break;
+          case Shader.Parameter.GLSLType.Isampler1DArray:
+            break;
+          case Shader.Parameter.GLSLType.Isampler2DArray:
+            break;
+          case Shader.Parameter.GLSLType.IsamplerBuffer:
+            break;
+          case Shader.Parameter.GLSLType.Isampler2DMS:
+            break;
+          case Shader.Parameter.GLSLType.Isampler2DMSArray:
+            break;
+          case Shader.Parameter.GLSLType.IsamplerCubeArray:
+            break;
+          case Shader.Parameter.GLSLType.Usampler1D:
+            break;
+          case Shader.Parameter.GLSLType.Usampler2D:
+            break;
+          case Shader.Parameter.GLSLType.Usampler3D:
+            break;
+          case Shader.Parameter.GLSLType.UsamplerCube:
+            break;
+          case Shader.Parameter.GLSLType.Usampler2DRect:
+            break;
+          case Shader.Parameter.GLSLType.Usampler1DArray:
+            break;
+          case Shader.Parameter.GLSLType.Usampler2DArray:
+            break;
+          case Shader.Parameter.GLSLType.UsamplerBuffer:
+            break;
+          case Shader.Parameter.GLSLType.Usampler2DMS:
+            break;
+          case Shader.Parameter.GLSLType.Usampler2DMSArray:
+            break;
+          case Shader.Parameter.GLSLType.UsamplerCubeArray:
+            break;
+          default:
+            break;
+        }
+        #endregion
+      }
+    }
   }
 }

@@ -5,10 +5,10 @@ using System.Text;
 
 namespace TestProject.Objects
 {
-  public abstract class ShaderModifier
+  public abstract class ProgramModifier
   {
     public abstract string Name { get; }
 
-    public abstract ShaderProgram DeriveShaders(ShaderProgram sp);
+    public abstract ShaderProgram DeriveProgram(ShaderProgram sp);
   }
 }

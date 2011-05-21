@@ -7,35 +7,113 @@ using System.Xml.XPath;
 
 namespace ThereBeMonsters.Back_end
 {
-  public struct ModuleNode
-  {
-    public Type moduleType;
-    public string description;
-  }
-
   public struct ParameterWireup
   {
-    public string parameterName;
-    public string srcIdDotParam;
+    public string srcId;
+    public string srcParam;
+
+    public ParameterWireup(string id, string param)
+    {
+      this.srcId = id;
+      this.srcParam = param;
+    }
   }
 
-  public struct ValueWireup
+  public class ModuleEventArgs : EventArgs
   {
-    public string parameterName;
-    public object value;
+    public string ModuleId { get; set; }
+  }
+
+  public class ModuleParameterEventArgs : EventArgs
+  {
+    public string ParameterName { get; set; }
+  }
+
+  public delegate void ModuleAddedHandler(object sender, ModuleEventArgs e);
+  public delegate void ModuleRemovedHandler(object sender, ModuleEventArgs e);
+  public delegate void ModuleParameterChangedHandler(object sender, ModuleParameterEventArgs e);
+
+  public class ModuleNode
+  {
+    public string ModuleId { get; set; }
+    public Type ModuleType { get; set; }
+    public string Description { get; set; }
+    public Dictionary<string, object> Wireups { get; private set; }
+    public float X { get; set; }
+    public float Y { get; set; }
+
+    public event ModuleParameterChangedHandler ParameterUpdated;
+
+    public ModuleNode()
+    {
+      Wireups = new Dictionary<string, object>();
+    }
+
+    public void Add(string parameterName, object value)
+    {
+      Wireups.Add(parameterName, value);
+
+      ParameterUpdated(this, new ModuleParameterEventArgs {
+        ParameterName = parameterName
+      });
+    }
+
+    public void Add(string parameterName, string srcId, string srcParam)
+    {
+      Wireups.Add(parameterName, new ParameterWireup {
+        srcId = srcId,
+        srcParam = srcParam
+      });
+
+      ParameterUpdated(this, new ModuleParameterEventArgs {
+        ParameterName = parameterName
+      });
+    }
+
+    public object this[string parameterName]
+    {
+      get
+      {
+        return Wireups[parameterName];
+      }
+      set
+      {
+        Wireups[parameterName] = value;
+
+        ParameterUpdated(this, new ModuleParameterEventArgs {
+          ParameterName = parameterName
+        });
+      }
+    }
+
+    public IEnumerable<ParameterWireup> ParameterWireups
+    {
+      get
+      {
+        foreach (object o in Wireups.Values)
+        {
+          if (o.GetType() == typeof(ParameterWireup))
+          {
+            yield return (ParameterWireup)o;
+          }
+        }
+      }
+    }
   }
 
   public class ModuleGraph
   {
-    public Dictionary<string, ModuleNode> moduleNodes { get; private set; }
-    public Dictionary<string, List<ParameterWireup>> parameterWireups { get; private set; }
-    public Dictionary<string, List<ValueWireup>> valueWireups { get; private set; }
+    public event ModuleAddedHandler ModuleAdded;
+    public event ModuleRemovedHandler ModuleRemoved;
 
+    // TODO: refactor how the module graph is stored:
+    //  create a ModuleModel class, each module keeps its incoming wireups and values
+    //  (using dictionary or maybe HybridDictionary) so duplicate wireups are more preventable
+    public Dictionary<string, ModuleNode> Nodes { get; private set; }
+    
     public ModuleGraph()
     {
-      moduleNodes = new Dictionary<string, ModuleNode>();
-      parameterWireups = new Dictionary<string, List<ParameterWireup>>();
-      valueWireups = new Dictionary<string, List<ValueWireup>>();
+      Nodes = new Dictionary<string, ModuleNode>();
     }
 
     public ModuleGraph(string filePath)
@@ -43,6 +121,8 @@ namespace ThereBeMonsters.Back_end
     {
       LoadFromXml(filePath);
     }
+
+    #region Loading from XML methods
 
     public void LoadFromXml(string filePath)
     {
@@ -62,13 +142,7 @@ namespace ThereBeMonsters.Back_end
           continue;
         }
 
-        if (id.Contains("."))
-        {
-          LogError("id is not allowd to contain '.'", it);
-          continue;
-        }
-
-        if (moduleNodes.ContainsKey(id))
+        if (Nodes.ContainsKey(id))
         {
           LogError("Duplicate id", it);
           continue;
@@ -92,9 +166,10 @@ namespace ThereBeMonsters.Back_end
         }
 
         GetAttribute(it, "description", out description, null);
-        moduleNodes[id] = new ModuleNode {
-          moduleType = typeObject,
-          description = description
+        Nodes[id] = new ModuleNode {
+          ModuleId = id,
+          ModuleType = typeObject,
+          Description = description
         };
 
         wireupLoadQueue.Enqueue(it.Current.Clone());
@@ -104,19 +179,19 @@ namespace ThereBeMonsters.Back_end
       {
         nav = wireupLoadQueue.Dequeue();
         id = nav.GetAttribute("id", string.Empty);
-        LoadWireupsFromXml(nav.SelectChildren("Wireup", string.Empty), id);
+        LoadWireupsFromXml(nav.SelectChildren("Wireup", string.Empty), Nodes[id]);
       }
     }
 
-    private void LoadWireupsFromXml(XPathNodeIterator it, string id)
+    private void LoadWireupsFromXml(XPathNodeIterator it, ModuleNode node)
     {
       string param, value, srcId, srcParam;
       object valueObject = null;
       Dictionary<string, Module.Parameter> validParameters = null;
       TypeConverter converter;
-      if (Module.UsesDynamicParameters(moduleNodes[id].moduleType) == false)
+      if (Module.UsesDynamicParameters(node.ModuleType) == false)
       {
-        validParameters = Module.GetModuleParameters(moduleNodes[id].moduleType);
+        validParameters = Module.GetModuleParameters(node.ModuleType);
       }
 
       while (it.MoveNext())
@@ -134,11 +209,6 @@ namespace ThereBeMonsters.Back_end
 
         if (GetAttribute(it, "value", out value, null))
         {
-          if (valueWireups.ContainsKey(id) == false)
-          {
-            valueWireups[id] = new List<ValueWireup>();
-          }
-
           if (validParameters != null) // implies param is a key
           {
             converter = TypeDescriptor.GetConverter(validParameters[param].Type);
@@ -154,36 +224,28 @@ namespace ThereBeMonsters.Back_end
           // TODO: support a type attribute so the user can specify a type for
           // inputs to modules using dynamic parameters
 
-          valueWireups[id].Add(new ValueWireup {
-            parameterName = param,
-            value = valueObject ?? value
-          });
+          node[param] = valueObject ?? value;
         }
         else if (GetAttribute(it, "srcId", out srcId, null)
           && GetAttribute(it, "srcParam", out srcParam, null))
         {
-          if (parameterWireups.ContainsKey(id) == false)
-          {
-            parameterWireups[id] = new List<ParameterWireup>();
-          }
-
-          if (moduleNodes.ContainsKey(srcId) == false)
+          if (Nodes.ContainsKey(srcId) == false)
           {
             LogError("Invalid id", it);
             continue;
           }
 
-          if (Module.UsesDynamicParameters(moduleNodes[srcId].moduleType) == false
-            && Module.GetModuleParameters(moduleNodes[srcId].moduleType).ContainsKey(srcParam) == false)
+          if (Module.UsesDynamicParameters(Nodes[srcId].ModuleType) == false
+            && Module.GetModuleParameters(Nodes[srcId].ModuleType).ContainsKey(srcParam) == false)
           {
             LogError("Invalid srcParam", it);
             continue;
           }
 
-          parameterWireups[id].Add(new ParameterWireup {
-            parameterName = param,
-            srcIdDotParam = string.Format("{0}.{1}", srcId, srcParam)
-          });
+          node[param] = new ParameterWireup {
+            srcId = srcId,
+            srcParam = srcParam
+          };
         }
         else
         {
@@ -226,5 +288,61 @@ namespace ThereBeMonsters.Back_end
 
       System.Console.Error.WriteLine(errorMsg);
     }
+
+    #endregion
+  
+    public void Add(string moduleId, Type moduleType, string description = "")
+    {
+      Nodes.Add(moduleId, new ModuleNode {
+        ModuleType = moduleType,
+        Description = description
+      }); // Add will throw an exception in the case of a duplicate key (desired)
+
+      ModuleAdded(this, new ModuleEventArgs { ModuleId = moduleId });
+    }
+
+    public void Remove(string moduleId)
+    {
+      if (Nodes.Remove(moduleId))
+      {
+        ModuleRemoved(this, new ModuleEventArgs { ModuleId = moduleId });
+      }
+    }
+
+    /// <summary>
+    /// Gets or sets the ModuleNode with the specified ID.
+    /// </summary>
+    /// <param name="moduleId">The unique string identifier for the module node.</param>
+    /// <returns>The module node.</returns>
+    public ModuleNode this[string moduleId]
+    {
+      get
+      {
+        return Nodes[moduleId];
+      }
+      set
+      {
+        Nodes[moduleId] = value;
+      }
+    }
+
+    /// <summary>
+    /// Gets or sets the specified parameter of the specified module.
+    /// </summary>
+    /// <param name="moduleId">The unique string identifier for the module node.</param>
+    /// <param name="parameterName">The name of the parameter.</param>
+    /// <returns>Either a ParameterWireup struct, any object value, or null</returns>
+    public object this[string moduleId, string parameterName]
+    {
+      get
+      {
+        return this[moduleId][parameterName];
+      }
+      set
+      {
+        this[moduleId][parameterName] = value;
+      }
+    }
+
   }
 }

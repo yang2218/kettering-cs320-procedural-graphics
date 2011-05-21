@@ -24,8 +24,7 @@ namespace ThereBeMonsters.Front_end
 
     public string MaterialName { get; private set; }
 
-    private bool loaded, global;
-    private int shaderProgramHandle, vertexShaderHandle, geometryShaderHandle, fragmentShaderHandle;
+    private int shaderProgramHandle, vertexShaderHandle, /*geometryShaderHandle,*/ fragmentShaderHandle;
     
     private Dictionary<string, object> UniformParameters = new Dictionary<string, object>();
     // any global uniforms like projection, view, time are set at runtime.
@@ -342,7 +341,6 @@ void main(void)
     public Material CloneInstance()
     {
       Material clone = (Material)MemberwiseClone();
-      clone.global = false;
       clone.UniformParameters = new Dictionary<string, object>(this.UniformParameters);
       return clone;
     }

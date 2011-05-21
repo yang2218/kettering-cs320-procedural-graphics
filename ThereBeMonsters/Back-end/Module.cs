@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using OpenTKGUI;
+using ThereBeMonsters.Front_end;
 
 namespace ThereBeMonsters.Back_end
 {
@@ -243,6 +244,9 @@ namespace ThereBeMonsters.Back_end
         INOUT = INPUT | OUTPUT
       }
 
+      public delegate EditorControl EditorFactoryDelegate(
+        ModuleNodeControl nodeControl, string paramName);
+
       /// <summary>
       /// The name of this parameter (the name of its underlying property).
       /// </summary>
@@ -289,9 +293,10 @@ namespace ThereBeMonsters.Back_end
       /// <summary>
       /// Specifies a custom editor GUI control for this parameter.
       /// </summary>
-      // TODO: check to make sure type is an EditorControl decendant
-      // TODO: should this stay as a Type or a factory pattern? (lamda expression?)
       public Type Editor { get; set; }
+
+      // TODO: the factory pattern doesn't seem like it would be useful?
+      public EditorFactoryDelegate EditorFactory { get; set; }
 
       /// <summary>
       /// The PropertyInfo associated with this parameter. Set by the Module base class.
@@ -323,6 +328,21 @@ namespace ThereBeMonsters.Back_end
       {
         this.Direction = dir;
         this.Property = prop;
+      }
+
+      public EditorControl GetEditorInstance(ModuleNodeControl control)
+      {
+        if (this.EditorFactory != null)
+        {
+          return this.EditorFactory(control, this.Name);
+        }
+        
+        if (this.Editor != null)
+        {
+          return (EditorControl)Activator.CreateInstance(this.Editor, control, this.Name);
+        }
+
+        return EditorControl.CreateDefaultEditorInstanceFor(this.Type, control, this.Name);
       }
     }
 

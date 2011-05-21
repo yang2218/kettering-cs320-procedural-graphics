@@ -17,8 +17,12 @@ namespace ThereBeMonsters.Back_end.Modules
         get { return 128.0; }
       }
 
-      public PreviewControl(string paramName)
-        : base(paramName)
+      public PreviewControl(ModuleNodeControl parentNode, string paramName)
+        : base(parentNode, paramName)
+      {
+      }
+
+      public override void OnValueChanged(object sender, ModuleParameterEventArgs e)
       {
       }
 

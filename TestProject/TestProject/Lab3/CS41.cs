@@ -126,7 +126,7 @@ namespace TestProject.Lab3
 
       GL.Clear(ClearBufferMask.ColorBufferBit);
 
-      viewport.Draw(); // right now just makes the viewport active
+      viewport.SetActive(); // right now just makes the viewport active
 
       kyubei.Draw();
 

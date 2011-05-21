@@ -31,39 +31,34 @@ namespace ThereBeMonsters.Back_end
 
     public void RunGraph()
     {
-      Queue<string> runQueue;
-      Dictionary<string, int> paramReferences;
-      Dictionary<string, object> outputCache = new Dictionary<string,object>();
-      List<ParameterWireup> paramWireups;
-      List<ValueWireup> valueWireups;
+      Queue<ModuleNode> runQueue;
+      Dictionary<ParameterWireup, int> paramReferences;
+      Dictionary<ParameterWireup, object> outputCache = new Dictionary<ParameterWireup, object>();
       
       AnalyzeGraph(out runQueue, out paramReferences);
 
       Module module;
-      string idDotParam;
-      foreach (string id in runQueue)
+      ParameterWireup pw;
+      foreach (ModuleNode node in runQueue)
       {
-        module = GetModuleInstance(this.Graph.moduleNodes[id].moduleType);
+        module = GetModuleInstance(node.ModuleType);
 
-        if (this.Graph.valueWireups.TryGetValue(id, out valueWireups))
+        foreach (KeyValuePair<string, object> kvp in node.Wireups)
         {
-          foreach (ValueWireup vw in valueWireups)
+          if (kvp.Value.GetType() == typeof(ParameterWireup))
           {
-            module[vw.parameterName] = vw.value;
-          }
-        }
-
-        if (this.Graph.parameterWireups.TryGetValue(id, out paramWireups))
-        {
-          foreach (ParameterWireup pw in paramWireups)
-          {
-            module[pw.parameterName] = outputCache[pw.srcIdDotParam];
-            paramReferences[pw.srcIdDotParam]--;
-            if (paramReferences[pw.srcIdDotParam] == 0)
+            pw = (ParameterWireup)kvp.Value;
+            module[kvp.Key] = outputCache[pw];
+            paramReferences[pw]--;
+            if (paramReferences[pw] == 0)
             { // free the output result as soon as we know we don't need it anymore.
-              outputCache.Remove(pw.srcIdDotParam);
-              paramReferences.Remove(pw.srcIdDotParam);
+              outputCache.Remove(pw);
+              paramReferences.Remove(pw);
             }
+          }
+          else
+          {
+            module[kvp.Key] = kvp.Value;
           }
         }
 
@@ -76,10 +71,10 @@ namespace ThereBeMonsters.Back_end
             continue;
           }
 
-          idDotParam = string.Format("{0}.{1}", id, param.Name);
-          if (paramReferences.ContainsKey(idDotParam))
+          pw = new ParameterWireup(node.ModuleId, param.Name);
+          if (paramReferences.ContainsKey(pw))
           { // only read the parameter if we have a need for it in the future
-            outputCache[idDotParam] = module[param.Name];
+            outputCache[pw] = module[param.Name];
           }
         }
       }
@@ -101,67 +96,70 @@ namespace ThereBeMonsters.Back_end
       return module;
     }
 
-    private void AnalyzeGraph(out Queue<string> runQueue, out Dictionary<string, int> paramReferences)
+    private void AnalyzeGraph(out Queue<ModuleNode> runQueue,
+      out Dictionary<ParameterWireup, int> paramReferences)
     {
-      runQueue = new Queue<string>();
-      paramReferences = new Dictionary<string, int>();
+      runQueue = new Queue<ModuleNode>();
+      paramReferences = new Dictionary<ParameterWireup, int>();
 
       // first stage: construct a DAG of dependancies (adjacency list)
-      int numNodes = this.Graph.moduleNodes.Count;
-      Dictionary<string, string[]> dependancies = new Dictionary<string, string[]>(numNodes);
+      int numNodes = this.Graph.Nodes.Count;
+      Dictionary<ModuleNode, ModuleNode[]> dependancies
+        = new Dictionary<ModuleNode, ModuleNode[]>(numNodes);
 
-      SortedSet<string> tempSet = new SortedSet<string>();
-      string[] tempArray;
-      foreach (string id in this.Graph.parameterWireups.Keys)
+      HashSet<ModuleNode> tempSet = new HashSet<ModuleNode>();
+      ModuleNode[] tempArray;
+      foreach (ModuleNode node in this.Graph.Nodes.Values)
       {
-        foreach (ParameterWireup pw in this.Graph.parameterWireups[id])
+        foreach (ParameterWireup pw in node.ParameterWireups)
         {
-          if (paramReferences.ContainsKey(pw.srcIdDotParam) == false)
+          if (paramReferences.ContainsKey(pw) == false)
           {
-            paramReferences[pw.srcIdDotParam] = 0;
+            paramReferences[pw] = 0;
           }
 
-          paramReferences[pw.srcIdDotParam]++;
-          tempSet.Add(pw.srcIdDotParam.Split('.')[0]); // just get the ID part
+          paramReferences[pw]++;
+          tempSet.Add(this.Graph.Nodes[pw.srcId]);
         }
 
         if (tempSet.Count > 0)
         {
-          tempArray = new string[tempSet.Count];
+          tempArray = new ModuleNode[tempSet.Count];
           tempSet.CopyTo(tempArray);
-          dependancies[id] = tempArray;
+          dependancies[node] = tempArray;
           tempSet.Clear();
         }
       }
 
       // stage two: transverse the graph DFS to build the queue
       // TODO: add a check to make sure there are no cycles
-      HashSet<string> visited = new HashSet<string>();
-      foreach (string id in dependancies.Keys)
+      HashSet<ModuleNode> visited = new HashSet<ModuleNode>();
+      foreach (ModuleNode node in dependancies.Keys)
       {
-        if (visited.Contains(id) == false)
+        if (visited.Contains(node) == false)
         {
-          DFSVisit(id, visited, dependancies, runQueue);
+          DFSVisit(node, visited, dependancies, runQueue);
         }
       }
     }
 
-    private void DFSVisit(string id, HashSet<string> visited, Dictionary<string, string[]> dependancies, Queue<string> runQueue)
+    private void DFSVisit(ModuleNode node, HashSet<ModuleNode> visited,
+      Dictionary<ModuleNode, ModuleNode[]> dependancies, Queue<ModuleNode> runQueue)
     {
-      visited.Add(id);
-      string[] dependeeList;
-      if (dependancies.TryGetValue(id, out dependeeList))
+      visited.Add(node);
+      ModuleNode[] dependeeList;
+      if (dependancies.TryGetValue(node, out dependeeList))
       {
-        foreach (string dependee in dependeeList)
+        foreach (ModuleNode dependee in dependeeList)
         {
-          if (visited.Contains(dependee) == false)
+          if (visited.Contains(node) == false)
           {
             DFSVisit(dependee, visited, dependancies, runQueue);
           }
         }
       }
 
-      runQueue.Enqueue(id);
+      runQueue.Enqueue(node);
     }
 
   }

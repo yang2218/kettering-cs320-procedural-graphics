@@ -5,23 +5,28 @@ using OpenTK.Graphics.OpenGL;
 
 namespace TestProject.Objects.Shaders
 {
-  public class Simple1MVPShaderModifier : ShaderModifier
+  public class Simple1MVPShaderModifier : ProgramModifier
   {
     public override string Name
     {
       get { return "Simple1MVP"; }
     }
 
-    public override ShaderProgram DeriveShaders(ShaderProgram sp)
+    public override ShaderProgram DeriveProgram(ShaderProgram sp)
     {
+      string newName = string.Format("{0}_{1}", sp.Name, this.Name);
       ShaderProgram ret;
-      if (ShaderProgram.Cache.TryGet(sp.Name + this.Name, out ret))
+      if (ShaderProgram.Cache.TryGet(newName, out ret))
       {
         return ret;
       }
 
       Shader vertShader = ModifyShader(sp.VertexShader);
-      return null;
+      ret = new ShaderProgram(newName, vertShader, sp.GeometryShader, sp.FragmentShader);
+
+      ShaderProgram.Cache[ret.Name] = ret;
+
+      return ret;
     }
 
     private Shader ModifyShader(Shader s)
@@ -33,59 +38,35 @@ namespace TestProject.Objects.Shaders
         return ret;
       }
 
-      //ret = new Shader(newName, ShaderType.VertexShader);
-      //ret.Functions = new Dictionary<string, Shader.Function>(s.Functions);
-      //ret.Functions.
-      return null;
+      ret = new Shader(
+        newName,
+        ShaderType.VertexShader,
+        new Dictionary<string, Shader.Parameter>(s.Parameters),
+        new Dictionary<string, Shader.Function>(s.Functions),
+        "simple1MVP_main");
+      
+      // add parameter
+      ret.Parameters.Add("in_mvpMatrix", new Shader.Parameter(
+        Shader.Parameter.InterpolationQualifier.None,
+        Shader.Parameter.StorageQualifier.Uniform,
+        Shader.Parameter.GLSLType.Mat4,
+        "in_mvpMatrix"));
+
+      // add function
+      ret.Functions.Add("simple1MVP_main", new Shader.Function(
+        new Shader.Parameter(
+          Shader.Parameter.InterpolationQualifier.None,
+          Shader.Parameter.StorageQualifier.None,
+          Shader.Parameter.GLSLType.Void,
+          string.Empty),
+        "simple1MVP_main",
+        new Shader.Parameter[0],
+        string.Format(@"{0}();
+gl_Position = in_mvpMatrix * gl_Position;", s.EntryFunction)));
+
+      Shader.Cache[ret.Name] = ret;
+
+      return ret;
     }
-    /*
-    public override void Compile()
-    {
-      if (this.IsCompiled)
-      {
-        return;
-      }
-
-      StringBuilder parameterList = new StringBuilder();
-      foreach (Parameter p in Parameters.Values)
-      {
-        parameterList.AppendLine(p.ToString());
-      }
-
-      string source = string.Format(@"
-// version declaration?
-
-{0}
-
-void shaderMain(void)
-{
-{1}
-}
-
-void main(void)
-{
-  shaderMain();
-  gl_Position = mvpMatrix * gl_Position;
-}",
-  parameterList,
-  this.MainBodyCode);
-
-      Handle = GL.CreateShader(this.Type);
-      GL.ShaderSource(Handle, source);
-      GL.CompileShader(Handle);
-
-      // Validate
-      int status;
-      GL.GetShader(Handle, ShaderParameter.CompileStatus, out status);
-      if (status == 0)
-      {
-        string message = GL.GetShaderInfoLog(Handle);
-        throw new ApplicationException(string.Format(
-          "Error compiling {0} shader \"{1}\":\n{2}",
-          this.Type,
-          this.Name,
-          message));
-      }
-    }*/
   }
 }

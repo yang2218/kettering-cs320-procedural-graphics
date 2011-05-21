@@ -112,10 +112,62 @@ namespace TestProject.Objects
         UsamplerCubeArray
       }
 
+      public class List : Dictionary<string, Parameter>
+      {
+        public void Add(string name, Parameter.InterpolationQualifier interp,
+          Parameter.StorageQualifier stor, Parameter.GLSLType type)
+        {
+          base.Add(name, new Parameter(interp, stor, type, name));
+        }
+
+        public void Add(string name, Parameter.GLSLType type)
+        {
+          base.Add(name, new Parameter(type, name));
+        }
+
+        public void Add(string name, VertexData.Attribute attribute,
+          GLSLType type)
+        {
+          base.Add(name, new Parameter(attribute, type, name));
+        }
+      }
+
       public InterpolationQualifier interpolation;
       public StorageQualifier storage;
       public GLSLType type;
+      public VertexData.Attribute attribute;
       public string name;
+
+      public bool IsInputAttribute
+      {
+        get
+        {
+          return attribute != VertexData.Attribute.None;
+          /*
+          return storage == StorageQualifier.In
+              || storage == StorageQualifier.CentroidIn
+              || storage == StorageQualifier.PatchIn
+              || storage == StorageQualifier.SampleIn;
+          */
+        }
+      }
+
+      public bool IsUniform
+      {
+        get
+        {
+          return storage == StorageQualifier.Uniform;
+        }
+      }
+
+      public static Parameter Void = new Parameter()
+      {
+        interpolation = InterpolationQualifier.None,
+        storage = StorageQualifier.None,
+        type = GLSLType.Void,
+        name = string.Empty,
+        attribute = VertexData.Attribute.None
+      };
 
       public Parameter(
         InterpolationQualifier interp,
@@ -127,6 +179,28 @@ namespace TestProject.Objects
         this.storage = stor;
         this.type = type;
         this.name = name;
+        this.attribute = VertexData.Attribute.None;
+      }
+
+      public Parameter(GLSLType type, string name)
+      {
+        this.interpolation = InterpolationQualifier.None;
+        this.storage = StorageQualifier.Uniform;
+        this.type = type;
+        this.name = name;
+        this.attribute = VertexData.Attribute.None;
+      }
+
+      public Parameter(
+        VertexData.Attribute attribute,
+        GLSLType type,
+        string name)
+      {
+        this.interpolation = InterpolationQualifier.None;
+        this.storage = StorageQualifier.In;
+        this.type = type;
+        this.name = name;
+        this.attribute = attribute;
       }
 
       public string TypeToString()
@@ -150,9 +224,10 @@ namespace TestProject.Objects
           sb.Append(" ");
         }
 
-        string type = TypeToString();
+        sb.Append(TypeToString());
         sb.Append(" ");
         sb.Append(name);
+        sb.Append(";");
 
         return sb.ToString();
       }
@@ -192,7 +267,9 @@ namespace TestProject.Objects
         {
           for (int i = 0; i < parameters.Length; i++)
           {
-            sb.Append(parameters[i].ToString());
+            sb.Append(parameters[i].TypeToString());
+            sb.Append(" ");
+            sb.Append(parameters[i].name);
             if (i != parameters.Length - 1)
             {
               sb.Append(", ");
@@ -210,8 +287,191 @@ namespace TestProject.Objects
     private static Shader LoadShader(string name)
     {
       // TODO: load shader from disk
-      throw new ApplicationException(string.Format("Could not load shader {0}", name));
-      //Cache[name] = shader;
+      // for now, just use this switch stmt
+      Shader s;
+      switch (name)
+      {
+        case "Pos":
+          s = new Shader(
+            "Pos",
+            ShaderType.VertexShader,
+            new Dictionary<string, Parameter>()
+            {
+              {"position", new Parameter(
+                VertexData.Attribute.Position,
+                Parameter.GLSLType.Vec3,
+                "position")}
+            },
+            new Dictionary<string, Function>()
+            {
+              {"pos_main", new Function(
+                Parameter.Void,
+                "pos_main",
+                new Parameter[]{},
+                "gl_Position = vec4(position, 1.0);")}
+            },
+            "pos_main");
+          break;
+        case "VNT":
+          s = new Shader(
+            "PosNorm",
+            ShaderType.VertexShader,
+            new Parameter.List
+            {
+              {"position", VertexData.Attribute.Position, Parameter.GLSLType.Vec3},
+              {"in_normal", VertexData.Attribute.Normal, Parameter.GLSLType.Vec3},
+              {"in_texcoord", VertexData.Attribute.TexCoord, Parameter.GLSLType.Vec2},
+              {"mv_matrix", Parameter.GLSLType.Mat4},
+              {"norm_matrix", Parameter.GLSLType.Mat4},
+              {"fragNormal",
+                Parameter.InterpolationQualifier.Smooth,
+                Parameter.StorageQualifier.Out,
+                Parameter.GLSLType.Vec3},
+              {"fragTexCoord", 
+                Parameter.InterpolationQualifier.Smooth,
+                Parameter.StorageQualifier.Out,
+                Parameter.GLSLType.Vec2},
+              {"fragTexCoordNP",
+                Parameter.InterpolationQualifier.NoPerspective,
+                Parameter.StorageQualifier.Out,
+                Parameter.GLSLType.Vec2},
+              {"v",
+                Parameter.InterpolationQualifier.Smooth,
+                Parameter.StorageQualifier.Out,
+                Parameter.GLSLType.Vec3}
+            },
+            new Dictionary<string, Function>()
+            {
+              {"vnt_main", new Function(
+                Parameter.Void,
+                "vnt_main",
+                new Parameter[]{},
+                @"
+gl_Position = vec4(position, 1.0);
+v = vec3(mv_matrix * gl_Position);
+fragNormal = normalize(mat3(norm_matrix) * in_normal);
+fragTexCoord = in_texcoord;
+fragTexCoordNP = in_texcoord;
+")}
+            },
+            "vnt_main");
+          break;
+        #region FlatCol
+        case "FlatCol":
+          s = new Shader(
+            "FlatCol",
+            ShaderType.FragmentShader,
+            new Dictionary<string, Parameter>()
+            {
+              {"color", new Parameter(
+                Parameter.InterpolationQualifier.None,
+                Parameter.StorageQualifier.Uniform,
+                Parameter.GLSLType.Vec3,
+                "color")},
+              {"out_Color", new Parameter(
+                Parameter.InterpolationQualifier.None,
+                Parameter.StorageQualifier.Out,
+                Parameter.GLSLType.Vec4,
+                "out_Color")}
+            },
+            new Dictionary<string, Function>()
+            {
+              {"flatcol_main", new Function(
+                Parameter.Void,
+                "flatcol_main",
+                new Parameter[]{},
+                "out_Color = vec4(color, 1.0);")}
+            },
+            "flatcol_main");
+          break;
+        #endregion
+        case "DiffSpec":
+          s = new Shader(
+            "DiffSpec",
+            ShaderType.FragmentShader,
+            new Parameter.List
+            {
+              {"out_Color",
+                Parameter.InterpolationQualifier.None,
+                Parameter.StorageQualifier.Out,
+                Parameter.GLSLType.Vec4
+              },
+              {"v",
+                Parameter.InterpolationQualifier.Smooth,
+                Parameter.StorageQualifier.In,
+                Parameter.GLSLType.Vec3},
+              {"fragNormal", 
+                Parameter.InterpolationQualifier.Smooth,
+                Parameter.StorageQualifier.In,
+                Parameter.GLSLType.Vec3},
+              {"fragTexCoord",
+                Parameter.InterpolationQualifier.Smooth,
+                Parameter.StorageQualifier.In,
+                Parameter.GLSLType.Vec2},
+              {"fragTexCoordNP", 
+                Parameter.InterpolationQualifier.NoPerspective,
+                Parameter.StorageQualifier.In,
+                Parameter.GLSLType.Vec2},
+              {"textureMap", Parameter.GLSLType.Sampler2D},
+              {"npInterp", Parameter.GLSLType.Bool},
+              {"matCol", Parameter.GLSLType.Vec3},
+              {"matShiny", Parameter.GLSLType.Float},
+              {"ambLight", Parameter.GLSLType.Vec3},
+              {"pointLightPos", Parameter.GLSLType.Vec3}, // window space!
+              {"pointLightCol", Parameter.GLSLType.Vec3},
+              {"pointLightRange", Parameter.GLSLType.Float}
+            },
+            new Dictionary<string, Function>()
+            {
+              {"lengthSq", new Function(
+                new Parameter(Parameter.GLSLType.Float, string.Empty),
+                "lengthSq",
+                new Parameter[] { new Parameter(Parameter.GLSLType.Vec3, "v") },
+                "return v.x*v.x + v.y*v.y + v.z*v.z;")},
+              {"diffspec_main", new Function(
+                Parameter.Void,
+                "diffspec_main",
+                new Parameter[]{},
+                @"
+vec3 dir;
+float dist, distSq;
+
+dir = pointLightPos - v;
+distSq = lengthSq(dir);
+dist = sqrt(distSq);
+dir = dir / dist;
+
+vec3 col;
+col = ambLight;
+
+float surfDot;
+surfDot = max(dot(fragNormal, dir), 0);
+col += pointLightCol * (surfDot /* pointLightRange / distSq*/);
+
+vec3 e = normalize(-v);
+vec3 r = normalize(-reflect(e, dir));
+surfDot = pow(max(dot(r, e), 0), matShiny);
+col += pointLightCol * (surfDot /* pointLightRange / distSq*/);
+
+vec4 texCol;
+if (npInterp)
+  texCol = texture(textureMap, fragTexCoordNP);
+else
+  texCol = texture(textureMap, fragTexCoord);
+
+col *= texCol.rgb * matCol;
+
+out_Color = vec4(col, texCol.a);
+")}
+            },
+            "diffspec_main");
+          break;
+        default:
+          throw new ApplicationException(string.Format("Could not load shader {0}", name));
+      }
+
+      Cache[name] = s;
+      return s;
     }
 
     // TODO: setup for xml deserialization
@@ -243,12 +503,42 @@ namespace TestProject.Objects
 
     public Shader(string name, ShaderType type,
       Dictionary<string, Parameter> parameters,
-      Dictionary<string, Function> functions)
+      Dictionary<string, Function> functions,
+      string entryFunction)
     {
       this.Name = name;
       this.Type = type;
       this.Parameters = parameters;
       this.Functions = functions;
+      this.EntryFunction = entryFunction;
+    }
+
+    public IEnumerable<Parameter> InputAttributes
+    {
+      get
+      {
+        foreach (Parameter p in Parameters.Values)
+        {
+          if (p.IsInputAttribute)
+          {
+            yield return p;
+          }
+        }
+      }
+    }
+
+    public IEnumerable<Parameter> Uniforms
+    {
+      get
+      {
+        foreach (Parameter p in Parameters.Values)
+        {
+          if (p.IsUniform)
+          {
+            yield return p;
+          }
+        }
+      }
     }
 
     public string GenerateSource()
@@ -291,6 +581,7 @@ namespace TestProject.Objects
     public void Delete()
     {
       GL.DeleteShader(this.Handle);
+      this._handle = null;
     }
   }
 }

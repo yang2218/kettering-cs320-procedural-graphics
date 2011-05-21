@@ -36,6 +36,11 @@ namespace TestProject.Objects
     private static int vertexBufferHandle;
     private static int vertexBufferTweenHandle;
 
+    public override string DefaultVertexShader
+    {
+      get { throw new NotImplementedException(); }
+    }
+
     public static void Setup()
     {
       // Create the vertex array object (defines how to read various vertex attributes from the data buffer(s))
@@ -187,11 +192,14 @@ namespace TestProject.Objects
       throw new NotImplementedException();
     }
 
-    public override void Draw()
+    public override void BindVAO()
     {
       GL.BindVertexArray(vertexArrayHandle);
+    }
+
+    public override void Draw()
+    {
       GL.MultiDrawArrays(PrimitiveType, firsts, counts, firsts.Length);
-      GL.BindVertexArray(0);
     }
   }
 }

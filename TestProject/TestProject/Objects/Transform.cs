@@ -153,5 +153,23 @@ namespace TestProject.Objects
     }
 
     // Other helper properties
+
+    // TODO: this implicit conversion may not be beneficial.. consider removing
+    public static implicit operator Matrix4(Transform t)
+    {
+      return t.matrix;
+    }
+
+    public void Rotate(Quaternion qrot)
+    {
+      Vector3 savedPos = Pos;
+      Pos = Vector3.Zero;
+      Vector3 axis;
+      float angle;
+      qrot.ToAxisAngle(out axis, out angle);
+      Matrix4 mrot = Matrix4.CreateFromAxisAngle(axis, angle);
+      Matrix4.Mult(ref matrix, ref mrot, out matrix);
+      Pos = savedPos;
+    }
   }
 }

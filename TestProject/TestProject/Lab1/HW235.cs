@@ -9,7 +9,6 @@ namespace TestProject.Lab1
 {
   public class HW235 : GameWindow
   {
-    // Normally, Entitys would be in a Scene class, but for now...
     private List<Entity> diamonds;
     private VertexData squareVertexData;
     private Material material;
@@ -30,9 +29,9 @@ namespace TestProject.Lab1
       GL.ClearColor(Color.Black);
 
       viewport = new Viewport(new Rectangle(0, 0, 250, 250));
-      Matrix4.CreateOrthographicOffCenter(-2f, 2f, -2f, 2f, -1f, 1f, out viewport.projectionMatrix);
-      viewport.viewMatrix = Matrix4.LookAt(Vector3.UnitZ, Vector3.Zero, Vector3.UnitY);
-
+      Matrix4.CreateOrthographicOffCenter(-2f, 2f, -2f, 2f, 1f, 50f, out viewport.projectionMatrix);
+      viewport.viewMatrix = Matrix4.LookAt(Vector3.UnitZ*5f, Vector3.Zero, Vector3.UnitY);
+      
       VertexPosData.Setup();
 
       VertexPosData vertexData = new VertexPosData();
@@ -77,14 +76,19 @@ namespace TestProject.Lab1
 
       width = ClientSize.Width * coordScale;
       height = ClientSize.Height * coordScale;
-      Matrix4.CreateOrthographicOffCenter(-width/2f, width/2f, -height/2f, height/2f, -1f, 1f, out viewport.projectionMatrix);
+      Matrix4.CreateOrthographicOffCenter(-width/2f, width/2f, -height/2f, height/2f, -1f, 50f, out viewport.projectionMatrix);
 
       Entity diamond;
       int newCount = (int)(width * height * diamondsPerArea);
       int oldCount = diamonds.Count;
       if (newCount < oldCount)
       {
-        diamonds.RemoveRange(newCount, oldCount - newCount);
+        for (int i = oldCount; i >= newCount; i--)
+        {
+          diamonds[i].VertexData = null;
+          diamonds.RemoveAt(i);
+        }
+
         return;
       }
 
@@ -99,17 +103,25 @@ namespace TestProject.Lab1
       }
     }
 
+    protected override void OnUpdateFrame(FrameEventArgs e)
+    {
+      if (Keyboard[OpenTK.Input.Key.Escape])
+      {
+        Exit();
+      }
+    }
+
     protected override void OnRenderFrame(FrameEventArgs e)
     {
       GL.Clear(ClearBufferMask.ColorBufferBit);
 
-      // this is supposed to also draw the scene it's attached to, but I haven't created a Scene object yet,
-      // plus, the point of the assignment is to do something like the loop I have below anyway...
-      viewport.Draw();
+      viewport.SetActive();
+
+      VertexData.DrawAllVertexData();
 
       foreach (Entity diamond in diamonds)
       {
-        diamond.Draw();
+        //diamond.Draw();
         diamond.transform.PosY -= (minFallingSpeed +
           fallingSpeedFactor * diamond.transform.ScaleX) * (float)e.Time;
         if (diamond.transform.PosY  < -height/2f - 1f)
@@ -134,6 +146,7 @@ namespace TestProject.Lab1
       diamond.transform.matrix = Matrix4.Scale(scale)
         * Matrix4.CreateRotationZ((float)Math.PI / 4.0f)
         * Matrix4.CreateTranslation(pos);
+
     }
     
     /// <summary>

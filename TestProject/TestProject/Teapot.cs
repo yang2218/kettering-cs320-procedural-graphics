@@ -57,7 +57,7 @@ namespace TestProject
   {
     // Rim, body, lid, and bottom data must be reflected in x and
     // y; handle and spout data across the y axis only.
-    private static int[,] patchdata = new int[,]
+    public static int[,] patchdata = new int[,]
     {
       // rim
       {102, 103, 104, 105, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15},
@@ -77,7 +77,7 @@ namespace TestProject
       {80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95}
     };
 
-    private static float[,] cpdata =
+    public static float[,] cpdata =
     {
         {0.2f, 0, 2.7f}, {0.2f, -0.112f, 2.7f}, {0.112f, -0.2f, 2.7f}, {0,
         -0.2f, 2.7f}, {1.3375f, 0, 2.53125f}, {1.3375f, -0.749f, 2.53125f},
@@ -122,7 +122,7 @@ namespace TestProject
         {0.84f, -1.5f, 0.075f}
     };
 
-    private static float[] tex =
+    public static float[] tex =
     {
       0, 0,
       1, 0,

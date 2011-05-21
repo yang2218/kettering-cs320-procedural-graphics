@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>TestProject.TeapotDemo</StartupObject>
+    <StartupObject>TestProject.Lab4.Lab4And5</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="OpenTK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
@@ -43,6 +43,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Lab2\dino.dat">
@@ -62,9 +63,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Lab4\Lab4And5.cs" />
+    <Compile Include="Objects\Data\VNiData.cs" />
     <Compile Include="Objects\Materials\FontMaterial.cs" />
     <Compile Include="Objects\Shaders\Shader.cs" />
-    <Compile Include="Objects\Shaders\ShaderModifier.cs" />
+    <Compile Include="Objects\Shaders\ProgramModifier.cs" />
     <Compile Include="Objects\Shaders\ShaderProgram.cs" />
     <Compile Include="Objects\Shaders\Simple1MVPShaderModifier.cs" />
     <Compile Include="Teapot.cs" />
@@ -110,6 +113,7 @@
     <Content Include="Lab2\numbers.png" />
     <Content Include="Lab2\score.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

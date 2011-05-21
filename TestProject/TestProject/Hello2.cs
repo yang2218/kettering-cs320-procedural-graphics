@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using OpenTK;
+using OpenTK.Input;
 using OpenTK.Graphics.OpenGL;
 
 namespace TestProject
@@ -32,7 +33,9 @@ namespace TestProject
       GL.ClearColor(Color.Black);
 
       GL.MatrixMode(MatrixMode.Projection);
-      GL.Ortho(-0.6, 0.6, -0.6, 0.6, -10, 10);
+      Matrix4 tempMat;
+      Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 2f, 1f, 0.1f, 10f, out tempMat);
+      GL.LoadMatrix(ref tempMat);
 
       // Initialize the camera's transform and some state variables
       eyePos = new Vector3(0f, 0f, 2f);
@@ -81,13 +84,20 @@ namespace TestProject
       return id;
     }
 
+    public void OnMouseMove(object sender, MouseMoveEventArgs e)
+    {
+
+    }
+
     protected override void OnUpdateFrame(FrameEventArgs e)
     {
+      this.Mouse.Move += OnMouseMove;
+
       base.OnUpdateFrame(e);
 
       float frameTime = (float)e.Time;
 
-      if (Keyboard[OpenTK.Input.Key.Escape])
+      if (Keyboard[Key.Escape])
       {
         Exit();
       }
@@ -98,22 +108,22 @@ namespace TestProject
       const float panSpeed = 1f;
       bool updated = false;
 
-      if (Keyboard[OpenTK.Input.Key.Up])
+      if (Keyboard[Key.Up])
       {
         lookTarget.Y += panSpeed * frameTime;
         updated = true;
       }
-      if (Keyboard[OpenTK.Input.Key.Down])
+      if (Keyboard[Key.Down])
       {
         lookTarget.Y -= panSpeed * frameTime;
         updated = true;
       }
-      if (Keyboard[OpenTK.Input.Key.Left])
+      if (Keyboard[Key.Left])
       {
         lookTarget.X -= panSpeed * frameTime;
         updated = true;
       }
-      if (Keyboard[OpenTK.Input.Key.Right])
+      if (Keyboard[Key.Right])
       {
         lookTarget.X += panSpeed * frameTime;
         updated = true;
@@ -130,22 +140,22 @@ namespace TestProject
       const float rotSpeed = 5f;
       updated = false;
 
-      if (Keyboard[OpenTK.Input.Key.W])
+      if (Keyboard[Key.W])
       {
         bulldogRotation.X += rotSpeed * frameTime;
         updated = true;
       }
-      if (Keyboard[OpenTK.Input.Key.S])
+      if (Keyboard[Key.S])
       {
         bulldogRotation.X -= rotSpeed * frameTime;
         updated = true;
       }
-      if (Keyboard[OpenTK.Input.Key.A])
+      if (Keyboard[Key.A])
       {
         bulldogRotation.Y -= rotSpeed * frameTime;
         updated = true;
       }
-      if (Keyboard[OpenTK.Input.Key.D])
+      if (Keyboard[Key.D])
       {
         bulldogRotation.Y += rotSpeed * frameTime;
         updated = true;

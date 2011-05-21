@@ -21,8 +21,8 @@ namespace ThereBeMonsters.Back_end
       get { return 30; }
     }
 
-    public BlendDelegateEditor(string paramName)
-      : base(paramName)
+    public BlendDelegateEditor(ModuleNodeControl parentNode, string paramName)
+      : base(parentNode, paramName)
     {
       // TODO: add controls:
       // a select list of functions from Blend8bppFunctions.List
@@ -30,16 +30,25 @@ namespace ThereBeMonsters.Back_end
 
       // TODO: listbox event
 
+      _srcFactorField = new Textbox();
+      _dstFactorField = new Textbox();
+
+      // TODO: change parameter updating to after focus is lost?
       _srcFactorField.TextEntered += (string text) =>
       {
         // TODO: validation
-        SetModuleParameterValue(parameterName + "SrcFactor", float.Parse(text));
+        SetModuleParameterValue(ParameterName + "SrcFactor", float.Parse(text));
       };
 
       _dstFactorField.TextEntered += (string text) =>
       {
-        SetModuleParameterValue(parameterName + "DstFactor", float.Parse(text));
+        SetModuleParameterValue(ParameterName + "DstFactor", float.Parse(text));
       };
+    }
+    
+    public override void OnValueChanged(object sender, ModuleParameterEventArgs e)
+    {
+      throw new NotImplementedException();
     }
 
     public override void Render(GUIRenderContext Context)
@@ -57,25 +66,28 @@ namespace ThereBeMonsters.Back_end
   {
     private Blend8bppDelegate _function;
 
-    public Blend8bppDelegateEditor(string paramName)
-      : base(paramName)
+    public Blend8bppDelegateEditor(ModuleNodeControl parentNode, string paramName)
+      : base(parentNode, paramName)
     {
+      _function = Blend8bppFunctions.Default;
     }
   }
 
   public class Blend32bppDelegateEditor : BlendDelegateEditor
   {
     private Blend32bppDelegate _function;
-    
-    public Blend32bppDelegateEditor(string paramName)
-      : base(paramName)
+
+    public Blend32bppDelegateEditor(ModuleNodeControl parentNode, string paramName)
+      : base(parentNode, paramName)
     {
+      _function = Blend32bppFunctions.Default;
     }
   }
 
   public static class Blend8bppFunctions
   {
     private static List<Blend8bppDelegate> _functions;
+    public static Blend8bppDelegate Default { get { return DestinationOnly; } }
     public static List<Blend8bppDelegate> List
     {
       get
@@ -134,6 +146,7 @@ namespace ThereBeMonsters.Back_end
   public static class Blend32bppFunctions
   {
     private static List<Blend32bppDelegate> _functions;
+    public static Blend32bppDelegate Default { get { return DestinationOnly; } }
     public static List<Blend32bppDelegate> List
     {
       get

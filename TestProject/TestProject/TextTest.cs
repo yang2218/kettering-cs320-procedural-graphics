@@ -17,6 +17,10 @@ namespace TestProject
 
     protected override void OnLoad(EventArgs e)
     {
+      
+      Exit();
+      return;
+
       GL.ClearColor(Color.Black);
       //GL.Enable(EnableCap.DepthTest);
 
@@ -91,7 +95,7 @@ namespace TestProject
 
       GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-      viewport.Draw(); // right now just makes the viewport active
+      viewport.SetActive(); // right now just makes the viewport active
 
       testEnt.Draw();
 

@@ -30,9 +30,24 @@ namespace ThereBeMonsters.Front_end
     // parameter from this method (infinite feedback loop)
     public abstract void OnValueChanged(object sender, ModuleParameterEventArgs e);
 
-    protected void SetModuleParameterValue(object value)
+    /// <summary>
+    /// Gets or sets the value of the module parameter this editor is associated with.
+    /// </summary>
+    protected object ModuleParameterValue
     {
-      this.NodeControl.Node[ParameterName] = value;
+      get
+      {
+        return this.NodeControl.Node[ParameterName];
+      }
+      set
+      {
+        this.NodeControl.Node[ParameterName] = value;
+      }
+    }
+
+    protected object GetModuleParameterValue(string otherParamName)
+    {
+      return this.NodeControl.Node[otherParamName];
     }
 
     protected void SetModuleParameterValue(string otherParamName, object value)

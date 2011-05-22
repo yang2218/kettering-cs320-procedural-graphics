@@ -132,7 +132,8 @@ namespace ThereBeMonsters.Back_end
     /// </summary>
     /// <returns></returns>
     public virtual Dictionary<string, Parameter> GetModuleParameters()
-    {
+    { // TODO: there's probably no reason to have this overridable method, parameter metadata
+      // is mostly used before an instance is actually created, via the static GetModuleParameters
       return Module.GetModuleParameters(GetType());
     }
 
@@ -289,6 +290,12 @@ namespace ThereBeMonsters.Back_end
       /// editor for another parameter also changes this parameter).
       /// </summary>
       public bool Hidden { get; set; }
+
+      /// <summary>
+      /// The default value. If non-null, this value will be used used by editors, and
+      /// will be supplied to the module if not Optional and no other value was specified
+      /// </summary>
+      public object Default { get; set; }
 
       /// <summary>
       /// Specifies a custom editor GUI control for this parameter.

@@ -24,6 +24,11 @@ namespace ThereBeMonsters.Front_end
       EditorControl editor;
       foreach (KeyValuePair<string, Module.Parameter> kvp in parameters)
       {
+        if (kvp.Value.Hidden)
+        {
+          continue;
+        }
+
         editor = kvp.Value.GetEditorInstance(this);
         EditorControls[kvp.Key] = editor;
 

@@ -74,7 +74,13 @@ namespace ThereBeMonsters.Back_end
     {
       get
       {
-        return Wireups[parameterName];
+        object temp;
+        if (Wireups.TryGetValue(parameterName, out temp))
+        {
+          return temp;
+        }
+
+        return Module.GetModuleParameters(ModuleType)[parameterName].Default;
       }
       set
       {

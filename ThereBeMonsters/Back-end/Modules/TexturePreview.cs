@@ -140,6 +140,7 @@ namespace ThereBeMonsters.Back_end.Modules
 
       using (PreviewWindow win = new PreviewWindow(map))
       {
+        win.Y = 10;
         win.Run();
       }
     }

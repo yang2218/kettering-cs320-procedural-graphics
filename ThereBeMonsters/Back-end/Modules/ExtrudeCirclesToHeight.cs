@@ -9,18 +9,32 @@ namespace ThereBeMonsters.Back_end.Modules
   [Module("Rasterizes circles onto a heightmap")]
   public class ExtrudeCirclesToHeight : Module
   {
-    public enum CapType
+    public enum Cap
     {
       Flat,
       Cone,
       Hemisphere
     }
 
+    public enum Scale
+    {
+      None,
+      Linear,
+      Quadradic
+    }
+
     private byte[,] inputHeightMap, outputHeightMap;
 
-    public IList<Vector3> Circles { private get; set; }
+    public IEnumerable<Vector3> Circles { private get; set; }
 
-    public CapType Cap { private get; set; }
+    public Cap CapMode { private get; set; }
+
+    // TODO: this can be generalized to an arbitrary second-degree polynomial...
+    // but, probably no reason to do the extra work
+    public Scale ScaleMode { private get; set; }
+
+    [Parameter(Default = true)]
+    public bool ScaleByRadius { private get; set; }
 
     public byte[,] HeightMap
     {
@@ -38,53 +52,96 @@ namespace ThereBeMonsters.Back_end.Modules
     [Parameter(Hidden = true)]
     public float BlendFuncDstFactor { private get; set; }
 
+    private static byte[] lookupTable = {};
+
     public override void Run()
     {
       int res = inputHeightMap.GetLength(0);
       outputHeightMap = new byte[res, res];
-      int cx, cy, cr, r2, d2;
-      float rr, r2r;
+      int centerX, centerY, circleRadius, radiusSq, distSqFromCenter;
+      int r, l, t, b;
       byte v = 0;
+      float heightScale = 1f;
+
+      // generate lookup table
+      int tableSize = (int)Math.Sqrt(res * res * 2);
+      if (lookupTable.Length != tableSize)
+      {
+        lookupTable = new byte[tableSize];
+        for (int i = 0; i < lookupTable.Length; i++)
+        {
+          switch (CapMode)
+          {
+            case Cap.Flat:
+              lookupTable[i] = byte.MaxValue;
+              break;
+            case Cap.Cone:
+              lookupTable[i] = (byte)(byte.MaxValue * (1f - (float)i / tableSize));
+              break;
+            case Cap.Hemisphere:
+              lookupTable[i] = (byte)(byte.MaxValue * Math.Sin(Math.Acos((float)i / tableSize)));
+              break;
+          }
+        }
+      }
+      
       foreach (Vector3 circle in Circles)
       {
-        rr = circle.X * res;
-        r2r = circle.Z * 2f;
-        cx = (int)rr;
-        cy = (int)(circle.Y * res);
-        cr = (int)(circle.Z * res);
-        r2 = cr * cr;
-        for (int i = 0; i <= cr; i++)
+        centerX = (int)(circle.X * res);
+        centerY = (int)(circle.Y * res);
+        circleRadius = (int)(circle.Z * res);
+        radiusSq = circleRadius * circleRadius;
+        switch (ScaleMode)
         {
-          for (int j = 0; j <= cr; j++)
+          case Scale.Linear:
+            heightScale = circle.Z * 2f;
+            break;
+          case Scale.Quadradic:
+            heightScale = 1f - (float)Math.Pow(1f - circle.Z * 2f, 2.0);
+            break;
+        }
+
+        for (int i = 0; i <= circleRadius; i++)
+        {
+          for (int j = 0; j <= circleRadius; j++)
           {
-            d2 = i * i + j * j;
-            if (d2 > r2)
+            distSqFromCenter = i * i + j * j;
+            if (distSqFromCenter > radiusSq)
             {
               continue;
             }
 
-            switch (Cap)
-            { // TODO: precomute lookup tables for sqrt and sin(acos())
-              case CapType.Flat:
-                v = (byte)(255 * r2r);
-                break;
-              case CapType.Cone:
-                v = (byte)(255 * r2r * (1f - Math.Sqrt(d2) / rr));
-                break;
-              case CapType.Hemisphere:
-                v = (byte)(255 * r2r * Math.Sin(Math.Acos(Math.Sqrt(d2) / rr)));
-                break;
+            if (distSqFromCenter == 0)
+            {
+              v = lookupTable[0];
+            }
+            else
+            {
+              v = lookupTable[(int)(tableSize
+                * MathHelper.InverseSqrtFast((float)radiusSq / distSqFromCenter))];
             }
 
-            outputHeightMap[cx + i, cy + j] = v;
-            outputHeightMap[cx - i, cy + j] = v;
-            outputHeightMap[cx + i, cy - j] = v;
-            outputHeightMap[cx - i, cy - j] = v;
+            v = (byte)(v * heightScale);
+
+            r = Clamp(centerX + i, 0, res - 1);
+            l = Clamp(centerX - i, 0, res - 1);
+            t = Clamp(centerY + j, 0, res - 1);
+            b = Clamp(centerY - j, 0, res - 1);
+
+            outputHeightMap[r, t] = v;
+            outputHeightMap[l, t] = v;
+            outputHeightMap[r, b] = v;
+            outputHeightMap[l, b] = v;
           }
         }
       }
 
       BlendFunc(inputHeightMap, outputHeightMap, BlendFuncSrcFactor, BlendFuncDstFactor);
+    }
+
+    private int Clamp(int v, int min, int max)
+    {
+      return v < min ? min : v > max ? max : v;
     }
   }
 }

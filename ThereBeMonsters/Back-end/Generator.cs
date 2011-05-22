@@ -39,26 +39,37 @@ namespace ThereBeMonsters.Back_end
 
       Module module;
       ParameterWireup pw;
+      object value;
       foreach (ModuleNode node in runQueue)
       {
         module = GetModuleInstance(node.ModuleType);
 
-        foreach (KeyValuePair<string, object> kvp in node.Wireups)
+        foreach (Module.Parameter param in module.Parameters.Values)
         {
-          if (kvp.Value.GetType() == typeof(ParameterWireup))
+          if (node.Wireups.TryGetValue(param.Name, out value))
           {
-            pw = (ParameterWireup)kvp.Value;
-            module[kvp.Key] = outputCache[pw];
-            paramReferences[pw]--;
-            if (paramReferences[pw] == 0)
-            { // free the output result as soon as we know we don't need it anymore.
-              outputCache.Remove(pw);
-              paramReferences.Remove(pw);
+            if (value.GetType() == typeof(ParameterWireup))
+            {
+              pw = (ParameterWireup)value;
+              module[param.Name] = outputCache[pw];
+              paramReferences[pw]--;
+              if (paramReferences[pw] == 0)
+              { // free the output result as soon as we know we don't need it anymore.
+                outputCache.Remove(pw);
+                paramReferences.Remove(pw);
+              }
             }
+            else
+            {
+              module[param.Name] = value;
+            }
+
+            continue;
           }
-          else
+
+          if (param.Optional == false)
           {
-            module[kvp.Key] = kvp.Value;
+            module[param.Name] = param.Default;
           }
         }
 

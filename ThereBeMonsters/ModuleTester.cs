@@ -1,88 +1,62 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using ThereBeMonsters.Back_end;
 using ThereBeMonsters.Back_end.Modules;
 using OpenTK;
-
-using System.ComponentModel;
 
 namespace ThereBeMonsters
 {
   public class ModuleTester
   {
+    private static IEnumerable<Vector3> CirlceFilter(IEnumerable<Vector3> input)
+    {
+      foreach (Vector3 v in input)
+      {
+        if (v.Z > 0f && v.Z < 1f)
+        {
+          yield return v;
+        }
+      }
+    }
+
     public static void Main()
     {
-      /*
       Gasket cookie = new Gasket();
-      cookie.Run();*/
-      /*Generator g = new Generator("TestGraph.xml");
-      g.RunGraph();
-      */
+      cookie.InitialShapePoints = new List<Vector2> {
+        new Vector2(0f, 0f),
+        new Vector2(1f, 0f),
+        new Vector2(1f, 1f),
+        new Vector2(0f, 1f),
+        new Vector2(0f, 0f)
+      };
+      cookie.MaxDepth = 7;
 
-      byte[,] hm = new byte[512, 512];
-      List<Vector3> c = new List<Vector3>() {
-        new Vector3(0.5f, 0.5f, 0.4f)};
+      Stopwatch sw = new Stopwatch();
+      sw.Start();
+      cookie.Run();
+      sw.Stop();
+      Console.WriteLine(string.Format("Gasket generator run time: {0}ms", sw.ElapsedMilliseconds));
 
-      ExtrudeCirclesToHeight m = new ExtrudeCirclesToHeight();
-      m.Cap = ExtrudeCirclesToHeight.CapType.Flat;
-      m.Circles = c;
-      m.HeightMap = hm;
-      m.BlendFunc = Blend8bppFunctions.Additive;
-      m.BlendFuncSrcFactor = 1f;
-      m.BlendFuncDstFactor = 1f;
+      ExtrudeCirclesToHeight extruder = new ExtrudeCirclesToHeight();
+      extruder.CapMode = ExtrudeCirclesToHeight.Cap.Hemisphere;
+      extruder.Circles = CirlceFilter(cookie.Circles);
+      extruder.HeightMap = new byte[1024, 1024];
+      extruder.ScaleMode = ExtrudeCirclesToHeight.Scale.Quadradic;
+      extruder.BlendFunc = Blend8bppFunctions.Additive;
+      extruder.BlendFuncSrcFactor = 1f;
+      extruder.BlendFuncDstFactor = 1f;
 
-      m.Run();
-
-      /*hm = m.HeightMap;
-      int i = 0;
-      foreach (byte b in hm)
-      {
-        if (i++ % 32 == 0)
-        {
-          Console.WriteLine();
-        }
-        
-        Console.Write(string.Format("{0,2}", b / 10));
-      }
-
-      System.Console.ReadLine();*/
+      sw.Reset();
+      sw.Start();
+      extruder.Run();
+      sw.Stop();
+      Console.WriteLine(string.Format("Extruder run time: {0}ms", sw.ElapsedMilliseconds));
 
       TexturePreview preview = new TexturePreview();
-      preview.HeightMap = m.HeightMap;
+      preview.HeightMap = extruder.HeightMap;
       preview.Run();
     }
-
-    /*
-    public static void Main()
-    {
-      Module m = new ExampleModule();
-
-      System.Console.WriteLine(m.Description);
-
-      m["A"] = 2;
-      m["B"] = 2;
-
-      m.Run();
-
-      System.Console.WriteLine(m["C"]);
-      
-      foreach(string param in m.Parameters.Keys) // names of all parameters
-      { 
-        System.Console.WriteLine(string.Format(@"
-Parameter: {0}
-ParamType: {1}
-Description: {2}
-Input/Output Dir: {3}
-Optional: {4}",
-          param,
-          m.Parameters[param].Type,
-          m.Parameters[param].Description,
-          m.Parameters[param].Direction,
-          m.Parameters[param].Optional));
-      }
-
-      System.Console.ReadLine();
-    }
-    */
   }
 }

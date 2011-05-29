@@ -8,7 +8,7 @@ namespace ThereBeMonsters.Front_end
 {
   public class MainWindow : HostWindow
   {
-    public List<Viewport> Viewports { get; private set; }
+    public Viewport Viewport { get; private set; }
 
     public System.Drawing.Color ClearColor
     {
@@ -23,19 +23,10 @@ namespace ThereBeMonsters.Front_end
     {
       this.ClientSize = new System.Drawing.Size(1024, 768);
 
-      Viewports = new List<Viewport>();
+      Viewport = new Viewport(System.Drawing.Rectangle.Empty);
       ClearColor = System.Drawing.Color.Black;
 
-      Scene s = new Scene();
-      s.Entities.AddLast(new TestEntity());
-
-      Viewport v = new Viewport(System.Drawing.Rectangle.Empty);
-      v.Scene = s;
-      Matrix4.CreateOrthographic(1.1f, 1.1f, -1f, 1f, out v.projectionMatrix);
-      v.viewMatrix = Matrix4.Identity;
-      Viewports.Add(v);
-
-      vp.Viewport = v;
+      vp.Viewport = Viewport;
     }
 
     // HACK
@@ -48,12 +39,12 @@ namespace ThereBeMonsters.Front_end
       // lower part of split pane
       LayerContainer lc = new LayerContainer(null);
       vp = new ViewportPlaceholder(null);
-      AlignContainer ac = new AlignContainer(vp, new Point(200, 200), Align.Center, Align.Bottom);
+      AlignContainer ac = new AlignContainer(new Button("test"), new Point(200, 200), Align.Center, Align.Bottom);
       Form p = new Form(ac, "Test");
       p.ClientSize = new Point(250, 300);
       lc.AddControl(p, new Point(10, 10));
 
-      SplitContainer sc = new SplitContainer(Axis.Vertical, new Button("test"), lc);
+      SplitContainer sc = new SplitContainer(Axis.Vertical, vp, lc);
       sc.NearSize = 300;
       return sc;
     }
@@ -77,20 +68,11 @@ namespace ThereBeMonsters.Front_end
       GUIRenderContext rc = new GUIRenderContext(this.ViewSize);
       rc.Setup();
       this.Control.Render(rc);
-
-      //GL.Disable(EnableCap.ScissorTest);
-      //GL.Disable(EnableCap.DepthTest);
+      
       GL.Disable(EnableCap.Texture2D);
       
-      foreach (Viewport v in Viewports)
-      {
-        GL.MatrixMode(MatrixMode.Projection);
-        GL.LoadMatrix(ref v.projectionMatrix);
-        GL.MatrixMode(MatrixMode.Modelview);
-        GL.LoadMatrix(ref v.viewMatrix);
-        v.Draw();
-      }
-
+      Viewport.Draw();
+      
       this.SwapBuffers();
     }
 

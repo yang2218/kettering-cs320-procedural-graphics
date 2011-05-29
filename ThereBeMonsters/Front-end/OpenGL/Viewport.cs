@@ -7,10 +7,11 @@ namespace ThereBeMonsters.Front_end
 {
   public class Viewport
   {
-    // public fields can be passed as ref/out parameters
-    public Matrix4 projectionMatrix, viewMatrix;
     public Rectangle ViewportRect { get; set; }
-    public Scene Scene { get; set; }
+
+    public event EventHandler PreRender;
+
+    public event EventHandler Render;
 
     public static Viewport Active { get; private set; }
 
@@ -22,9 +23,15 @@ namespace ThereBeMonsters.Front_end
     public void Draw()
     {
       GL.Viewport(ViewportRect);
-      // TODO: premultiply the projection and view matrix
-      Viewport.Active = this;
-      this.Scene.Draw();
+      if (PreRender != null)
+      {
+        PreRender(this, new EventArgs());
+      }
+
+      if (Render != null)
+      {
+        Render(this, new EventArgs());
+      }
     }
   }
 }

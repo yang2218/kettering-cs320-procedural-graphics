@@ -283,7 +283,7 @@ void main(void)
 
     public void Use(ref Matrix4 modelMatrix) // TODO: maybe a better way to assign the model matrix?
     {
-      GL.UseProgram(shaderProgramHandle);
+      /*GL.UseProgram(shaderProgramHandle);
 
       int location;
       location = GL.GetUniformLocation(shaderProgramHandle, "projectionMatrix");
@@ -313,7 +313,7 @@ void main(void)
         location = GL.GetUniformLocation(shaderProgramHandle, "tween");
         GL.Uniform1(location, (float)value);
       }
-      
+      */
       /*
       // TODO: set global uniforms
       int location;

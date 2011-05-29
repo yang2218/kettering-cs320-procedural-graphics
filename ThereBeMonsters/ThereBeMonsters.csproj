@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>ThereBeMonsters.ModuleTester</StartupObject>
+    <StartupObject>ThereBeMonsters.Front_end.MainWindow</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <None Include="OpenTK.dll" />
@@ -56,12 +56,6 @@
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.XML" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="TestGraph.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Back-end\Modules\gasket.cs" />

@@ -49,7 +49,7 @@ namespace ThereBeMonsters.Back_end.Modules
       }
 
       //array for triangles created from verticies
-      int[] triangles = new int[(2 * mapLength + 1) * mapHeight - 1];
+      int[] triangles = new int[(2 * mapLength) * (mapHeight - 1)];
       int[] counts = new int[mapHeight - 1];
       int[] offsets = new int[mapHeight - 1];
 
@@ -63,7 +63,7 @@ namespace ThereBeMonsters.Back_end.Modules
           triangles[store++] = j * mapLength + i;
           triangles[store++] = (j + 1) * mapLength + i;
         }
-        offsets[j] = j * mapLength;
+        offsets[j] = j * mapLength * 8; // offset in bytes
         counts[j] = mapLength * 2;
       }
 
@@ -94,7 +94,7 @@ namespace ThereBeMonsters.Back_end.Modules
         GL.DepthFunc(DepthFunction.Less);
         GL.BindVertexArray(vertexArrayHandle);
         //GL.DrawElements(BeginMode.TriangleStrip, triangles.Length, DrawElementsType.UnsignedInt, 0);
-        GL.MultiDrawElements(BeginMode.TriangleStrip, counts, DrawElementsType.UnsignedInt, offsets, offsets.Length);
+        GL.MultiDrawElements(BeginMode.TriangleStrip, counts, DrawElementsType.UnsignedInt, offsets, counts.Length);
 
         GL.Disable(EnableCap.DepthTest);
       };

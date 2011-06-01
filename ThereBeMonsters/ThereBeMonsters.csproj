@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{EE3101BC-EFE0-4148-96D8-38C85CCE664E}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ThereBeMonsters</RootNamespace>
+    <AssemblyName>ThereBeMonsters</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>ThereBeMonsters.ModuleTester</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="OpenTK.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="OpenTK.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="OpenTK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTKGUI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\OpenTKGUI.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TestGraph.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Back-end\Modules\ColorCircle.cs" />
+    <Compile Include="Back-end\Modules\gasket.cs" />
+    <Compile Include="Back-end\Modules\TexturePreview.cs" />
+    <Compile Include="Front-end\Controls\EditorControl.cs" />
+    <Compile Include="Back-end\Generator.cs" />
+    <Compile Include="Back-end\BlendDelegate.cs" />
+    <Compile Include="Back-end\Module.cs" />
+    <Compile Include="Back-end\ModuleGraph.cs" />
+    <Compile Include="Back-end\Modules\ExampleModule.cs" />
+    <Compile Include="Back-end\Modules\ExtrudeCirclesToHeight.cs" />
+    <Compile Include="Back-end\Modules\WriteToConsole.cs" />
+    <Compile Include="Front-end\OpenGL\Entity.cs" />
+    <Compile Include="FloatExtensions.cs" />
+    <Compile Include="Front-end\Main.cs" />
+    <Compile Include="Front-end\OpenGL\Material.cs" />
+    <Compile Include="Front-end\Controls\ModuleGraphControl.cs" />
+    <Compile Include="Front-end\Controls\ModuleNodeControl.cs" />
+    <Compile Include="Front-end\OpenGL\Scene.cs" />
+    <Compile Include="Front-end\OpenGL\TestEntity.cs" />
+    <Compile Include="Front-end\OpenGL\Texture.cs" />
+    <Compile Include="Front-end\OpenGL\Transform.cs" />
+    <Compile Include="Front-end\OpenGL\VertexData.cs" />
+    <Compile Include="Front-end\OpenGL\VertexPosData.cs" />
+    <Compile Include="Front-end\OpenGL\VertexPosUVData.cs" />
+    <Compile Include="Front-end\OpenGL\Viewport.cs" />
+    <Compile Include="Front-end\Controls\ViewportPlaceholder.cs" />
+    <Compile Include="ModuleTester.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="OpenTKGUI.dll" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

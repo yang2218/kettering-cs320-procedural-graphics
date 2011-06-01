@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using OpenTK;
 using OpenTKGUI;
+using ThereBeMonsters.Front_end.Controls;
 
 using ThereBeMonsters.Back_end;
 

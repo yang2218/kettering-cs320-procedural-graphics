@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using OpenTKGUI;
 using ThereBeMonsters.Back_end;
 
-namespace ThereBeMonsters.Front_end
+namespace ThereBeMonsters.Front_end.Controls
 {
   public abstract class EditorControl : Control
   {

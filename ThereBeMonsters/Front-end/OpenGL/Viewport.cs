@@ -9,9 +9,9 @@ namespace ThereBeMonsters.Front_end
   {
     public Rectangle ViewportRect { get; set; }
 
-    public event EventHandler PreRender;
+    public event EventHandler<FrameEventArgs> PreRender;
 
-    public event EventHandler Render;
+    public event EventHandler<FrameEventArgs> Render;
 
     public static Viewport Active { get; private set; }
 
@@ -20,17 +20,17 @@ namespace ThereBeMonsters.Front_end
       ViewportRect = rect;
     }
 
-    public void Draw()
+    public void Draw(FrameEventArgs e)
     {
       GL.Viewport(ViewportRect);
       if (PreRender != null)
       {
-        PreRender(this, new EventArgs());
+        PreRender(this, e);
       }
 
       if (Render != null)
       {
-        Render(this, new EventArgs());
+        Render(this, e);
       }
     }
   }

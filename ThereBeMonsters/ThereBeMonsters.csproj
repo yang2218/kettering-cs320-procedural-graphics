@@ -64,6 +64,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Back-end\Modules\ColorCircle.cs" />
     <Compile Include="Back-end\Modules\gasket.cs" />
     <Compile Include="Back-end\Modules\TexturePreview.cs" />
     <Compile Include="Front-end\Controls\EditorControl.cs" />

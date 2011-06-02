@@ -80,21 +80,16 @@ namespace ThereBeMonsters.Front_end
 
     // HACK
     private static ViewportPlaceholder vp;
-
+    private static ModuleGraphControl g;
     private static Control SetupControls()
     {
       // TODO: build the control heiarchy here
+      g = new ModuleGraphControl(ModuleGraph.LoadFromXml("save.xml"));
 
-      // lower part of split pane
-      LayerContainer lc = new LayerContainer(null);
       vp = new ViewportPlaceholder(null);
-      AlignContainer ac = new AlignContainer(new Button("test"), new Point(200, 200), Align.Center, Align.Bottom);
-      Form p = new Form(ac, "Test");
-      p.ClientSize = new Point(250, 300);
-      lc.AddControl(p, new Point(10, 10));
-
-      SplitContainer sc = new SplitContainer(Axis.Vertical, vp, lc);
-      sc.NearSize = 300;
+      
+      SplitContainer sc = new SplitContainer(Axis.Vertical, vp, g);
+      sc.NearSize = 450;
       return sc;
     }
 
@@ -105,6 +100,12 @@ namespace ThereBeMonsters.Front_end
       {
         Exit();
       }
+    }
+
+    protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+    {
+      base.OnClosing(e);
+      //g.Graph.SaveToXml("save.xml");
     }
 
     protected override void OnRenderFrame(FrameEventArgs e)
@@ -119,6 +120,7 @@ namespace ThereBeMonsters.Front_end
       this.Control.Render(rc);
       
       GL.Disable(EnableCap.Texture2D);
+      GL.Disable(EnableCap.Blend);
 
       GL.MatrixMode(MatrixMode.Modelview);
       GL.PushMatrix();

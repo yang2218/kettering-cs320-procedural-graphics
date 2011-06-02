@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="IBM437"?>
+<?xml version="1.0" encoding="utf-8"?>
 <ModuleGraph name="testGraph">
   <Module id="mod1" description="Optional user descripion" type="ThereBeMonsters.Back_end.Modules.ExampleModule">
     <Wireups>
@@ -10,8 +10,8 @@
       </Wireup>
     </Wireups>
     <Position>
-      <X>0</X>
-      <Y>0</Y>
+      <X>53</X>
+      <Y>40</Y>
     </Position>
   </Module>
   <Module id="mod2" type="ThereBeMonsters.Back_end.Modules.ExampleModule">
@@ -24,8 +24,8 @@
       </Wireup>
     </Wireups>
     <Position>
-      <X>0</X>
-      <Y>0</Y>
+      <X>251</X>
+      <Y>51</Y>
     </Position>
   </Module>
   <Module id="out" type="ThereBeMonsters.Back_end.Modules.WriteToConsole">
@@ -35,8 +35,8 @@
       </Wireup>
     </Wireups>
     <Position>
-      <X>0</X>
-      <Y>0</Y>
+      <X>461</X>
+      <Y>46</Y>
     </Position>
   </Module>
 </ModuleGraph>

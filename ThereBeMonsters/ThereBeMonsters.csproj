@@ -69,6 +69,10 @@
     <Compile Include="Back-end\Modules\ExampleModule.cs" />
     <Compile Include="Back-end\Modules\ExtrudeCirclesToHeight.cs" />
     <Compile Include="Back-end\Modules\WriteToConsole.cs" />
+    <Compile Include="Front-end\Controls\EnumControl.cs" />
+    <Compile Include="Front-end\Controls\FloatControl.cs" />
+    <Compile Include="Front-end\Controls\IntControl.cs" />
+    <Compile Include="Front-end\Controls\StringControl.cs" />
     <Compile Include="Front-end\OpenGL\Camera.cs" />
     <Compile Include="Front-end\OpenGL\Entity.cs" />
     <Compile Include="FloatExtensions.cs" />

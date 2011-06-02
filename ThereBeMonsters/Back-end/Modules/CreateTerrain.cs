@@ -85,17 +85,15 @@ namespace ThereBeMonsters.Back_end.Modules
       GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
       GL.EnableVertexAttribArray(0);
 
+      GL.BindVertexArray(0);
+
       MainWindow.hack.Viewport.Render += (object sender, FrameEventArgs e) =>
       {
-        /*GL.Enable(EnableCap.PrimitiveRestart);
-        GL.PrimitiveRestartIndex(-1);*/
-        GL.Clear(ClearBufferMask.DepthBufferBit);
         GL.Enable(EnableCap.DepthTest);
         GL.DepthFunc(DepthFunction.Less);
         GL.BindVertexArray(vertexArrayHandle);
-        //GL.DrawElements(BeginMode.TriangleStrip, triangles.Length, DrawElementsType.UnsignedInt, 0);
         GL.MultiDrawElements(BeginMode.TriangleStrip, counts, DrawElementsType.UnsignedInt, offsets, counts.Length);
-
+        GL.BindVertexArray(0);
         GL.Disable(EnableCap.DepthTest);
       };
     }

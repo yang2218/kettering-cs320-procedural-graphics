@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using OpenTKGUI;
 using ThereBeMonsters.Front_end;
+using ThereBeMonsters.Front_end.Controls;
 
 namespace ThereBeMonsters.Back_end
 {

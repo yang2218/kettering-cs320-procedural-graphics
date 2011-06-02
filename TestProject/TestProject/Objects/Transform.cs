@@ -5,12 +5,19 @@ namespace TestProject.Objects
 {
   public class Transform
   {
+    // TODO: make matrix private; to that end, create methods which perform
+    // the needed operations that would normally act on the field via ref
     public Matrix4 matrix;
-    // TODO: Quaternion for rotation?
+    public Quaternion rotation;
+    private bool _noRotation;
+    public bool NeedsRegeneration { get; private set; }
+    public Vector3 position, scale;
 
     public Transform()
     {
       matrix = Matrix4.Identity;
+      rotation = Quaternion.Identity;
+      _noRotation = true;
     }
 
     public Transform(Matrix4 matrix)
@@ -18,7 +25,39 @@ namespace TestProject.Objects
       this.matrix = matrix;
     }
 
+    public void ResetRotation()
+    {
+      rotation = Quaternion.Identity;
+      _noRotation = true;
+    }
+
     // TODO: ref/out methods for these properties?
+
+    public void RegenerateMatrix()
+    {
+      if (!NeedsRegeneration)
+      {
+        return;
+      }
+
+      rotation.ToMatrix(out matrix);
+      Matrix4 temp = Matrix4.Scale(scale);
+      Matrix4.Mult(ref matrix, ref temp, out matrix);
+      matrix.Row3 = new Vector4(position, 1f);
+    }
+
+    public Matrix4 Matrix
+    {
+      get
+      {
+        if (NeedsRegeneration)
+        {
+          RegenerateMatrix();
+        }
+
+        return matrix;
+      }
+    }
 
     public Vector3 Pos
     {
@@ -76,9 +115,17 @@ namespace TestProject.Objects
       }
       set
       {
-        matrix.M11 = value.X;
-        matrix.M22 = value.Y;
-        matrix.M33 = value.Z;
+        this.scale = value;
+        if (_noRotation)
+        {
+          matrix.M11 = value.X;
+          matrix.M22 = value.Y;
+          matrix.M33 = value.Z;
+        }
+        else
+        {
+          NeedsRegeneration = true;
+        }
       }
     }
     public float ScaleX
@@ -89,7 +136,15 @@ namespace TestProject.Objects
       }
       set
       {
-        matrix.M11 = value;
+        scale.X = value;
+        if (_noRotation)
+        {
+          matrix.M11 = value;
+        }
+        else
+        {
+          NeedsRegeneration = true;
+        }
       }
     }
     public float ScaleY
@@ -100,7 +155,15 @@ namespace TestProject.Objects
       }
       set
       {
-        matrix.M22 = value;
+        scale.Y = value;
+        if (_noRotation)
+        {
+          matrix.M22 = value;
+        }
+        else
+        {
+          NeedsRegeneration = true;
+        }
       }
     }
     public float ScaleZ
@@ -111,7 +174,15 @@ namespace TestProject.Objects
       }
       set
       {
-        matrix.M33 = value;
+        scale.Z = value;
+        if (_noRotation)
+        {
+          matrix.M33 = value;
+        }
+        else
+        {
+          NeedsRegeneration = true;
+        }
       }
     }
 
@@ -152,7 +223,23 @@ namespace TestProject.Objects
       }
     }
 
+    // TODO: a method to set rotation with a pass by ref?
+    public Quaternion Rotation
+    {
+      get
+      {
+        return rotation;
+      }
+      set
+      {
+        rotation = value;
+        _noRotation = false;
+        NeedsRegeneration = true;
+      }
+    }
+
     // Other helper properties
+
 
     // TODO: this implicit conversion may not be beneficial.. consider removing
     public static implicit operator Matrix4(Transform t)
@@ -160,16 +247,22 @@ namespace TestProject.Objects
       return t.matrix;
     }
 
-    public void Rotate(Quaternion qrot)
+    public void Rotate(ref Quaternion qrot)
     {
-      Vector3 savedPos = Pos;
-      Pos = Vector3.Zero;
-      Vector3 axis;
+      Quaternion.Multiply(ref rotation, ref qrot, out rotation);
+      NeedsRegeneration = true;
+      //Vector3 savedPos = Pos;
+      //Pos = Vector3.Zero;
+      /*Vector3 axis;
       float angle;
       qrot.ToAxisAngle(out axis, out angle);
-      Matrix4 mrot = Matrix4.CreateFromAxisAngle(axis, angle);
+      Matrix4 mrot = Matrix4.CreateFromAxisAngle(axis, angle);*/
+      /*
+      Matrix4 mrot;
+      qrot.ToMatrix(out mrot);
       Matrix4.Mult(ref matrix, ref mrot, out matrix);
       Pos = savedPos;
+      */
     }
   }
 }

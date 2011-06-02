@@ -65,6 +65,14 @@ namespace TestProject.Objects
           return DefaultTexturedMaterial();
         case "TweenLines":
           return TweenLinesMaterial();
+        case "VT_Tex":
+          Material mat = new Material();
+          mat.Name = "VT_Tex";
+          Simple1MVPShaderModifier mod = new Simple1MVPShaderModifier();
+          mat.Program = mod.DeriveProgram(ShaderProgram.Cache["VT_Tex"]);
+          mat.Program.Compile();
+          Cache[mat.Name] = mat;
+          return mat;
         default:
           // load from file
           throw new NotImplementedException();
@@ -485,10 +493,11 @@ void main(void)
       // TODO: figure out how we're gonna figure out how to get transform data to the shader
       // for now, just assume there's one transform matrix
       Matrix4 transform;
+      e.transform.RegenerateMatrix();
       Matrix4.Mult(ref e.transform.matrix, ref Viewport.Active.vpMatrix, out transform);
       int location = GL.GetUniformLocation(Program.Handle, "in_mvpMatrix");
       GL.UniformMatrix4(location, false, ref transform);
-
+      /*
       Matrix4.Mult(ref e.transform.matrix, ref Viewport.Active.viewMatrix, out transform);
       location = GL.GetUniformLocation(Program.Handle, "mv_matrix");
       GL.UniformMatrix4(location, false, ref transform);
@@ -497,6 +506,7 @@ void main(void)
       transform.Transpose();
       location = GL.GetUniformLocation(Program.Handle, "norm_matrix");
       GL.UniformMatrix4(location, false, ref transform);
+      */
     }
 
     protected void SetMaterialUniforms()
@@ -628,7 +638,7 @@ void main(void)
           case Shader.Parameter.GLSLType.Sampler1D:
             break;
           case Shader.Parameter.GLSLType.Sampler2D:
-            GL.Uniform1(location, (int)TextureUnit.Texture0);
+            GL.Uniform1(location, 0); // texture unit 0
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, (int)value);
             break;

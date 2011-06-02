@@ -186,7 +186,7 @@ namespace TestProject.Lab4
       // TODO: encapsulate light parameters into a Light class
       // TODO: separate the lighting parts of the shader into shadermodifiers
 
-      //diffspec["textureMap"] = textureId; no idea why this causes a crash
+      diffspec["textureMap"] = textureId;
       diffspec["npInterp"] = false;
       diffspec["matCol"] = new Vector3(1f, 1f, 1f);
       diffspec["matShiny"] = 10f;
@@ -224,6 +224,7 @@ namespace TestProject.Lab4
     /// <returns>The ID of the uploaded texture.</returns>
     private int LoadBitmapTexture(string filePath)
     {
+      /*
       if (String.IsNullOrEmpty(filePath))
         throw new ArgumentException(filePath);
 
@@ -237,6 +238,33 @@ namespace TestProject.Lab4
           OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bmp_data.Scan0);
 
       bmp.UnlockBits(bmp_data);
+      */
+
+      Bitmap bmp = new Bitmap(filePath);
+
+      Size _bitmapSize = new Size(bmp.Width, bmp.Height);
+
+      BitmapData bmpData = bmp.LockBits(new Rectangle(Point.Empty, _bitmapSize),
+        ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+      // Get the address of the first line.
+      IntPtr ptr = bmpData.Scan0;
+
+      // Declare an array to hold the bytes of the bitmap.
+      int numPixels = Math.Abs(bmpData.Stride) * bmp.Height / 4;
+      int[] _bitmapData = new int[numPixels];
+
+      // Copy the RGB values into the array.
+      System.Runtime.InteropServices.Marshal.Copy(ptr, _bitmapData, 0, numPixels);
+
+      bmp.UnlockBits(bmpData);
+      bmp.Dispose();
+
+      int id = GL.GenTexture();
+      GL.BindTexture(TextureTarget.Texture2D, id);
+
+      GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bmpData.Width, bmpData.Height, 0,
+          OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, _bitmapData);
 
       // We haven't uploaded mipmaps, so disable mipmapping (otherwise the texture will not appear).
       // On newer video cards, we can use GL.GenerateMipmaps() or GL.Ext.GenerateMipmaps() to create
@@ -288,10 +316,10 @@ namespace TestProject.Lab4
       float rotSpeed = 2f;
 
       Quaternion rot = Quaternion.FromAxisAngle(Vector3.UnitY, rotSpeed * frameTime);
-      cube1.transform.Rotate(rot);
+      cube1.transform.Rotate(ref rot);
 
       rot *= Quaternion.FromAxisAngle(Vector3.UnitX, 1.5f * rotSpeed * frameTime);
-      cube2.transform.Rotate(rot);
+      cube2.transform.Rotate(ref rot);
     }
 
     protected override void OnRenderFrame(FrameEventArgs e)

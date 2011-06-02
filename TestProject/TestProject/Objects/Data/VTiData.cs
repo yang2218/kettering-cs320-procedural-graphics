@@ -6,44 +6,38 @@ using OpenTK.Graphics.OpenGL;
 
 namespace TestProject.Objects
 {
-  public class VNTiData : VertexData
+  public class VTiData : VertexData
   {
     public struct VertexLayout
     {
-      public Vector3 position, normal;
+      public Vector3 position;
       public Vector2 texcoord;
 
-      public VertexLayout(float px, float py, float pz,
-        float nx, float ny, float nz, float s, float t)
+      public VertexLayout(float px, float py, float pz, float s, float t)
       {
         this.position = new Vector3(px, py, px);
-        this.normal = new Vector3(nx, ny, nz);
         this.texcoord = new Vector2(s, t);
       }
 
-      public VertexLayout(Vector3 pos, Vector3 norm, Vector2 tex)
+      public VertexLayout(Vector3 pos, Vector2 tex)
       {
         this.position = pos;
-        this.normal = norm;
         this.texcoord = tex;
       }
 
-      public VertexLayout(ref Vector3 pos, ref Vector3 norm, ref Vector2 tex)
+      public VertexLayout(ref Vector3 pos, ref Vector2 tex)
       {
         this.position = pos;
-        this.normal = norm;
         this.texcoord = tex;
       }
     }
 
     public class VertexList : List<VertexLayout>
     {
-      public void Add(float px, float py, float pz,
-        float nx, float ny, float nz, float s, float t)
+      public void Add(float px, float py, float pz, float s, float t)
       {
         base.Add(new VertexLayout(
           new Vector3(px, py, pz),
-          new Vector3(nx, ny, nz),
           new Vector2(s, t)));
       }
     }
@@ -62,7 +56,7 @@ namespace TestProject.Objects
 
     public override string DefaultVertexShader
     {
-      get { return "PosNorm"; }
+      get { return "Pos"; }
     }
 
     public static void Setup()
@@ -91,8 +85,7 @@ namespace TestProject.Objects
       // Associate a buffer and instructions for reading it to an attribute index
       GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferHandle);
       BindAttribute<VertexLayout>(Attribute.Position, 3, VertexAttribPointerType.Float, false, 0);
-      BindAttribute<VertexLayout>(Attribute.Normal, 3, VertexAttribPointerType.Float, false, Vector3.SizeInBytes);
-      BindAttribute<VertexLayout>(Attribute.TexCoord, 2, VertexAttribPointerType.Float, false, Vector3.SizeInBytes * 2);
+      BindAttribute<VertexLayout>(Attribute.TexCoord, 2, VertexAttribPointerType.Float, false, Vector3.SizeInBytes);
       
       GL.BindVertexArray(0);
       GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
@@ -112,39 +105,49 @@ namespace TestProject.Objects
     {
       switch (fromFile)
       {
+        case "Square":
+          data = new VertexList {
+            { 0.5f, -0.5f, 0f, 0f, 1f},
+            {-0.5f, -0.5f, 0f, 1f, 1f},
+            { 0.5f,  0.5f, 0f, 0f, 0f},
+            {-0.5f,  0.5f, 0f, 1f, 0f}
+          };
+
+          elements = new ushort[] { 0, 1, 2, 3 };
+          PrimitiveType = BeginMode.TriangleStrip;
+          break;
         case "Cube":
-          // TODO: add texture coordinates
           data = new VertexList {
             // front
-            { 0.5f, -0.5f, -0.5f, 0f, 0f, -1f, 0f, 0.33f},
-            {-0.5f, -0.5f, -0.5f, 0f, 0f, -1f, 0.33f, 0.33f},
-            { 0.5f,  0.5f, -0.5f, 0f, 0f, -1f, 0f, 0f},
-            {-0.5f,  0.5f, -0.5f, 0f, 0f, -1f, 0.33f, 0f},
+            { 0.5f, -0.5f, -0.1f, 0f, 1f},
+            {-0.5f, -0.5f, -0.1f, 1f, 1f},
+            { 0.5f,  0.5f, -0.1f, 0f, 0f},
+            {-0.5f,  0.5f, -0.1f, 1f, 0f},
             // right
-            { 0.5f, -0.5f,  0.5f, 1f, 0f, 0f, 0.33f, 0.33f},
-            { 0.5f, -0.5f, -0.5f, 1f, 0f, 0f, 0.66f, 0.33f},
-            { 0.5f,  0.5f,  0.5f, 1f, 0f, 0f, 0.33f, 0f},
-            { 0.5f,  0.5f, -0.5f, 1f, 0f, 0f, 0.66f, 0f},
+            { 0.5f, -0.5f,  0.5f, 1f, 1f},
+            { 0.5f, -0.5f, -0.5f, 1f, 1f},
+            { 0.5f,  0.5f,  0.5f, 1f, 0f},
+            { 0.5f,  0.5f, -0.5f, 1f, 0f},
             // top
-            { 0.5f,  0.5f, -0.5f, 0f, 1f, 0f, 1f, 0.33f},
-            {-0.5f,  0.5f, -0.5f, 0f, 1f, 0f, 0.66f, 0.33f},
-            { 0.5f,  0.5f,  0.5f, 0f, 1f, 0f, 1f, 0f},
-            {-0.5f,  0.5f,  0.5f, 0f, 1f, 0f, 0.66f, 0f},
+            { 0.5f,  0.5f, -0.5f, 1f, 1f},
+            {-0.5f,  0.5f, -0.5f, 0f, 1f},
+            { 0.5f,  0.5f,  0.5f, 1f, 1f},
+            {-0.5f,  0.5f,  0.5f, 0f, 1f},
             // back
-            { 0.5f, -0.5f,  0.5f, 0f, 0f, 1f, 1f, 0.66f},
-            {-0.5f, -0.5f,  0.5f, 0f, 0f, 1f, 0f, 0.66f},
-            { 0.5f,  0.5f,  0.5f, 0f, 0f, 1f, 1f, 0.33f},
-            {-0.5f,  0.5f,  0.5f, 0f, 0f, 1f, 0f, 0.33f},
+            { 0.5f, -0.5f,  0.5f, 1f, 1f},
+            {-0.5f, -0.5f,  0.5f, 0f, 1f},
+            { 0.5f,  0.5f,  0.5f, 1f, 0f},
+            {-0.5f,  0.5f,  0.5f, 0f, 0f},
             // left
-            {-0.5f,  0.5f, -0.5f, -1f, 0f, 0f, 0f, 0.33f},
-            {-0.5f, -0.5f, -0.5f, -1f, 0f, 0f, 0f, 0.66f},
-            {-0.5f,  0.5f,  0.5f, -1f, 0f, 0f, 1f, 0.33f},
-            {-0.5f, -0.5f,  0.5f, -1f, 0f, 0f, 1f, 0.66f},
+            {-0.5f,  0.5f, -0.5f, 0f, 0f},
+            {-0.5f, -0.5f, -0.5f, 0f, 1f},
+            {-0.5f,  0.5f,  0.5f, 0f, 0f},
+            {-0.5f, -0.5f,  0.5f, 0f, 1f},
             // bottom
-            { 0.5f, -0.5f, -0.5f, 0f, -1f, 0f, 1f, 0.66f},
-            {-0.5f, -0.5f, -0.5f, 0f, -1f, 0f, 0f, 0.66f},
-            { 0.5f, -0.5f,  0.5f, 0f, -1f, 0f, 1f, 0.33f},
-            {-0.5f, -0.5f,  0.5f, 0f, -1f, 0f, 0f, 0.33f}
+            { 0.5f, -0.5f, -0.5f, 1f, 0f},
+            {-0.5f, -0.5f, -0.5f, 0f, 0f},
+            { 0.5f, -0.5f,  0.5f, 1f, 0f},
+            {-0.5f, -0.5f,  0.5f, 0f, 0f}
           };
 
           PrimitiveType = BeginMode.Triangles;

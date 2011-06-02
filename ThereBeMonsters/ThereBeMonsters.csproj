@@ -62,6 +62,7 @@
     <Compile Include="Back-end\Modules\gasket.cs" />
     <Compile Include="Back-end\Modules\TexturePreview.cs" />
     <Compile Include="Front-end\Controls\BubbleControl.cs" />
+    <Compile Include="Front-end\Controls\ConnectorControl.cs" />
     <Compile Include="Front-end\Controls\EditorControl.cs" />
     <Compile Include="Back-end\Generator.cs" />
     <Compile Include="Back-end\BlendDelegate.cs" />

@@ -268,7 +268,7 @@ namespace ThereBeMonsters.Back_end
       {
         foreach (object o in Wireups.Values)
         {
-          if (o.GetType() == typeof(ParameterWireup))
+          if (o != null && o.GetType() == typeof(ParameterWireup))
           {
             yield return (ParameterWireup)o;
           }
@@ -390,6 +390,18 @@ namespace ThereBeMonsters.Back_end
       if (Nodes.TryGetValue(moduleId, out node) == false)
       {
         return;
+      }
+
+      foreach (ModuleNode n in Nodes.Values)
+      {
+        foreach (KeyValuePair<string, object> kvp in n.Wireups)
+        {
+          if (kvp.Value != null && kvp.Value.GetType() == typeof(ParameterWireup)
+            && ((ParameterWireup)kvp.Value).srcId == moduleId)
+          {
+            n[kvp.Key] = null;
+          }
+        }
       }
 
       node.Moved -= OnModuleMoved;

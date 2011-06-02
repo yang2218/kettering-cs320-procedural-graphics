@@ -26,6 +26,9 @@ namespace ThereBeMonsters.Front_end.Controls
     {
       this.NodeControl = parentNode;
       this.ParameterName = paramName;
+      parentNode.Node.ParameterUpdated += OnValueChangedPrefiltered;
+      // TODO: do we have to worry about unsubscribing? ModuleNode will probably
+      // be GC'd anyway...
     }
 
     public static EditorControl CreateDefaultEditorInstanceFor(

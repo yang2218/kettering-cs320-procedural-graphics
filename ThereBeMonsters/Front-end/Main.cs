@@ -105,7 +105,7 @@ namespace ThereBeMonsters.Front_end
     protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
     {
       base.OnClosing(e);
-      //g.Graph.SaveToXml("save.xml");
+      g.Graph.SaveToXml("save.xml");
     }
 
     protected override void OnRenderFrame(FrameEventArgs e)

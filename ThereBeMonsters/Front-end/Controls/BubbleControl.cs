@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using OpenTKGUI;
 using OpenTK;
 using ThereBeMonsters.Back_end;
+using OpenTK.Input;
 
 namespace ThereBeMonsters.Front_end.Controls
 {
@@ -12,9 +13,6 @@ namespace ThereBeMonsters.Front_end.Controls
     public string ParameterName { get; private set; }
     bool IsOutput;
     public Point Offset { get; private set; }
-
-    public static BubbleControl ClickDraggedBubbledControl;
-
 
     public BubbleControl(ModuleNodeControl nodeControl, 
                          string parameterName, 
@@ -27,13 +25,33 @@ namespace ThereBeMonsters.Front_end.Controls
       IsOutput = isOutput;
       Offset = offset;
 
-      //nodeControl.Node[parameterName].GetType()==typeof(ParameterWireup);
+      if (isOutput == false)
+      {
+        NodeControl.Node.ParameterUpdated += OnParameterChanged;
+      }
+    }
+
+    private void OnParameterChanged(object sender, ModuleParameterEventArgs e)
+    {
+      if (e.ParameterName != this.ParameterName)
+      {
+        return;
+      }
+
+      object value = NodeControl.Node[ParameterName];
+      if (value == null || value.GetType() != typeof(ParameterWireup))
+      {
+        // TODO: remove connector
+      }
+      else
+      {
+        ParameterWireup pw = (ParameterWireup)value;
+        // TODO: move connector's far endpoint
+      }
     }
 
     public override void Update(GUIControlContext Context, double Time)
     {
-      //base.Update(Context, Time);
-
       // input buble can have only 1 link
       // output bubble can have as many links as it wants
 
@@ -43,38 +61,39 @@ namespace ThereBeMonsters.Front_end.Controls
 
       // start out only support click drag from output to input
 
-      // tell connect control exact position of the bubble
+      // Bubble responsible for changing the model, not connectors
 
-      // we can calculate it manually or use from update polls
+      //nodeControl.Node[parameterName].GetType()==typeof(ParameterWireup);
 
-      MouseState ms = Context.MouseState;
+      OpenTKGUI.MouseState ms = Context.MouseState;
       if(ms == null) return;
 
       if(new Rectangle(0,0,12,12).In(ms.Position))
       {
-        if(ms.HasPushedButton(OpenTK.Input.MouseButton.Left))
+        if(ms.HasPushedButton(MouseButton.Left))
         {
           if(IsOutput)
           {
-            ClickDraggedBubbledControl = this;
+            // create connection control to follow mouse coursor
 
-            // create connection control to follow mouse coursor until we leftMouseUp somewhere
+            // when released, try to find the bubble under the mouse
           }
           else
           {
             // if connection, unconnect and have it follow the mouse
+            NodeControl.Node[ParameterName] = null;
+            // otherrwise, create connection
+            // when releasd and find the bubble under the cursor
           }
         }
 
-        if(ms.HasReleasedButton(OpenTK.Input.MouseButton.Left))
+        if(ms.HasReleasedButton(MouseButton.Left))
         {
-          if (IsOutput == false && ClickDraggedBubbledControl != null)
+          if (IsOutput)
           {
-            if(ClickDraggedBubbledControl.IsOutput)
-            {
-              // give all bubbles 1 frame to claim that button was released above them
-              // if none claim then nullify the variable ClickDraggedBubbledControl
-            }
+          }
+          else
+          {
           }
         }
       }

@@ -24,6 +24,21 @@ namespace ThereBeMonsters.Front_end
       Dictionary<string, Module.Parameter> parameters
         = Module.GetModuleParameters(Node.ModuleType);
 
+      FlowContainer flow = (FlowContainer)this.Client;
+
+      Textbox tb = new Textbox();
+      tb.Text = node.ModuleId;
+      flow.AddChild(tb, 20);
+
+      tb.TextEntered += (text) =>
+      {
+        node.ModuleId = text;
+        // TODO validate uniquness and non-empty
+      };
+
+      double borderSize = this.ClientRectangle.TopLeft.X;
+      double titleSize = this.ClientRectangle.TopLeft.Y;
+
       EditorControl editor;
       foreach (KeyValuePair<string, Module.Parameter> kvp in parameters)
       {
@@ -32,11 +47,46 @@ namespace ThereBeMonsters.Front_end
           continue;
         }
 
+        FlowContainer horiz = new FlowContainer(Axis.Horizontal);
+        // add left bubble
+        if((kvp.Value.Direction & Module.Parameter.IODirection.INPUT) > 0)
+        {
+          horiz.AddChild(new BubbleControl(this, kvp.Key, false, new Point(borderSize + 6, flow.SuggestLength + 10 + titleSize)), 12);
+        }
+        else
+        {
+          horiz.AddChild(new Blank(Color.RGB(.8,.8,.8)), 12);
+        }
+
+        horiz.AddChild(new Label(kvp.Key), 126);
+
+        // add right bubble
+        if((kvp.Value.Direction & Module.Parameter.IODirection.OUTPUT) > 0)
+        {
+          horiz.AddChild(new BubbleControl(this, kvp.Key, true, new Point(borderSize + 150 - 6, flow.SuggestLength + 10 + titleSize)), 12);
+        }
+        else
+        {
+          horiz.AddChild(new Blank(Color.RGB(.8, .8, .8)), 12);
+        }
+        flow.AddChild(horiz, 20);
+
+        if ((kvp.Value.Direction & Module.Parameter.IODirection.INPUT) == 0)
+        {
+          continue;
+        }
+
         editor = kvp.Value.GetEditorInstance(this);
         EditorControls[kvp.Key] = editor;
 
         // TODO: add editor to child control heiarchy
+        if( editor != null)
+        {
+          flow.AddChild(editor, editor.PreferredHeight);
+        }
       }
+
+      this.ResizeChild(this.Client,this.ClientSize);
     }
 
     private Vector2 _lastPostion;

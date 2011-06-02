@@ -84,7 +84,7 @@ namespace ThereBeMonsters.Front_end
     private static Control SetupControls()
     {
       // TODO: build the control heiarchy here
-      g = new ModuleGraphControl(ModuleGraph.LoadFromXml("save.xml"));
+      g = new ModuleGraphControl(ModuleGraph.LoadFromXml("TestGraph2.xml"));
 
       vp = new ViewportPlaceholder(null);
       

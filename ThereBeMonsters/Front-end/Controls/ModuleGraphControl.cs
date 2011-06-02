@@ -14,12 +14,13 @@ namespace ThereBeMonsters.Front_end
       {
         return _graph;
       }
-      private set
+      set
       {
         if (_graph != null)
         {
           _graph.ModuleAdded -= OnModuleAdded;
           _graph.ModuleRemoved -= OnModuleRemoved;
+          _graph.ModuleMoved -= OnModuleMoved;
         }
 
         // TODO: remove all child controls
@@ -27,6 +28,7 @@ namespace ThereBeMonsters.Front_end
         _graph = value;
         _graph.ModuleAdded += OnModuleAdded;
         _graph.ModuleRemoved += OnModuleRemoved;
+        _graph.ModuleMoved += OnModuleMoved;
       }
     }
 
@@ -36,14 +38,25 @@ namespace ThereBeMonsters.Front_end
       Graph = new ModuleGraph();
     }
 
+    public ModuleGraphControl(ModuleGraph g)
+      : base(null)
+    {
+      Graph = g;
+    }
+
     private void OnModuleAdded(object sender, ModuleEventArgs e)
     {
-      ModuleNodeControl nodeControl = new ModuleNodeControl(_graph[e.ModuleId]);
+      ModuleNodeControl nodeControl = new ModuleNodeControl(Graph[e.ModuleId]);
 
       // TODO: position control
       // change the event info to include mouse position?
 
       AddControl(nodeControl, new Point());
+    }
+
+    private void OnModuleMoved(object sender, ModuleMovedEventArgs e)
+    {
+      // TODO: reposition child control
     }
 
     private void OnModuleRemoved(object sender, ModuleEventArgs e)

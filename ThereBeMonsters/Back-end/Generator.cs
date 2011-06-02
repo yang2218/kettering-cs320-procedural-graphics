@@ -18,7 +18,7 @@ namespace ThereBeMonsters.Back_end
     public Generator(string filePath)
       : this()
     {
-      this.Graph = new ModuleGraph(filePath);
+      this.Graph = ModuleGraph.LoadFromXml(filePath);
     }
 
     public Generator(ModuleGraph graph)

@@ -27,10 +27,12 @@ namespace ThereBeMonsters.Back_end.Modules
 
     public IEnumerable<Vector3> Circles { private get; set; }
 
+    [Parameter(Default = Cap.Cone)]
     public Cap CapMode { private get; set; }
 
     // TODO: this can be generalized to an arbitrary second-degree polynomial...
     // but, probably no reason to do the extra work
+    [Parameter(Default = Scale.Quadradic)]
     public Scale ScaleMode { private get; set; }
 
     [Parameter(Default = true)]
@@ -44,7 +46,9 @@ namespace ThereBeMonsters.Back_end.Modules
 
     [Parameter(@"How the calculated heightmap will be blended with the input heightmap.
 (Input heightmap will be the Source, generated heightmap will be Destination)",
-      Editor = typeof(Blend8bppDelegateEditor))]
+      Editor = typeof(Blend8bppDelegateEditor),
+      Direction = Parameter.IODirection.NONE)]//, //don't allow connections
+      //Default = Blend8bppFunctions.Default)]
     public Blend8bppDelegate BlendFunc { private get; set; }
 
     [Parameter(Hidden = true)]

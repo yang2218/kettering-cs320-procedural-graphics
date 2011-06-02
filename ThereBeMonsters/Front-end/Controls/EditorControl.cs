@@ -7,6 +7,14 @@ namespace ThereBeMonsters.Front_end.Controls
 {
   public abstract class EditorControl : Control
   {
+    public static Dictionary<Type, Type> _editorRegistry =
+      new Dictionary<Type, Type> {
+        {typeof(Enum), typeof(EnumControl)},
+        {typeof(float), typeof(FloatControl)},
+        {typeof(int), typeof(IntControl)},
+        {typeof(string), typeof(StringControl)}
+      };
+    
     public ModuleNodeControl NodeControl { get; protected set; }
     public string ParameterName { get; protected set; }
 
@@ -16,15 +24,21 @@ namespace ThereBeMonsters.Front_end.Controls
 
     public EditorControl(ModuleNodeControl parentNode, string paramName)
     {
+      this.NodeControl = parentNode;
       this.ParameterName = paramName;
     }
 
     public static EditorControl CreateDefaultEditorInstanceFor(
       Type type, ModuleNodeControl control, string parameterName)
     {
-      // TODO: create a registry of default editors, registered via subclasses using
-      // an EditorAttribute
-      return null;
+      Type editorType;
+      if (_editorRegistry.TryGetValue(type, out editorType) == false)
+      {
+        return null;
+      }
+
+      return (EditorControl)Activator.CreateInstance(editorType,
+        new object[]{ control, parameterName });
     }
 
     public virtual void OnValueChangedPrefiltered(object sender, ModuleParameterEventArgs e)
@@ -47,7 +61,13 @@ namespace ThereBeMonsters.Front_end.Controls
     {
       get
       {
-        return this.NodeControl.Node[ParameterName];
+        object value = this.NodeControl.Node[ParameterName];
+        if (value != null && value.GetType() != typeof(ParameterWireup))
+        {
+          return value;
+        }
+
+        return null;
       }
       set
       {

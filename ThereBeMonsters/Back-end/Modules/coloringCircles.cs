@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using OpenTK;
-using System.Drawing;
+﻿using System.Drawing;
 using OpenTK.Graphics.OpenGL;
+using System.Collections.Generic;
+using OpenTK;
+
 
 namespace ThereBeMonsters.Back_end.Modules
 {
     class ColorCircle : Module
     {
+
         public IEnumerable<Vector3> Circles { private get; set; }
 
         [Parameter(@"How the calculated heightmap will be blended with the input heightmap.
@@ -25,6 +24,7 @@ namespace ThereBeMonsters.Back_end.Modules
         public Color? Color { private get; set; }
 
         private uint[,] inputColorMap, outputColorMap;
+
 
         public uint[,] ColorMap
         {
@@ -53,9 +53,9 @@ namespace ThereBeMonsters.Back_end.Modules
                 }
                 else
                 {
-                    byte redValue =   (byte)Module.rng.Next(255);
+                    byte redValue = (byte)Module.rng.Next(255);
                     byte greenValue = (byte)Module.rng.Next(255);
-                    byte blueValue =  (byte)Module.rng.Next(255);
+                    byte blueValue = (byte)Module.rng.Next(255);
                     colorValue = 0xFF000000 + redValue << 16 + greenValue << 8 + blueValue;
                 }
 
@@ -87,8 +87,6 @@ namespace ThereBeMonsters.Back_end.Modules
         {
             return v < min ? min : v > max ? max : v;
         }
-
     }
-
-
 }
+

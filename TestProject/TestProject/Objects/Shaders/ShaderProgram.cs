@@ -50,6 +50,9 @@ namespace TestProject.Objects
         case "VNT_DiffSpec":
           sp = new ShaderProgram(name, "VNT", "DiffSpec");
           break;
+        case "VT_Tex":
+          sp = new ShaderProgram(name, "VT", "Tex");
+          break;
         default:
           throw new NotImplementedException();
       }

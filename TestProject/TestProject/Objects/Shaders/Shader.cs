@@ -291,6 +291,7 @@ namespace TestProject.Objects
       Shader s;
       switch (name)
       {
+        #region Pos
         case "Pos":
           s = new Shader(
             "Pos",
@@ -312,50 +313,81 @@ namespace TestProject.Objects
             },
             "pos_main");
           break;
-        case "VNT":
+        #endregion
+        #region VT
+        case "VT":
           s = new Shader(
-            "PosNorm",
+            "VT",
             ShaderType.VertexShader,
             new Parameter.List
             {
               {"position", VertexData.Attribute.Position, Parameter.GLSLType.Vec3},
-              {"in_normal", VertexData.Attribute.Normal, Parameter.GLSLType.Vec3},
               {"in_texcoord", VertexData.Attribute.TexCoord, Parameter.GLSLType.Vec2},
-              {"mv_matrix", Parameter.GLSLType.Mat4},
-              {"norm_matrix", Parameter.GLSLType.Mat4},
-              {"fragNormal",
-                Parameter.InterpolationQualifier.Smooth,
-                Parameter.StorageQualifier.Out,
-                Parameter.GLSLType.Vec3},
               {"fragTexCoord", 
                 Parameter.InterpolationQualifier.Smooth,
                 Parameter.StorageQualifier.Out,
-                Parameter.GLSLType.Vec2},
-              {"fragTexCoordNP",
-                Parameter.InterpolationQualifier.NoPerspective,
-                Parameter.StorageQualifier.Out,
-                Parameter.GLSLType.Vec2},
-              {"v",
-                Parameter.InterpolationQualifier.Smooth,
-                Parameter.StorageQualifier.Out,
-                Parameter.GLSLType.Vec3}
+                Parameter.GLSLType.Vec2}
             },
             new Dictionary<string, Function>()
             {
-              {"vnt_main", new Function(
+              {"vt_main", new Function(
                 Parameter.Void,
-                "vnt_main",
+                "vt_main",
                 new Parameter[]{},
                 @"
 gl_Position = vec4(position, 1.0);
-v = vec3(mv_matrix * gl_Position);
-fragNormal = normalize(mat3(norm_matrix) * in_normal);
 fragTexCoord = in_texcoord;
-fragTexCoordNP = in_texcoord;
 ")}
             },
-            "vnt_main");
+            "vt_main");
           break;
+        #endregion
+        #region VNT
+        case "VNT":
+            s = new Shader(
+              "PosNorm",
+              ShaderType.VertexShader,
+              new Parameter.List
+              {
+                {"position", VertexData.Attribute.Position, Parameter.GLSLType.Vec3},
+                {"in_normal", VertexData.Attribute.Normal, Parameter.GLSLType.Vec3},
+                {"in_texcoord", VertexData.Attribute.TexCoord, Parameter.GLSLType.Vec2},
+                {"mv_matrix", Parameter.GLSLType.Mat4},
+                {"norm_matrix", Parameter.GLSLType.Mat4},
+                {"fragNormal",
+                  Parameter.InterpolationQualifier.Smooth,
+                  Parameter.StorageQualifier.Out,
+                  Parameter.GLSLType.Vec3},
+                {"fragTexCoord", 
+                  Parameter.InterpolationQualifier.Smooth,
+                  Parameter.StorageQualifier.Out,
+                  Parameter.GLSLType.Vec2},
+                {"fragTexCoordNP",
+                  Parameter.InterpolationQualifier.NoPerspective,
+                  Parameter.StorageQualifier.Out,
+                  Parameter.GLSLType.Vec2},
+                {"v",
+                  Parameter.InterpolationQualifier.Smooth,
+                  Parameter.StorageQualifier.Out,
+                  Parameter.GLSLType.Vec3}
+              },
+              new Dictionary<string, Function>()
+              {
+                {"vnt_main", new Function(
+                  Parameter.Void,
+                  "vnt_main",
+                  new Parameter[]{},
+                  @"
+  gl_Position = vec4(position, 1.0);
+  v = vec3(mv_matrix * gl_Position);
+  fragNormal = normalize(mat3(norm_matrix) * in_normal);
+  fragTexCoord = in_texcoord;
+  fragTexCoordNP = in_texcoord;
+  ")}
+              },
+              "vnt_main");
+          break;
+        #endregion
         #region FlatCol
         case "FlatCol":
           s = new Shader(
@@ -385,6 +417,7 @@ fragTexCoordNP = in_texcoord;
             "flatcol_main");
           break;
         #endregion
+        #region DiffSpec
         case "DiffSpec":
           s = new Shader(
             "DiffSpec",
@@ -466,6 +499,48 @@ out_Color = vec4(col, texCol.a);
             },
             "diffspec_main");
           break;
+        #endregion
+        #region Tex
+        case "Tex":
+          s = new Shader(
+            "Tex",
+            ShaderType.FragmentShader,
+            new Parameter.List
+            {
+              {"textureMap", Parameter.GLSLType.Sampler2D},
+              {"minBox", Parameter.GLSLType.Vec2},
+              {"maxBox", Parameter.GLSLType.Vec2},
+              {"boxColor", Parameter.GLSLType.Vec4},
+              {"fragTexCoord",
+                Parameter.InterpolationQualifier.Smooth,
+                Parameter.StorageQualifier.In,
+                Parameter.GLSLType.Vec2},
+              {"out_Color",
+                Parameter.InterpolationQualifier.None,
+                Parameter.StorageQualifier.Out,
+                Parameter.GLSLType.Vec4
+              }
+            },
+            new Dictionary<string, Function>()
+            {
+              {"tex_main", new Function(
+                Parameter.Void,
+                "tex_main",
+                new Parameter[]{},
+                @"
+out_Color = texture(textureMap, fragTexCoord);
+if (fragTexCoord.x > minBox.x
+  && fragTexCoord.x < maxBox.x
+  && fragTexCoord.y > minBox.y
+  && fragTexCoord.y < maxBox.y)
+{
+  out_Color.rgb = out_Color.rgb * (1.0 - boxColor.a) + boxColor.a * boxColor.rgb;
+}
+")}
+            },
+            "tex_main");
+          break;
+        #endregion
         default:
           throw new ApplicationException(string.Format("Could not load shader {0}", name));
       }

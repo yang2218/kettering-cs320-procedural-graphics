@@ -3,13 +3,22 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using System.Xml;
+using System.Xml.Serialization;
 using System.Xml.XPath;
+using System.Drawing;
+using OpenTK;
+using System.Xml.Schema;
+using System.IO;
 
 namespace ThereBeMonsters.Back_end
 {
+  #region Helper classes
+
   public struct ParameterWireup
   {
+    [XmlAttribute]
     public string srcId;
+    [XmlAttribute]
     public string srcParam;
 
     public ParameterWireup(string id, string param)
@@ -22,40 +31,202 @@ namespace ThereBeMonsters.Back_end
   public class ModuleEventArgs : EventArgs
   {
     public string ModuleId { get; set; }
+    public ModuleEventArgs(string id)
+    {
+      this.ModuleId = id;
+    }
   }
 
   public class ModuleParameterEventArgs : EventArgs
   {
     public string ParameterName { get; set; }
+
+    public ModuleParameterEventArgs(string name)
+    {
+      this.ParameterName = name;
+    }
   }
 
-  public delegate void ModuleAddedHandler(object sender, ModuleEventArgs e);
-  public delegate void ModuleRemovedHandler(object sender, ModuleEventArgs e);
-  public delegate void ModuleParameterChangedHandler(object sender, ModuleParameterEventArgs e);
-
-  public class ModuleNode
+  public class ModuleMovedEventArgs : ModuleEventArgs
   {
-    public string ModuleId { get; set; }
-    public Type ModuleType { get; set; }
-    public string Description { get; set; }
-    public Dictionary<string, object> Wireups { get; private set; }
     public float X { get; set; }
     public float Y { get; set; }
 
-    public event ModuleParameterChangedHandler ParameterUpdated;
+    public ModuleMovedEventArgs(string id, float x, float y)
+      : base(id)
+    {
+      this.X = x;
+      this.Y = y;
+    }
+  }
+
+  public static class XmlHelper
+  {
+    private static XmlSerializerNamespaces _ns;
+    public static XmlSerializerNamespaces Ns
+    {
+      get
+      {
+        if (_ns == null)
+        {
+          _ns = new XmlSerializerNamespaces();
+          _ns.Add("", "");
+        }
+
+        return _ns;
+      }
+    }
+  }
+
+  public class Wireups : Dictionary<string, object>, IXmlSerializable
+  {
+    public XmlSchema GetSchema()
+    {
+      return null;
+    }
+
+    private static Dictionary<string, XmlSerializer> _serializers
+      = new Dictionary<string, XmlSerializer>();
+
+    public void ReadXml(System.Xml.XmlReader reader)
+    {
+      bool wasEmpty = reader.IsEmptyElement;
+      reader.Read();
+
+      if (wasEmpty)
+      {
+        return;
+      }
+
+      string key, type;
+      XmlSerializer xs;
+      while (reader.NodeType != XmlNodeType.EndElement)
+      {
+        key = reader.GetAttribute("name");
+        type = reader.GetAttribute("type");
+        reader.ReadStartElement("Wireup");
+        if (_serializers.TryGetValue(type, out xs) == false)
+        {
+          _serializers[type] = xs = new XmlSerializer(Type.GetType(type));
+        }
+
+        Add(key, xs.Deserialize(reader));
+
+        reader.ReadEndElement();
+        reader.MoveToContent();
+      }
+
+      reader.ReadEndElement();
+    }
+
+    public void WriteXml(XmlWriter writer)
+    {
+      foreach (KeyValuePair<string, object> kvp in this)
+      {
+        try
+        {
+          XmlSerializer xs = new XmlSerializer(kvp.Value.GetType());
+          // if a value is not serializable by xml, skip it (the constructor should
+          // error if there's a problem, otherwise xs.Serialize shoudl work)
+
+          writer.WriteStartElement("Wireup");
+          writer.WriteAttributeString("name", kvp.Key);
+          writer.WriteAttributeString("type", kvp.Value.GetType().FullName);
+          xs.Serialize(writer, kvp.Value, XmlHelper.Ns);
+          writer.WriteEndElement();
+        }
+        catch (Exception)
+        {
+        }
+      }
+    }
+  }
+
+  #endregion
+
+  [XmlRoot("Module")]
+  public class ModuleNode
+  {
+    [XmlAttribute("id")]
+    public string ModuleId { get; set; }
+    [XmlIgnore]
+    public Type ModuleType { get; set; }
+    [XmlAttribute("description")]
+    public string Description { get; set; }
+
+    [XmlAttribute("type")]
+    public string ModuleTypeName
+    { // Type is not serializable, so serialize the name instead
+      get
+      {
+        return ModuleType.FullName;
+        // TODO: if ModuleType not from the current assembly, use assembly-qualified name
+      }
+      set
+      {
+        ModuleType = Type.GetType(value);
+      }
+    }
+
+    public Wireups Wireups { get; set; }
+
+    private Vector2 _position;
+    public Vector2 Position
+    {
+      get
+      {
+        return _position;
+      }
+      set
+      {
+        _position = value;
+        FireMovedEvents();
+      }
+    }
+
+    [XmlIgnore]
+    public float X
+    {
+      get
+      {
+        return _position.X;
+      }
+      set
+      {
+        _position.X = value;
+        FireMovedEvents();
+      }
+    }
+    [XmlIgnore]
+    public float Y
+    {
+      get
+      {
+        return _position.Y;
+      }
+      set
+      {
+        _position.Y = value;
+        FireMovedEvents();
+      }
+    }
+
+    public event EventHandler<ModuleParameterEventArgs> ParameterUpdated;
+    public event EventHandler<ModuleMovedEventArgs> Moved;
 
     public ModuleNode()
     {
-      Wireups = new Dictionary<string, object>();
+      this.Wireups = new Wireups();
     }
 
     public void Add(string parameterName, object value)
     {
       Wireups.Add(parameterName, value);
 
-      ParameterUpdated(this, new ModuleParameterEventArgs {
-        ParameterName = parameterName
-      });
+      if (ParameterUpdated != null)
+      {
+        ParameterUpdated(this, new ModuleParameterEventArgs(parameterName));
+      }
     }
 
     public void Add(string parameterName, string srcId, string srcParam)
@@ -65,9 +236,7 @@ namespace ThereBeMonsters.Back_end
         srcParam = srcParam
       });
 
-      ParameterUpdated(this, new ModuleParameterEventArgs {
-        ParameterName = parameterName
-      });
+      ParameterUpdated(this, new ModuleParameterEventArgs(parameterName));
     }
 
     public object this[string parameterName]
@@ -86,9 +255,10 @@ namespace ThereBeMonsters.Back_end
       {
         Wireups[parameterName] = value;
 
-        ParameterUpdated(this, new ModuleParameterEventArgs {
-          ParameterName = parameterName
-        });
+        if (ParameterUpdated != null)
+        {
+          ParameterUpdated(this, new ModuleParameterEventArgs(parameterName));
+        }
       }
     }
 
@@ -103,215 +273,138 @@ namespace ThereBeMonsters.Back_end
             yield return (ParameterWireup)o;
           }
         }
+        yield break;
       }
+    }
+
+    private void FireMovedEvents()
+    {
+      if (Moved != null)
+      {
+        Moved(this, new ModuleMovedEventArgs(
+          this.ModuleId,
+          _position.X,
+          _position.Y
+        ));
+      }
+    }
+  }
+
+  // hack for serializing/deserializing the ModuleNode dictionary in ModuleGraph
+  public class Nodes : List<ModuleNode>
+  {
+    private Dictionary<string, ModuleNode> _nodes;
+    public Nodes(Dictionary<string, ModuleNode> d)
+    {
+      this._nodes = d;
+      foreach (ModuleNode n in d.Values)
+      {
+        base.Add(n);
+      }
+    }
+
+    public new void Add(ModuleNode n)
+    {
+      _nodes[n.ModuleId] = n;
     }
   }
 
   public class ModuleGraph
   {
-    public event ModuleAddedHandler ModuleAdded;
-    public event ModuleRemovedHandler ModuleRemoved;
+    public event EventHandler<ModuleEventArgs> ModuleAdded;
+    public event EventHandler<ModuleEventArgs> ModuleRemoved;
+    public event EventHandler<ModuleMovedEventArgs> ModuleMoved;
 
-    // TODO: refactor how the module graph is stored:
-    //  create a ModuleModel class, each module keeps its incoming wireups and values
-    //  (using dictionary or maybe HybridDictionary) so duplicate wireups are more preventable
+    [XmlIgnore] // can't serialize dictionaries, so NodeValues was created
     public Dictionary<string, ModuleNode> Nodes { get; private set; }
-    
+
+    [XmlElement("Module")]
+    public Nodes NodeValues
+    {
+      get
+      {
+        return new Nodes(this.Nodes);
+      }
+    }
+
+    [XmlAttribute("name")]
+    public string Name { get; set; }
+
+    private static XmlSerializer _moduleGraphSerializer;
+    private static XmlSerializer ModuleGraphSerializer
+    {
+      get
+      {
+        return _moduleGraphSerializer
+          ?? (_moduleGraphSerializer = new XmlSerializer(typeof(ModuleGraph)));
+      }
+    }
+
+    public static ModuleGraph LoadFromXml(string filePath)
+    {
+      XmlReaderSettings settings = new XmlReaderSettings();
+      settings.IgnoreWhitespace = true;
+      using (XmlReader reader = XmlReader.Create(filePath, settings))
+      {
+        return (ModuleGraph)ModuleGraphSerializer.Deserialize(reader);
+      }
+    }
+
     public ModuleGraph()
     {
       Nodes = new Dictionary<string, ModuleNode>();
     }
 
-    public ModuleGraph(string filePath)
-      : this()
+    public void SaveToXml(string filePath)
     {
-      LoadFromXml(filePath);
-    }
-
-    #region Loading from XML methods
-
-    public void LoadFromXml(string filePath)
-    {
-      LoadFromXml(new XPathDocument(filePath).CreateNavigator());
-    }
-
-    private void LoadFromXml(XPathNavigator nav)
-    {
-      XPathNodeIterator it = nav.Select("/ModuleGraph/Module");
-      Queue<XPathNavigator> wireupLoadQueue = new Queue<XPathNavigator>();
-      Type typeObject;
-      string id, type, description;
-      while (it.MoveNext())
+      XmlWriterSettings settings = new XmlWriterSettings();
+      settings.Indent = true;
+      settings.IndentChars = "  ";
+      using (XmlWriter writer = XmlWriter.Create(filePath, settings))
       {
-        if (GetAttribute(it, "id", out id, "Missing attribute 'id'") == false)
-        {
-          continue;
-        }
-
-        if (Nodes.ContainsKey(id))
-        {
-          LogError("Duplicate id", it);
-          continue;
-        }
-
-        if (GetAttribute(it, "type", out type, "Missing attribute 'type'") == false)
-        {
-          continue;
-        }
-
-        if (type.Contains(".") == false)
-        {
-          type = "ThereBeMonsters.Back_end.Modules." + type;
-        }
-
-        typeObject = Type.GetType(type, false, true);
-        if (typeObject == null || typeObject.IsSubclassOf(typeof(Module)) == false)
-        {
-          LogError("Invalid type", it);
-          continue;
-        }
-
-        GetAttribute(it, "description", out description, null);
-        Nodes[id] = new ModuleNode {
-          ModuleId = id,
-          ModuleType = typeObject,
-          Description = description
-        };
-
-        wireupLoadQueue.Enqueue(it.Current.Clone());
-      }
-
-      while (wireupLoadQueue.Count > 0)
-      {
-        nav = wireupLoadQueue.Dequeue();
-        id = nav.GetAttribute("id", string.Empty);
-        LoadWireupsFromXml(nav.SelectChildren("Wireup", string.Empty), Nodes[id]);
+        ModuleGraphSerializer.Serialize(writer, this, XmlHelper.Ns);
       }
     }
 
-    private void LoadWireupsFromXml(XPathNodeIterator it, ModuleNode node)
-    {
-      string param, value, srcId, srcParam;
-      object valueObject = null;
-      Dictionary<string, Module.Parameter> validParameters = null;
-      TypeConverter converter;
-      if (Module.UsesDynamicParameters(node.ModuleType) == false)
-      {
-        validParameters = Module.GetModuleParameters(node.ModuleType);
-      }
-
-      while (it.MoveNext())
-      {
-        if (GetAttribute(it, "name", out param, "Missing parameter name") == false)
-        {
-          continue;
-        }
-
-        if (validParameters != null && validParameters.ContainsKey(param) == false)
-        {
-          LogError("Invalid parameter", it);
-          continue;
-        }
-
-        if (GetAttribute(it, "value", out value, null))
-        {
-          if (validParameters != null) // implies param is a key
-          {
-            converter = TypeDescriptor.GetConverter(validParameters[param].Type);
-            if (converter.CanConvertFrom(typeof(string)))
-            {
-              valueObject = converter.ConvertFromString(value);
-            }
-            else
-            {
-              LogError("Warning: cannot convert value to parameter type (a string will be passed in)", it);
-            }
-          }
-          // TODO: support a type attribute so the user can specify a type for
-          // inputs to modules using dynamic parameters
-
-          node[param] = valueObject ?? value;
-        }
-        else if (GetAttribute(it, "srcId", out srcId, null)
-          && GetAttribute(it, "srcParam", out srcParam, null))
-        {
-          if (Nodes.ContainsKey(srcId) == false)
-          {
-            LogError("Invalid id", it);
-            continue;
-          }
-
-          if (Module.UsesDynamicParameters(Nodes[srcId].ModuleType) == false
-            && Module.GetModuleParameters(Nodes[srcId].ModuleType).ContainsKey(srcParam) == false)
-          {
-            LogError("Invalid srcParam", it);
-            continue;
-          }
-
-          node[param] = new ParameterWireup {
-            srcId = srcId,
-            srcParam = srcParam
-          };
-        }
-        else
-        {
-          LogError("Either value or srcId and srcParam attributes missing", it);
-        }
-      }
-    }
-
-    private bool GetAttribute(XPathNodeIterator it, string name, out string value, string errorMsg)
-    {
-      value = it.Current.GetAttribute(name, string.Empty);
-      if (string.IsNullOrEmpty(value))
-      {
-        if (errorMsg != null)
-        {
-          LogError(errorMsg, it);
-        }
-
-        return false;
-      }
-
-      return true;
-    }
-
-    private void LogError(string errorMsg, XPathNodeIterator it)
-    {
-      LogError(errorMsg, it.Current as IXmlLineInfo);
-    }
-
-    private void LogError(string errorMsg, IXmlLineInfo lineInfo)
-    {
-      if (lineInfo != null)
-      {
-        errorMsg = string.Format(
-          "Line {0} char {1}: {2}",
-          lineInfo.LineNumber,
-          lineInfo.LinePosition,
-          errorMsg);
-      }
-
-      System.Console.Error.WriteLine(errorMsg);
-    }
-
-    #endregion
-  
     public void Add(string moduleId, Type moduleType, string description = "")
     {
-      Nodes.Add(moduleId, new ModuleNode {
+      ModuleNode node = new ModuleNode
+      {
         ModuleType = moduleType,
         Description = description
-      }); // Add will throw an exception in the case of a duplicate key (desired)
+      };
 
-      ModuleAdded(this, new ModuleEventArgs { ModuleId = moduleId });
+      // Add will throw an exception in the case of a duplicate key (desired)
+      Nodes.Add(moduleId, node);
+      node.Moved += OnModuleMoved;
+
+      if (ModuleAdded != null)
+      {
+        ModuleAdded(this, new ModuleEventArgs(moduleId));
+      }
     }
 
     public void Remove(string moduleId)
     {
-      if (Nodes.Remove(moduleId))
+      ModuleNode node;
+      if (Nodes.TryGetValue(moduleId, out node) == false)
       {
-        ModuleRemoved(this, new ModuleEventArgs { ModuleId = moduleId });
+        return;
+      }
+
+      node.Moved -= OnModuleMoved;
+      Nodes.Remove(moduleId);
+      if (ModuleRemoved != null)
+      {
+        ModuleRemoved(this, new ModuleEventArgs(moduleId));
+      }
+    }
+
+    private void OnModuleMoved(object sender, ModuleMovedEventArgs e)
+    {
+      if (ModuleMoved != null)
+      {
+        ModuleMoved(sender, e);
       }
     }
 

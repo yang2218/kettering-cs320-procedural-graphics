@@ -12,9 +12,19 @@ namespace ThereBeMonsters.Front_end
 
     public abstract double PreferredHeight { get; }
 
+    public Control Client { get; protected set; }
+
     public EditorControl(ModuleNodeControl parentNode, string paramName)
     {
       this.ParameterName = paramName;
+    }
+
+    public static EditorControl CreateDefaultEditorInstanceFor(
+      Type type, ModuleNodeControl control, string parameterName)
+    {
+      // TODO: create a registry of default editors, registered via subclasses using
+      // an EditorAttribute
+      throw new NotImplementedException();
     }
 
     public virtual void OnValueChangedPrefiltered(object sender, ModuleParameterEventArgs e)
@@ -55,12 +65,24 @@ namespace ThereBeMonsters.Front_end
       this.NodeControl.Node[otherParamName] = value;
     }
 
-    public static EditorControl CreateDefaultEditorInstanceFor(
-      Type type, ModuleNodeControl control, string parameterName)
+    public override void Render(GUIRenderContext Context)
     {
-      // TODO: create a registry of default editors, registered via subclasses using
-      // an EditorAttribute
-      throw new NotImplementedException();
+      Client.Render(Context);
+    }
+
+    public override void Update(GUIControlContext Context, double Time)
+    {
+      Client.Update(Context.CreateChildContext(Client, new Point(0.0, 0.0)), Time);
+    }
+
+    protected override void OnResize(Point Size)
+    {
+      this.ResizeChild(Client, Size);
+    }
+
+    protected override void OnDispose()
+    {
+      Client.Dispose();
     }
   }
 }

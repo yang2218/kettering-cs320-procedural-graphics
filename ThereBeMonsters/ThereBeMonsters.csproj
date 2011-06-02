@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>ThereBeMonsters.ModuleTester</StartupObject>
+    <StartupObject>ThereBeMonsters.Front_end.MainWindow</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <None Include="OpenTK.dll" />
@@ -58,13 +58,6 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="TestGraph.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Back-end\Modules\ColorCircle.cs" />
     <Compile Include="Back-end\Modules\gasket.cs" />
     <Compile Include="Back-end\Modules\TexturePreview.cs" />
     <Compile Include="Front-end\Controls\EditorControl.cs" />

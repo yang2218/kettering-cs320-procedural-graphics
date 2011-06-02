@@ -11,32 +11,29 @@ namespace ThereBeMonsters.Back_end
 
   public abstract class BlendDelegateEditor : EditorControl
   {
-    protected float _srcFactor, _dstFactor;
-
-    //private Listbox
-    private Textbox _srcFactorField, _dstFactorField;
+    protected Textbox _functionListbox;
+    protected Textbox _srcFactorField, _dstFactorField;
 
     public override double PreferredHeight
     {
-      get { return 30; }
+      get { return 100; }
     }
 
     public BlendDelegateEditor(ModuleNodeControl parentNode, string paramName)
       : base(parentNode, paramName)
     {
-      // TODO: add controls:
-      // a select list of functions from Blend8bppFunctions.List
-      // collaspable srcFactor and dstFactor fields as well
+      FlowContainer container = new FlowContainer(Axis.Vertical);
 
-      // TODO: listbox event
+      container.AddChild(CreateFunctionPicker(), 30);
 
+      // TODO: replace these fields with EditorControl for floats
+      // TODO: make the two fields on the same row
+      // TODO: if time, make these collaspable
       _srcFactorField = new Textbox();
       _dstFactorField = new Textbox();
 
-      // TODO: change parameter updating to after focus is lost?
       _srcFactorField.TextEntered += (string text) =>
       {
-        // TODO: validation
         SetModuleParameterValue(ParameterName + "SrcFactor", float.Parse(text));
       };
 
@@ -44,43 +41,78 @@ namespace ThereBeMonsters.Back_end
       {
         SetModuleParameterValue(ParameterName + "DstFactor", float.Parse(text));
       };
-    }
-    
-    public override void OnValueChanged(object sender, ModuleParameterEventArgs e)
-    {
-      throw new NotImplementedException();
+
+      container.AddChild(_srcFactorField, 30);
+      container.AddChild(_dstFactorField, 30);
+      Client = container;
     }
 
-    public override void Render(GUIRenderContext Context)
-    {
-      base.Render(Context);
-    }
-
-    public override void Update(GUIControlContext Context, double Time)
-    {
-      base.Update(Context, Time);
-    }
+    protected abstract Control CreateFunctionPicker();
   }
   
   public class Blend8bppDelegateEditor : BlendDelegateEditor
   {
-    private Blend8bppDelegate _function;
-
     public Blend8bppDelegateEditor(ModuleNodeControl parentNode, string paramName)
       : base(parentNode, paramName)
     {
-      _function = Blend8bppFunctions.Default;
+    }
+
+    protected override Control CreateFunctionPicker()
+    {
+      _functionListbox = new Textbox();
+      _functionListbox.Text = ((Blend8bppDelegate)ModuleParameterValue).Method.Name;
+      PopupContainer pc = new PopupContainer(_functionListbox);
+      // TODO: show on left click as well
+      pc.ShowOnRightClick = true;
+      List<MenuItem> options = new List<MenuItem>();
+      foreach (Blend8bppDelegate func in Blend8bppFunctions.List)
+      {
+        options.Add(MenuItem.Create(
+          func.Method.Name,
+          () => { ModuleParameterValue = func; }));
+      }
+
+      pc.Items = options.ToArray();
+
+      return pc;
+    }
+
+    public override void OnValueChanged(object sender, ModuleParameterEventArgs e)
+    {
+      _functionListbox.Text = ((Blend8bppDelegate)ModuleParameterValue).Method.Name;
     }
   }
 
   public class Blend32bppDelegateEditor : BlendDelegateEditor
   {
-    private Blend32bppDelegate _function;
-
     public Blend32bppDelegateEditor(ModuleNodeControl parentNode, string paramName)
       : base(parentNode, paramName)
     {
-      _function = Blend32bppFunctions.Default;
+    }
+
+    protected override Control CreateFunctionPicker()
+    {
+      _functionListbox = new Textbox();
+      _functionListbox.Text = ((Blend32bppDelegate)ModuleParameterValue).Method.Name;
+      PopupContainer pc = new PopupContainer(_functionListbox);
+      // TODO: show on left click as well
+      pc.ShowOnRightClick = true;
+      List<MenuItem> options = new List<MenuItem>();
+      foreach (Blend32bppDelegate func in Blend32bppFunctions.List)
+      {
+        options.Add(MenuItem.Create(
+          func.Method.Name,
+          () => { ModuleParameterValue = func; }));
+      }
+
+      pc.Items = options.ToArray();
+
+      return pc;
+    }
+
+    public override void OnValueChanged(object sender, ModuleParameterEventArgs e)
+    {
+      _functionListbox.Text = ((Blend32bppDelegate)ModuleParameterValue).Method.Name;
     }
   }
 

@@ -58,6 +58,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Back-end\Modules\coloringCircles.cs" />
     <Compile Include="Back-end\Modules\CreateTerrain.cs" />
     <Compile Include="Back-end\Modules\gasket.cs" />
     <Compile Include="Back-end\Modules\TexturePreview.cs" />

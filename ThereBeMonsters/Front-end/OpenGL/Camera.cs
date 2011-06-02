@@ -33,6 +33,7 @@ namespace ThereBeMonsters.Front_end.OpenGL
       camera = Matrix4.LookAt(cameraPos, Vector3.Zero, Vector3.UnitY);
       GL.LoadMatrix(ref camera);
 
+      GL.Clear(ClearBufferMask.DepthBufferBit);
     }
   }
 }

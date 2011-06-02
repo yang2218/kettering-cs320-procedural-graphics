@@ -13,11 +13,13 @@ namespace ThereBeMonsters.Front_end
     public ModuleNode Node { get; private set; }
     public Dictionary<string, EditorControl> EditorControls { get; private set; }
 
-    public ModuleNodeControl(ModuleNode bide)
-      : base(null, string.Empty) // TODO: figure out how base class is going to be used
+    public ModuleNodeControl(ModuleNode node)
+      : base(new FlowContainer(Axis.Vertical), node.ModuleType.Name)
     {
-      this.Node = Node;
+      this.Node = node;
       this.EditorControls = new Dictionary<string, EditorControl>();
+
+      this.ClientSize = new Point(150, 200);
 
       Dictionary<string, Module.Parameter> parameters
         = Module.GetModuleParameters(Node.ModuleType);
@@ -34,6 +36,17 @@ namespace ThereBeMonsters.Front_end
         EditorControls[kvp.Key] = editor;
 
         // TODO: add editor to child control heiarchy
+      }
+    }
+
+    private Vector2 _lastPostion;
+    public override void Update(GUIControlContext Context, double Time)
+    {
+      base.Update(Context, Time);
+
+      if (this.Position != _lastPostion)
+      {
+        Node.Position = _lastPostion = this.Position;
       }
     }
 

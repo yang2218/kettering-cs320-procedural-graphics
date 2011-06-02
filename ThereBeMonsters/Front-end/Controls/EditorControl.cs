@@ -24,7 +24,7 @@ namespace ThereBeMonsters.Front_end.Controls
     {
       // TODO: create a registry of default editors, registered via subclasses using
       // an EditorAttribute
-      throw new NotImplementedException();
+      return null;
     }
 
     public virtual void OnValueChangedPrefiltered(object sender, ModuleParameterEventArgs e)

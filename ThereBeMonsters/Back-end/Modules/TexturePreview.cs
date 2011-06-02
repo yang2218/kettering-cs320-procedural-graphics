@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using ThereBeMonsters.Front_end;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using ThereBeMonsters.Front_end.Controls;
 
 namespace ThereBeMonsters.Back_end.Modules
 {

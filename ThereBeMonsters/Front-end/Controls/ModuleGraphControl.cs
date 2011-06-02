@@ -29,6 +29,11 @@ namespace ThereBeMonsters.Front_end
         _graph.ModuleAdded += OnModuleAdded;
         _graph.ModuleRemoved += OnModuleRemoved;
         _graph.ModuleMoved += OnModuleMoved;
+
+        foreach (ModuleNode node in _graph.Nodes.Values)
+        {
+          OnModuleAdded(_graph, new ModuleEventArgs(node.ModuleId));
+        }
       }
     }
 
@@ -46,12 +51,13 @@ namespace ThereBeMonsters.Front_end
 
     private void OnModuleAdded(object sender, ModuleEventArgs e)
     {
-      ModuleNodeControl nodeControl = new ModuleNodeControl(Graph[e.ModuleId]);
+      ModuleNode node = Graph[e.ModuleId];
+      ModuleNodeControl nodeControl = new ModuleNodeControl(node);
 
       // TODO: position control
       // change the event info to include mouse position?
 
-      AddControl(nodeControl, new Point());
+      AddControl(nodeControl, new Point(node.X, node.Y));
     }
 
     private void OnModuleMoved(object sender, ModuleMovedEventArgs e)

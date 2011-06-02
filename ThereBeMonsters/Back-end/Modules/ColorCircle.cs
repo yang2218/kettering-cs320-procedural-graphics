@@ -6,108 +6,88 @@ using OpenTK;
 using System.Drawing;
 using OpenTK.Graphics.OpenGL;
 
-namespace Drawing
+namespace ThereBeMonsters.Back_end.Modules
 {
-    class DrawCircle
+    class ColorCircle : Module
     {
-        static bool initialized = false;//when first starting, color array is empty
+        public IEnumerable<Vector3> Circles { private get; set; }
 
-        static Random red = new Random();
-        static float redValue = red.Next(0) + red.Next(100) / 100f;
+        [Parameter(@"How the calculated heightmap will be blended with the input heightmap.
+(Input heightmap will be the Source, generated heightmap will be Destination)",
+          Editor = typeof(Blend32bppDelegateEditor))]
+        public Blend32bppDelegate BlendFunc { private get; set; }
 
-        static Random green = new Random();
-        static float greenValue = green.Next(0) + green.Next(100) / 100f;
+        [Parameter(Hidden = true)]
+        public float BlendFuncSrcFactor { private get; set; }
+        [Parameter(Hidden = true)]
+        public float BlendFuncDstFactor { private get; set; }
 
-        static Random blue = new Random();
-        static float blueValue = blue.Next(0) + blue.Next(100) / 100f;
+        public Color? Color { private get; set; }
 
-        static int arrayWidth = 1000;
-        static int arrayHeight = 1000;
-        double[,] colorOutput = new double[arrayWidth, arrayHeight];
+        private uint[,] inputColorMap, outputColorMap;
 
-        void fillWithWhite()
-        {//fills colorOutput 2D array with all white
-            if (initialized == false)
+        public uint[,] ColorMap
+        {
+            get { return outputColorMap; }
+            set { inputColorMap = value; }
+        }
+
+        public override void Run()
+        {
+            int res = inputColorMap.GetLength(0);
+            outputColorMap = new uint[res, res];
+            int centerX, centerY, circleRadius, radiusSq, distSqFromCenter;
+            int r, l, t, b;
+            uint colorValue = 0;
+
+            foreach (Vector3 circle in Circles)
             {
-                for (int i = 0; i < 1000; i++)
+                centerX = (int)(circle.X * res);
+                centerY = (int)(circle.Y * res);
+                circleRadius = (int)(circle.Z * res);
+                radiusSq = circleRadius * circleRadius;
+
+                if (this.Color.HasValue)
                 {
-                    for (int j = 0; j < 1000; j++)
+                    colorValue = (uint)this.Color.Value.ToArgb();
+                }
+                else
+                {
+                    byte redValue =   (byte)Module.rng.Next(255);
+                    byte greenValue = (byte)Module.rng.Next(255);
+                    byte blueValue =  (byte)Module.rng.Next(255);
+                    colorValue = 0xFF000000 + redValue << 16 + greenValue << 8 + blueValue;
+                }
+
+                for (int i = 0; i <= circleRadius; i++)
+                {
+                    for (int j = 0; j <= circleRadius; j++)
                     {
-                        colorOutput[i, j] = 0;
+                        distSqFromCenter = i * i + j * j;
+                        if (distSqFromCenter > radiusSq)
+                        {
+                            continue;
+                        }
+
+                        r = Clamp(centerX + i, 0, res - 1);
+                        l = Clamp(centerX - i, 0, res - 1);
+                        t = Clamp(centerY + j, 0, res - 1);
+                        b = Clamp(centerY - j, 0, res - 1);
+
+                        outputColorMap[r, t] = colorValue;
+                        outputColorMap[l, t] = colorValue;
+                        outputColorMap[r, b] = colorValue;
+                        outputColorMap[l, b] = colorValue;
                     }
                 }
-                initialized = true;
             }
         }
 
-        void populateColor()
+        private int Clamp(int v, int min, int max)
         {
-            double currentColor = colorOutput[0, 0];
-            bool writeColor = false;
-            for (int i = 0; i <= 1000-2; i++)
-            {
-                for (int j = 0; j <= 1000-2; j++)
-                {
-                    
-                    if (currentColor != colorOutput[i, j + 1])
-                    {
-                        if (writeColor == true)
-                            writeColor = false;
-                        else
-                            writeColor = true;
-                    }
-                        if (writeColor == true)
-                            colorOutput[i,j + 1] = currentColor;
-
-                }
-            }
-
+            return v < min ? min : v > max ? max : v;
         }
-        public void ColorRandom(Point center, float radius)
-        {
-            fillWithWhite();// if the bitmap is null, fill it all with wite placeholder color
 
-            //Console.WriteLine("Red " + redValue);
-            //Console.WriteLine("Green " + greenValue);
-            //Console.WriteLine("Blue " + blueValue);
-
-            GL.Color3(redValue, blueValue, greenValue);
-
-            int redInt = Convert.ToInt32(redValue * 1000000);
-            int blueInt = Convert.ToInt32(blueValue * 10000);
-            int greenInt = Convert.ToInt32(greenValue * 100);
-            int allColor = redInt + blueInt + greenInt;
-
-            GL.Begin(BeginMode.TriangleFan);//draws circle, colored with supplied.
-
-            for (int i = 0; i < 360; i++)
-            {
-                double degInRad = i * Math.PI / 180;
-                double xPos = ((Math.Cos(degInRad) * radius) + center.X);
-                int arrayXPos = Convert.ToInt32(xPos);
-                double yPos = ((Math.Sin(degInRad) * radius + center.Y));
-                int arrayYPos = Convert.ToInt32(yPos);
-                GL.Vertex2(xPos, yPos);
-                colorOutput[arrayXPos, arrayYPos] = allColor;
-            }
-
-            GL.End();
-            populateColor();
-            for (int i = 0; i < arrayHeight; i++)
-            {
-                for (int j = 0; j < arrayWidth; j++)
-                {
-                      Console.Write(colorOutput[i, j]);
-                }
-                Console.WriteLine("");
-            }
-
-
-        }
-        void fillColorArray()
-        {
-
-        }
     }
 
 

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModuleGraph name="testGraph">
+  <Module id="mod1" description="Optional user descripion" type="ThereBeMonsters.Back_end.Modules.ExampleModule">
+    <Wireups>
+      <Wireup name="A" type="System.Int32">
+        <int>1</int>
+      </Wireup>
+      <Wireup name="B" type="System.Int32">
+        <int>2</int>
+      </Wireup>
+    </Wireups>
+    <Position>
+      <X>53</X>
+      <Y>40</Y>
+    </Position>
+  </Module>
+  <Module id="mod2" type="ThereBeMonsters.Back_end.Modules.ExampleModule">
+    <Wireups>
+      <Wireup name="A" type="ThereBeMonsters.Back_end.ParameterWireup">
+        <ParameterWireup srcId="mod1" srcParam="C" />
+      </Wireup>
+      <Wireup name="B" type="System.Int32">
+        <int>4</int>
+      </Wireup>
+    </Wireups>
+    <Position>
+      <X>251</X>
+      <Y>51</Y>
+    </Position>
+  </Module>
+  <Module id="out" type="ThereBeMonsters.Back_end.Modules.WriteToConsole">
+    <Wireups>
+      <Wireup name="Input1" type="ThereBeMonsters.Back_end.ParameterWireup">
+        <ParameterWireup srcId="mod2" srcParam="C" />
+      </Wireup>
+    </Wireups>
+    <Position>
+      <X>461</X>
+      <Y>46</Y>
+    </Position>
+  </Module>
+</ModuleGraph>

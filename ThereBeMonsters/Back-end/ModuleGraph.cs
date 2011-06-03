@@ -125,6 +125,8 @@ namespace ThereBeMonsters.Back_end
       {
         try
         {
+          // TODO: check for a custom serializer
+
           XmlSerializer xs = new XmlSerializer(kvp.Value.GetType());
           // if a value is not serializable by xml, skip it (the constructor should
           // error if there's a problem, otherwise xs.Serialize shoudl work)
@@ -366,12 +368,13 @@ namespace ThereBeMonsters.Back_end
       }
     }
 
-    public void Add(string moduleId, Type moduleType, string description = "")
+    public void Add(string moduleId, Type moduleType, Vector2 position = new Vector2(), string description = "")
     {
       ModuleNode node = new ModuleNode
       {
         ModuleType = moduleType,
-        Description = description
+        Description = description,
+        Position = position
       };
 
       // Add will throw an exception in the case of a duplicate key (desired)

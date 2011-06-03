@@ -39,4 +39,10 @@
       <Y>46</Y>
     </Position>
   </Module>
+  <Module id="ehtest1" type="ThereBeMonsters.Back_end.Modules.ExtrudeCirclesToHeight">
+    <Position>
+      <X>700</X>
+      <Y>50</Y>
+    </Position>
+  </Module>
 </ModuleGraph>

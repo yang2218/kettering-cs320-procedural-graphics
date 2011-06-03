@@ -243,7 +243,8 @@ namespace ThereBeMonsters.Back_end
 
         INPUT = 0x1,
         OUTPUT = 0x2,
-        INOUT = INPUT | OUTPUT
+        INOUT = INPUT | OUTPUT,
+        NOWIREUP = 0x8
       }
 
       public delegate EditorControl EditorFactoryDelegate(

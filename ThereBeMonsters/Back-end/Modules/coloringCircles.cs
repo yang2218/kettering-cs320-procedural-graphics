@@ -10,8 +10,8 @@ namespace ThereBeMonsters.Back_end.Modules
 
     [Parameter(@"How the calculated colormap will be blended with the input colormap.
 (Input colormap will be the Source, generated colormap will be Destination)",
-      Editor = typeof(Blend32bppDelegateEditor))]
-    public Blend32bppDelegate BlendFunc { private get; set; }
+      Editor = typeof(BlendFuncEditor))]
+    public Blend32bppFunc BlendFunc { private get; set; }
 
     [Parameter(Hidden = true)]
     public float BlendFuncSrcFactor { private get; set; }
@@ -81,6 +81,9 @@ namespace ThereBeMonsters.Back_end.Modules
           }
         }
       }
+
+      Blend32bppFunctions.GetFunc(BlendFunc)(inputColorMap, outputColorMap,
+        BlendFuncSrcFactor, BlendFuncDstFactor);
     }
 
     private int Clamp(int v, int min, int max)

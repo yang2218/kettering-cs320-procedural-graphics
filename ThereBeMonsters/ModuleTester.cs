@@ -51,7 +51,7 @@ namespace ThereBeMonsters
       ColorCircle painter = new ColorCircle();
       painter.Circles = CirlceFilter(cookie.Circles);
       painter.ColorMap = new uint[512,512];
-      painter.BlendFunc = Blend32bppFunctions.Additive;
+      painter.BlendFunc = Blend32bppFunc.Additive;
       painter.BlendFuncSrcFactor = 1f;
       painter.BlendFuncDstFactor = 1f;
       painter.Color = Color.Pink;

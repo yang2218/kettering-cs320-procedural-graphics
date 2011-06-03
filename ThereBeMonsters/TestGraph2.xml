@@ -40,6 +40,23 @@
     </Position>
   </Module>
   <Module id="ehtest1" type="ThereBeMonsters.Back_end.Modules.ExtrudeCirclesToHeight">
+    <Wireups>
+      <Wireup name="CapMode" type="ThereBeMonsters.Back_end.Modules.ExtrudeCirclesToHeight+Cap">
+        <Cap>Cone</Cap>
+      </Wireup>
+      <Wireup name="ScaleMode" type="ThereBeMonsters.Back_end.Modules.ExtrudeCirclesToHeight+Scale">
+        <Scale>None</Scale>
+      </Wireup>
+      <Wireup name="BlendFunc" type="ThereBeMonsters.Back_end.Blend8bppFunc">
+        <Blend8bppFunc>Additive</Blend8bppFunc>
+      </Wireup>
+      <Wireup name="BlendFuncSrcFactor" type="System.Single">
+        <float>1</float>
+      </Wireup>
+      <Wireup name="BlendFuncDstFactor" type="System.Single">
+        <float>1</float>
+      </Wireup>
+    </Wireups>
     <Position>
       <X>700</X>
       <Y>50</Y>

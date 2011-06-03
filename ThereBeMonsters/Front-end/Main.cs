@@ -51,7 +51,7 @@ namespace ThereBeMonsters.Front_end
       extruder.Circles = CirlceFilter(cookie.Circles);
       extruder.HeightMap = new byte[64, 64];
       extruder.ScaleMode = ExtrudeCirclesToHeight.Scale.Quadradic;
-      extruder.BlendFunc = Blend8bppFunctions.Additive;
+      extruder.BlendFunc = Blend8bppFunc.Additive;
       extruder.BlendFuncSrcFactor = 1f;
       extruder.BlendFuncDstFactor = 1f;
       extruder.Run();

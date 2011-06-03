@@ -307,6 +307,8 @@ namespace ThereBeMonsters.Back_end
       // TODO: the factory pattern doesn't seem like it would be useful?
       public EditorFactoryDelegate EditorFactory { get; set; }
 
+      // TODO: argument to pass to the editor (i.e. validation constraints)
+
       /// <summary>
       /// The PropertyInfo associated with this parameter. Set by the Module base class.
       /// </summary>

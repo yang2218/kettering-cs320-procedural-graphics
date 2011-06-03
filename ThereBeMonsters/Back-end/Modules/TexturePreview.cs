@@ -6,6 +6,7 @@ using ThereBeMonsters.Front_end;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using ThereBeMonsters.Front_end.Controls;
+using OpenTKGUI;
 
 namespace ThereBeMonsters.Back_end.Modules
 {
@@ -13,24 +14,73 @@ namespace ThereBeMonsters.Back_end.Modules
   {
     public class PreviewControl : EditorControl
     {
+      private uint[,] _map;
+      public uint[,] Map
+      {
+        get
+        {
+          return _map;
+        }
+        set
+        {
+          _map = value;
+
+          if (_textureHandle.HasValue)
+          {
+            GL.DeleteTexture(_textureHandle.Value);
+          }
+
+          _textureHandle = GL.GenTexture();
+          GL.BindTexture(TextureTarget.Texture2D, _textureHandle.Value);
+
+          GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Map.GetLength(0),
+            Map.GetLength(1), 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte,
+            Map);
+
+          GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+          GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+        }
+      }
+
+      private int? _textureHandle;
+
       public override double PreferredHeight
       {
-        get { return 128.0; }
+        get { return 150.0; }
       }
 
       public PreviewControl(ModuleNodeControl parentNode, string paramName)
         : base(parentNode, paramName)
       {
+        ModuleParameterValue = this;
       }
 
       public override void OnValueChanged(object sender, ModuleParameterEventArgs e)
       {
       }
 
-      public override void Render(OpenTKGUI.GUIRenderContext Context)
+      public override void Update(GUIControlContext Context, double Time)
       {
-        // TODO: code for in-line preview
-        base.Render(Context);
+        // TODO: on click, open up a modal dialog with a bigger preview
+      }
+
+      public override void Render(GUIRenderContext Context)
+      {
+        if (_textureHandle.HasValue == false)
+        {
+          return;
+        }
+
+        GL.Enable(EnableCap.Texture2D);
+        GL.BindTexture(TextureTarget.Texture2D, _textureHandle.Value);
+
+        // TODO: perserve aspect ratio of map
+        GL.Begin(BeginMode.Polygon);
+        GL.TexCoord2(0.0, 1.0); GL.Vertex3(0f, 0f, 0.0);
+        GL.TexCoord2(1.0, 1.0); GL.Vertex3(Size.X, 0f, 0.0);
+        GL.TexCoord2(1.0, 0.0); GL.Vertex3(Size.X, Size.Y, 0.0);
+        GL.TexCoord2(0.0, 0.0); GL.Vertex3(0f, Size.Y, 0.0);
+        GL.End();
       }
     }
 
@@ -50,7 +100,7 @@ namespace ThereBeMonsters.Back_end.Modules
       {
         GL.Viewport(ClientRectangle);
 
-        GL.ClearColor(Color.Black);
+        GL.ClearColor(System.Drawing.Color.Black);
 
         GL.MatrixMode(MatrixMode.Projection);
         GL.Ortho(-0.5, 0.5, -0.5, 0.5, -1, 1);
@@ -93,16 +143,15 @@ namespace ThereBeMonsters.Back_end.Modules
       }
     }
 
-    [Parameter(Editor = typeof(PreviewControl))]
-    public bool PreviewInline { private get; set; }
+    [Parameter(Editor = typeof(PreviewControl),
+      Direction = Module.Parameter.IODirection.NOWIREUP)]
+    public PreviewControl PreviewInline { private get; set; }
 
     [Parameter(Optional = true)]
     public byte[,] HeightMap { private get; set; }
 
     [Parameter(Optional = true)]
     public uint[,] ColorMap { private get; set; }
-
-    public int TextureID { get; private set; }
 
     public override void Run()
     {
@@ -133,9 +182,9 @@ namespace ThereBeMonsters.Back_end.Modules
           (Exception)null);
       }
 
-      if (PreviewInline)
+      if (PreviewInline != null)
       {
-        // TODO
+        PreviewInline.Map = map;
         return;
       }
 

@@ -61,6 +61,7 @@
     <Compile Include="Back-end\Modules\coloringCircles.cs" />
     <Compile Include="Back-end\Modules\CreateTerrain.cs" />
     <Compile Include="Back-end\Modules\gasket.cs" />
+    <Compile Include="Back-end\Modules\InitMapsModule.cs" />
     <Compile Include="Back-end\Modules\TexturePreview.cs" />
     <Compile Include="Front-end\Controls\BubbleControl.cs" />
     <Compile Include="Front-end\Controls\ConnectorControl.cs" />

@@ -72,13 +72,19 @@ namespace ThereBeMonsters.Front_end.Controls
 
     public void ClearPath(object sender, ModuleMovedEventArgs e)
     {
+      LOffset = LBubble.NodeControl.Position + LBubble.Offset;
+
       _path.Clear();
     }
 
     public override void Update(GUIControlContext Context, double Time)
     {
       // TODO: if an endpoint bubble is null,
-      // change the corresponding offset to the mouse pos, ClearPath
+      // change the corresponding offset to the mouse pos (relative to moduleGraphControl),
+      // then ClearPath
+      // MainWindow.hack.MouseState.Position 
+
+      _path.Clear();
 
       if (_checkForRemoval)
       {
@@ -88,17 +94,6 @@ namespace ThereBeMonsters.Front_end.Controls
         }
 
         _checkForRemoval = false;
-      }
-
-      MouseState ms = Context.MouseState;
-      if (ms == null)
-      {
-        return;
-      }
-
-      if (ms.HasReleasedButton(OpenTK.Input.MouseButton.Left))
-      {
-        _checkForRemoval = true;
       }
     }
 

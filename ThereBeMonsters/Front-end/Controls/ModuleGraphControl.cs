@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ThereBeMonsters.Back_end;
 using OpenTKGUI;
+using OpenTK.Graphics.OpenGL;
 
 namespace ThereBeMonsters.Front_end
 {
@@ -42,6 +43,23 @@ namespace ThereBeMonsters.Front_end
     }
   }
 
+  public class ModuleGraphBackground : PopupContainer
+  {
+    public ModuleGraphControl Parent { get; private set; }
+
+    public ModuleGraphBackground(ModuleGraphControl parent)
+      : base(new Blank())
+    {
+      this.Parent = parent;
+      this.ShowOnRightClick = true;
+      this.Items = new MenuItem[] {
+        // TODO: Menu items create a new module at the popup positoin
+        MenuItem.Create("Test"),
+        MenuItem.Create("Test2")
+      };
+    }
+  }
+
   public class ModuleGraphControl : LayerContainer
   {
     private ModuleGraph _graph;
@@ -78,14 +96,14 @@ namespace ThereBeMonsters.Front_end
       = new Dictionary<string, ModuleNodeControl>();
 
     public ModuleGraphControl()
-      : base(null)
+      : this(new ModuleGraph())
     {
-      Graph = new ModuleGraph();
     }
 
     public ModuleGraphControl(ModuleGraph g)
       : base(null)
     {
+      this.Background = new ModuleGraphBackground(this);
       Graph = g;
     }
 

@@ -1,133 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using ThereBeMonsters.Front_end.Controls;
 using OpenTKGUI;
 using ThereBeMonsters.Front_end;
-using ThereBeMonsters.Front_end.Controls;
 
 namespace ThereBeMonsters.Back_end
 {
   public delegate void Blend8bppDelegate(byte[,] src, byte[,] dst, float srcFactor = 1f, float dstFactor = 1f);
   public delegate void Blend32bppDelegate(uint[,] src, uint[,] dst, float srcFactor = 1f, float dstFactor = 1f);
-
-  public abstract class BlendDelegateEditor : EditorControl
-  {
-    protected Textbox _functionListbox;
-    protected FloatControl _srcFactorField, _dstFactorField;
-
-    public override double PreferredHeight
-    {
-      get { return 40; }
-    }
-
-    public BlendDelegateEditor(ModuleNodeControl parentNode, string paramName)
-      : base(parentNode, paramName)
-    {
-      FlowContainer container = new FlowContainer(Axis.Vertical);
-
-      container.AddChild(CreateFunctionPicker(), 20);
-
-      FlowContainer horzFlow = new FlowContainer(Axis.Horizontal);
-      horzFlow.AddChild(new FloatControl(parentNode, paramName + "SrcFactor"), 75);
-      horzFlow.AddChild(new FloatControl(parentNode, paramName + "DstFactor"), 75);
-
-      container.AddChild(horzFlow, 20);
-
-      Client = container;
-    }
-
-    protected abstract Control CreateFunctionPicker();
-  }
   
-  public class Blend8bppDelegateEditor : BlendDelegateEditor
+  public enum Blend8bppFunc
   {
-    public Blend8bppDelegateEditor(ModuleNodeControl parentNode, string paramName)
-      : base(parentNode, paramName)
-    {
-    }
-
-    protected override Control CreateFunctionPicker()
-    {
-      _functionListbox = new Textbox();
-      if (ModuleParameterValue != null)
-      {
-        _functionListbox.Text = ((Blend8bppDelegate)ModuleParameterValue).Method.Name;
-      }
-
-      PopupContainer pc = new PopupContainer(_functionListbox);
-      // TODO: show on left click as well
-      pc.ShowOnRightClick = true;
-      List<MenuItem> options = new List<MenuItem>();
-      foreach (Blend8bppDelegate func in Blend8bppFunctions.List)
-      {
-        Blend8bppDelegate func2 = func;
-        options.Add(MenuItem.Create(
-          func.Method.Name,
-          () => { ModuleParameterValue = func2; }));
-      }
-
-      pc.Items = options.ToArray();
-
-      return pc;
-    }
-
-    public override void OnValueChanged(object sender, ModuleParameterEventArgs e)
-    {
-      _functionListbox.Text = ((Blend8bppDelegate)ModuleParameterValue).Method.Name;
-    }
+    DestinationOnly,
+    Additive
   }
 
-  public class Blend32bppDelegateEditor : BlendDelegateEditor
+  public enum Blend32bppFunc
   {
-    public Blend32bppDelegateEditor(ModuleNodeControl parentNode, string paramName)
-      : base(parentNode, paramName)
-    {
-    }
-
-    protected override Control CreateFunctionPicker()
-    {
-      _functionListbox = new Textbox();
-      _functionListbox.Text = ((Blend32bppDelegate)ModuleParameterValue).Method.Name;
-      PopupContainer pc = new PopupContainer(_functionListbox);
-      // TODO: show on left click as well
-      pc.ShowOnRightClick = true;
-      List<MenuItem> options = new List<MenuItem>();
-      foreach (Blend32bppDelegate func in Blend32bppFunctions.List)
-      {
-        options.Add(MenuItem.Create(
-          func.Method.Name,
-          () => { ModuleParameterValue = func; }));
-      }
-
-      pc.Items = options.ToArray();
-
-      return pc;
-    }
-
-    public override void OnValueChanged(object sender, ModuleParameterEventArgs e)
-    {
-      _functionListbox.Text = ((Blend32bppDelegate)ModuleParameterValue).Method.Name;
-    }
+    DestinationOnly,
+    Additive
   }
 
   public static class Blend8bppFunctions
   {
-    private static List<Blend8bppDelegate> _functions;
-    public static Blend8bppDelegate Default { get { return DestinationOnly; } }
-    public static List<Blend8bppDelegate> List
+    public static Blend8bppDelegate GetFunc(Blend8bppFunc f)
     {
-      get
+      switch (f)
       {
-        if (_functions == null)
-        {
-          _functions = new List<Blend8bppDelegate>()
-          { // Add functions here
-            Additive,
-            DestinationOnly
-          };
-        }
-
-        return _functions;
+        case Blend8bppFunc.DestinationOnly:
+          return DestinationOnly;
+        case Blend8bppFunc.Additive:
+          return Additive;
+        default:
+          throw new ArgumentException("Function not found.");
       }
     }
 
@@ -171,22 +77,16 @@ namespace ThereBeMonsters.Back_end
 
   public static class Blend32bppFunctions
   {
-    private static List<Blend32bppDelegate> _functions;
-    public static Blend32bppDelegate Default { get { return DestinationOnly; } }
-    public static List<Blend32bppDelegate> List
+    public static Blend32bppDelegate GetFunc(Blend32bppFunc f)
     {
-      get
+      switch (f)
       {
-        if (_functions == null)
-        {
-          _functions = new List<Blend32bppDelegate>()
-          { // Add functions here
-            Additive,
-            DestinationOnly
-          };
-        }
-
-        return _functions;
+        case Blend32bppFunc.DestinationOnly:
+          return DestinationOnly;
+        case Blend32bppFunc.Additive:
+          return Additive;
+        default:
+          throw new ArgumentException("Function not found.");
       }
     }
 
@@ -265,4 +165,31 @@ namespace ThereBeMonsters.Back_end
     }
   }
 
+  public class BlendFuncEditor : EditorControl
+  {
+    public override double PreferredHeight
+    {
+      get { return 40; }
+    }
+
+    public BlendFuncEditor(ModuleNodeControl parentNode, string paramName)
+      : base(parentNode, paramName)
+    {
+      FlowContainer container = new FlowContainer(Axis.Vertical);
+
+      container.AddChild(new EnumControl(parentNode, paramName), 20);
+      FlowContainer horzFlow = new FlowContainer(Axis.Horizontal);
+
+      // TODO: add labels?
+      horzFlow.AddChild(new FloatControl(parentNode, paramName + "SrcFactor"), 75);
+      horzFlow.AddChild(new FloatControl(parentNode, paramName + "DstFactor"), 75);
+      container.AddChild(horzFlow, 20);
+
+      Client = container;
+    }
+
+    public override void OnValueChanged(object sender, ModuleParameterEventArgs e)
+    {
+    }
+  }
 }

@@ -77,6 +77,7 @@ namespace ThereBeMonsters.Front_end.Controls
             // create connection control to follow mouse coursor
 
             // when released, try to find the bubble under the mouse
+            Context.CaptureMouse();
           }
           else
           {
@@ -91,6 +92,9 @@ namespace ThereBeMonsters.Front_end.Controls
         {
           if (IsOutput)
           {
+            //uncapture mouse
+            Context.ReleaseMouse();
+
           }
           else
           {

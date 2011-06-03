@@ -46,13 +46,16 @@ namespace ThereBeMonsters.Back_end.Modules
 
     [Parameter(@"How the calculated heightmap will be blended with the input heightmap.
 (Input heightmap will be the Source, generated heightmap will be Destination)",
-      Editor = typeof(Blend8bppDelegateEditor),
+      Editor = typeof(BlendFuncEditor),
+      Default = Blend8bppFunc.Additive,
       Direction = Parameter.IODirection.NOWIREUP)] //don't allow connections
-    public Blend8bppDelegate BlendFunc { private get; set; }
+    public Blend8bppFunc BlendFunc { private get; set; }
 
-    [Parameter(Hidden = true)]
+    [Parameter(Hidden = true,
+      Default = 1f)]
     public float BlendFuncSrcFactor { private get; set; }
-    [Parameter(Hidden = true)]
+    [Parameter(Hidden = true,
+      Default = 1f)]
     public float BlendFuncDstFactor { private get; set; }
 
     private static byte[] lookupTable = {};
@@ -139,7 +142,8 @@ namespace ThereBeMonsters.Back_end.Modules
         }
       }
 
-      BlendFunc(inputHeightMap, outputHeightMap, BlendFuncSrcFactor, BlendFuncDstFactor);
+      Blend8bppFunctions.GetFunc(BlendFunc)(inputHeightMap, outputHeightMap,
+        BlendFuncSrcFactor, BlendFuncDstFactor);
     }
 
     private int Clamp(int v, int min, int max)

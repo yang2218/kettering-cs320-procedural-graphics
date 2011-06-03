@@ -83,12 +83,14 @@ namespace ThereBeMonsters.Front_end
     private static ModuleGraphControl g;
     private static Control SetupControls()
     {
-      // TODO: build the control heiarchy here
       g = new ModuleGraphControl(ModuleGraph.LoadFromXml("TestGraph2.xml"));
+      ModuleGraphWindowControl wc = new ModuleGraphWindowControl(g);
+      wc.FullSize = new Point(double.MaxValue, double.MaxValue);
+      wc.Offset = new Point(0, 0);
 
       vp = new ViewportPlaceholder(null);
       
-      SplitContainer sc = new SplitContainer(Axis.Vertical, vp, g);
+      SplitContainer sc = new SplitContainer(Axis.Vertical, vp, wc);
       sc.NearSize = 450;
       return sc;
     }

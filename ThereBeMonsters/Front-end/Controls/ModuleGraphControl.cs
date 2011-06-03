@@ -5,6 +5,43 @@ using OpenTKGUI;
 
 namespace ThereBeMonsters.Front_end
 {
+  public class ModuleGraphWindowControl : WindowContainer
+  {
+    private Point _dragOffset;
+
+    public ModuleGraphWindowControl(ModuleGraphControl graph)
+      : base(graph)
+    {
+    }
+
+    public override void Update(GUIControlContext Context, double Time)
+    {
+      base.Update(Context, Time);
+
+      MouseState ms = Context.MouseState;
+      if (ms == null)
+      {
+        return;
+      }
+
+      if (ms.HasPushedButton(OpenTK.Input.MouseButton.Middle))
+      {
+        _dragOffset = this.Offset + ms.Position;
+      }
+      else if (ms.IsButtonDown(OpenTK.Input.MouseButton.Middle))
+      {
+        Point p = _dragOffset - ms.Position;
+        if (p.X < 0 || p.Y < 0)
+        {
+          p = new Point(p.X < 0 ? 0 : p.X, p.Y < 0 ? 0 : p.Y);
+          _dragOffset = p + ms.Position;
+        }
+
+        this.Offset = p;
+      }
+    }
+  }
+
   public class ModuleGraphControl : LayerContainer
   {
     private ModuleGraph _graph;

@@ -83,7 +83,8 @@ namespace ThereBeMonsters.Front_end
 
         flow.AddChild(horiz, 20);
         
-        if ((kvp.Value.Direction & Module.Parameter.IODirection.INPUT) == 0)
+        if ((kvp.Value.Direction & Module.Parameter.IODirection.INPUT) == 0
+          && (kvp.Value.Direction & Module.Parameter.IODirection.NOWIREUP) == 0)
         {
           continue;
         }
@@ -141,6 +142,13 @@ namespace ThereBeMonsters.Front_end
 
       if (this.Position != _lastPostion)
       {
+        if (this.Position.X < 0 || this.Position.Y < 0)
+        {
+          this.Position = new Point(
+            this.Position.X < 0 ? 0 : this.Position.X,
+            this.Position.Y < 0 ? 0 : this.Position.Y);
+        }
+
         Node.Position = _lastPostion = this.Position;
       }
     }

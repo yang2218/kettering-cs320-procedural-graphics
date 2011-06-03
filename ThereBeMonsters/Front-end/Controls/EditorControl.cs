@@ -35,7 +35,12 @@ namespace ThereBeMonsters.Front_end.Controls
       Type type, ModuleNodeControl control, string parameterName)
     {
       Type editorType;
-      if (_editorRegistry.TryGetValue(type, out editorType) == false)
+      // Enum classes are always subclassed -- maybe dictionary isn't the way to go...
+      if (type.BaseType == typeof(Enum))
+      {
+        editorType = _editorRegistry[typeof(Enum)];
+      }
+      else if (_editorRegistry.TryGetValue(type, out editorType) == false)
       {
         return null;
       }

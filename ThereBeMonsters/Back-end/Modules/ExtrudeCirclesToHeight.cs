@@ -47,8 +47,7 @@ namespace ThereBeMonsters.Back_end.Modules
     [Parameter(@"How the calculated heightmap will be blended with the input heightmap.
 (Input heightmap will be the Source, generated heightmap will be Destination)",
       Editor = typeof(Blend8bppDelegateEditor),
-      Direction = Parameter.IODirection.NONE)] //don't allow connections
-      //Default = new Delegate(Blend8bppFunctions.Default))]
+      Direction = Parameter.IODirection.NOWIREUP)] //don't allow connections
     public Blend8bppDelegate BlendFunc { private get; set; }
 
     [Parameter(Hidden = true)]

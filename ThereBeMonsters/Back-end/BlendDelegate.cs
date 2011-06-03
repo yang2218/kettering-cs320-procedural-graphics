@@ -13,11 +13,11 @@ namespace ThereBeMonsters.Back_end
   public abstract class BlendDelegateEditor : EditorControl
   {
     protected Textbox _functionListbox;
-    protected Textbox _srcFactorField, _dstFactorField;
+    protected FloatControl _srcFactorField, _dstFactorField;
 
     public override double PreferredHeight
     {
-      get { return 100; }
+      get { return 40; }
     }
 
     public BlendDelegateEditor(ModuleNodeControl parentNode, string paramName)
@@ -25,26 +25,14 @@ namespace ThereBeMonsters.Back_end
     {
       FlowContainer container = new FlowContainer(Axis.Vertical);
 
-      container.AddChild(CreateFunctionPicker(), 30);
+      container.AddChild(CreateFunctionPicker(), 20);
 
-      // TODO: replace these fields with EditorControl for floats
-      // TODO: make the two fields on the same row
-      // TODO: if time, make these collaspable
-      _srcFactorField = new Textbox();
-      _dstFactorField = new Textbox();
+      FlowContainer horzFlow = new FlowContainer(Axis.Horizontal);
+      horzFlow.AddChild(new FloatControl(parentNode, paramName + "SrcFactor"), 75);
+      horzFlow.AddChild(new FloatControl(parentNode, paramName + "DstFactor"), 75);
 
-      _srcFactorField.TextEntered += (string text) =>
-      {
-        SetModuleParameterValue(ParameterName + "SrcFactor", float.Parse(text));
-      };
+      container.AddChild(horzFlow, 20);
 
-      _dstFactorField.TextEntered += (string text) =>
-      {
-        SetModuleParameterValue(ParameterName + "DstFactor", float.Parse(text));
-      };
-
-      container.AddChild(_srcFactorField, 30);
-      container.AddChild(_dstFactorField, 30);
       Client = container;
     }
 
@@ -61,16 +49,21 @@ namespace ThereBeMonsters.Back_end
     protected override Control CreateFunctionPicker()
     {
       _functionListbox = new Textbox();
-      _functionListbox.Text = ((Blend8bppDelegate)ModuleParameterValue).Method.Name;
+      if (ModuleParameterValue != null)
+      {
+        _functionListbox.Text = ((Blend8bppDelegate)ModuleParameterValue).Method.Name;
+      }
+
       PopupContainer pc = new PopupContainer(_functionListbox);
       // TODO: show on left click as well
       pc.ShowOnRightClick = true;
       List<MenuItem> options = new List<MenuItem>();
       foreach (Blend8bppDelegate func in Blend8bppFunctions.List)
       {
+        Blend8bppDelegate func2 = func;
         options.Add(MenuItem.Create(
           func.Method.Name,
-          () => { ModuleParameterValue = func; }));
+          () => { ModuleParameterValue = func2; }));
       }
 
       pc.Items = options.ToArray();

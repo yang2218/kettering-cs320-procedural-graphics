@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ThereBeMonsters.Back_end;
 using OpenTKGUI;
 using OpenTK.Graphics.OpenGL;
+using OpenTK;
 
 namespace ThereBeMonsters.Front_end
 {
@@ -39,6 +40,8 @@ namespace ThereBeMonsters.Front_end
         }
 
         this.Offset = p;
+
+        // TODO: if position near the edge, teleport mouse cursor to other edge
       }
     }
   }
@@ -46,17 +49,36 @@ namespace ThereBeMonsters.Front_end
   public class ModuleGraphBackground : PopupContainer
   {
     public ModuleGraphControl Parent { get; private set; }
+    public Vector2 MousePosAtCall { get; set; }
+
+    private int _serialNum;
 
     public ModuleGraphBackground(ModuleGraphControl parent)
-      : base(new Blank())
+      : base(new Blank(Color.RGB(0.2, 0.2, 0.2)))
     {
       this.Parent = parent;
       this.ShowOnRightClick = true;
-      this.Items = new MenuItem[] {
-        // TODO: Menu items create a new module at the popup positoin
-        MenuItem.Create("Test"),
-        MenuItem.Create("Test2")
-      };
+      List<MenuItem> menuItems = new List<MenuItem>();
+      foreach (Type t in Module.ModuleList)
+      {
+        Type t2 = t;
+        menuItems.Add(MenuItem.Create(t2.Name, () =>
+          {
+            parent.Graph.Add(t2.Name + _serialNum++, t2, this.MousePosAtCall);
+          }));
+      }
+
+      this.Items = menuItems.ToArray();
+    }
+
+    public override void Update(GUIControlContext Context, double Time)
+    {
+      base.Update(Context, Time);
+      MouseState ms = Context.MouseState;
+      if (ms != null && ms.HasReleasedButton(OpenTK.Input.MouseButton.Right))
+      {
+        MousePosAtCall = ms.Position;
+      }
     }
   }
 

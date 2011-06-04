@@ -17,7 +17,7 @@ namespace ThereBeMonsters.Front_end
     {
       Viewport.ViewportRect = new System.Drawing.Rectangle(
         (int)Context.Offset.X,
-        768 - (int)Context.Offset.Y - (int)this.Size.Y, // HACK
+        (int)(MainWindow.Active.ClientSize.Height - Context.Offset.Y - this.Size.Y),
         (int)this.Size.X,
         (int)this.Size.Y);
     }

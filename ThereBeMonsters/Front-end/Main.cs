@@ -11,8 +11,53 @@ namespace ThereBeMonsters.Front_end
 {
   public class MainWindow : HostWindow
   {
-    public static MainWindow hack; 
+    public class ResizeBorder : BorderContainer
+    {
+      private int _yOffset;
+
+      public ResizeBorder(Control client)
+        : base(client)
+      {
+        this.Set(0, 0, 0, 3);
+        this.Color = Color.RGB(0.5, 0.5, 0.5);
+      }
+
+      public override void Update(GUIControlContext Context, double Time)
+      {
+        base.Update(Context, Time);
+
+        MouseState ms = Context.MouseState;
+        if (ms == null)
+        {
+          return;
+        }
+
+        if (Context.HasMouse)
+        {
+          MainWindow.Active.Split.NearSize = MainWindow.Active.Mouse.Y - _yOffset;
+          MainWindow.Active.Split.ForceResize(MainWindow.Active.ViewSize);
+          if (ms.HasReleasedButton(OpenTK.Input.MouseButton.Left))
+          {
+            Context.ReleaseMouse();
+          }
+        }
+        else
+        {
+          if (ms.Position.Y >= this.Size.Y - this.Bottom
+            && ms.HasPushedButton(OpenTK.Input.MouseButton.Left))
+          {
+            _yOffset = MainWindow.Active.Mouse.Y - (int)MainWindow.Active.Split.NearSize;
+            Context.CaptureMouse();
+          }
+        }
+      }
+    }
+
+    public static MainWindow Active { get; private set; }
+
     public Viewport Viewport { get; private set; }
+    public ModuleGraphControl GraphControl { get; private set; }
+    public SplitContainer Split { get; private set; }
 
     public System.Drawing.Color ClearColor
     {
@@ -63,14 +108,14 @@ namespace ThereBeMonsters.Front_end
     }
 
     public MainWindow()
-      : base(SetupControls, "Don't Blow a Gasket!")
+      : base(() => { return null; }, "Don't Blow a Gasket!")
     {
       this.ClientSize = new System.Drawing.Size(1024, 768);
-      hack = this;
+      Active = this;
       Viewport = new Viewport(System.Drawing.Rectangle.Empty);
       ClearColor = System.Drawing.Color.Black;
 
-      vp.Viewport = Viewport;
+      this.Control = SetupControls();
 
       Camera c = new Camera();
       Viewport.PreRender += c.SetupCamera;
@@ -78,21 +123,19 @@ namespace ThereBeMonsters.Front_end
       GenerateTest();
     }
 
-    // HACK
-    private static ViewportPlaceholder vp;
-    private static ModuleGraphControl g;
-    private static Control SetupControls()
+    private Control SetupControls()
     {
-      g = new ModuleGraphControl(ModuleGraph.LoadFromXml("TestGraph2.xml"));
-      ModuleGraphWindowControl wc = new ModuleGraphWindowControl(g);
+      GraphControl = new ModuleGraphControl(ModuleGraph.LoadFromXml("save.xml"));
+      ModuleGraphWindowControl wc = new ModuleGraphWindowControl(GraphControl);
       wc.FullSize = new Point(double.MaxValue, double.MaxValue);
       wc.Offset = new Point(0, 0);
 
-      vp = new ViewportPlaceholder(null);
-      
-      SplitContainer sc = new SplitContainer(Axis.Vertical, vp, wc);
-      sc.NearSize = 450;
-      return sc;
+      ViewportPlaceholder vp = new ViewportPlaceholder(Viewport);
+      ResizeBorder rb = new ResizeBorder(vp);
+
+      Split = new SplitContainer(Axis.Vertical, rb, wc);
+      Split.NearSize = 300;
+      return Split;
     }
 
     protected override void OnKeyPress(KeyPressEventArgs e)
@@ -107,7 +150,7 @@ namespace ThereBeMonsters.Front_end
     protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
     {
       base.OnClosing(e);
-      g.Graph.SaveToXml("save.xml");
+      GraphControl.Graph.SaveToXml("save.xml");
     }
 
     protected override void OnRenderFrame(FrameEventArgs e)

@@ -53,6 +53,7 @@ namespace ThereBeMonsters.Back_end.Modules
         : base(parentNode, paramName)
       {
         ModuleParameterValue = this;
+        Client = new Blank();
       }
 
       public override void OnValueChanged(object sender, ModuleParameterEventArgs e)

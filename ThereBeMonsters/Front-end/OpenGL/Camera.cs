@@ -14,7 +14,7 @@ namespace ThereBeMonsters.Front_end.OpenGL
 
     public void SetupCamera(object sender, FrameEventArgs e)
     {
-      if (MainWindow.hack.Keyboard[OpenTK.Input.Key.A])
+      if (MainWindow.Active.Keyboard[OpenTK.Input.Key.A])
       {
         xAngle -= MathHelper.PiOver6 * (float)e.Time;
       }

@@ -87,7 +87,7 @@ namespace ThereBeMonsters.Back_end.Modules
 
       GL.BindVertexArray(0);
 
-      MainWindow.hack.Viewport.Render += (object sender, FrameEventArgs e) =>
+      MainWindow.Active.Viewport.Render += (object sender, FrameEventArgs e) =>
       {
         GL.Enable(EnableCap.DepthTest);
         GL.DepthFunc(DepthFunction.Less);

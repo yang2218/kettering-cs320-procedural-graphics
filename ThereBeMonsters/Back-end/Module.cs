@@ -120,6 +120,24 @@ namespace ThereBeMonsters.Back_end
 
     #region Constructors and static helpers
 
+    public static IEnumerable<Type> ModuleList
+    {
+      get
+      {
+        return new Type[]
+        {
+          typeof(Modules.ColorCircle),
+          typeof(Modules.CreateTerrain),
+          typeof(Modules.ExampleModule),
+          typeof(Modules.ExtrudeCirclesToHeight),
+          typeof(Modules.Gasket),
+          typeof(Modules.InitMapsModule),
+          typeof(Modules.TexturePreview),
+          typeof(Modules.WriteToConsole)
+        };
+      }
+    }
+
     /// <summary>
     /// Default constructor.
     /// </summary>

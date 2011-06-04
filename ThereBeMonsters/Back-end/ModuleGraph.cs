@@ -368,16 +368,18 @@ namespace ThereBeMonsters.Back_end
       }
     }
 
-    public void Add(string moduleId, Type moduleType, Vector2 position = new Vector2(), string description = "")
+    public void Add(string moduleId, Type moduleType,
+      Vector2 position = new Vector2(), string description = null)
     {
       ModuleNode node = new ModuleNode
       {
+        ModuleId = moduleId,
         ModuleType = moduleType,
         Description = description,
         Position = position
       };
 
-      // Add will throw an exception in the case of a duplicate key (desired)
+      // TODO: throw exception if we try to add a duplicate key
       Nodes.Add(moduleId, node);
       node.Moved += OnModuleMoved;
 
@@ -395,6 +397,8 @@ namespace ThereBeMonsters.Back_end
         return;
       }
 
+      List<string> removeKeys = new List<string>();
+
       foreach (ModuleNode n in Nodes.Values)
       {
         foreach (KeyValuePair<string, object> kvp in n.Wireups)
@@ -402,9 +406,16 @@ namespace ThereBeMonsters.Back_end
           if (kvp.Value != null && kvp.Value.GetType() == typeof(ParameterWireup)
             && ((ParameterWireup)kvp.Value).srcId == moduleId)
           {
-            n[kvp.Key] = null;
+            removeKeys.Add(kvp.Key);
           }
         }
+
+        foreach (string key in removeKeys)
+        {
+          n.Wireups.Remove(key);
+        }
+
+        removeKeys.Clear();
       }
 
       node.Moved -= OnModuleMoved;

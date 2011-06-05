@@ -24,20 +24,12 @@ namespace ThereBeMonsters
 
     public static void Main()
     {
-       InitShape shape = new InitShape();
-       shape.Run();
+      InitShape shape = new InitShape();
+      shape.Run();
+
       Gasket cookie = new Gasket();
-      cookie.InitialShapePoints = new List<Vector2> {
-          shape.Shape[0],
-          shape.Shape[1],
-          shape.Shape[2],
-          shape.Shape[3],
-          shape.Shape[4],
-          shape.Shape[5],
-          shape.Shape[6],
-          shape.Shape[7]
-        
-          /*new Vector2(0f, 0f), 
+      cookie.InitialShapePoints = shape.Shape;
+      /*new Vector2(0f, 0f), 
         new Vector2(0f, 1f),
         new Vector2(1f, 1f),
         new Vector2(1f, 0f),
@@ -49,8 +41,8 @@ namespace ThereBeMonsters
         10f * new Vector2(0f, 1.00f),
         10f * new Vector2(0.5f, 0.13f),
         10f * new Vector2(1.50f, 0.13f),
-        10f * new Vector2(2.00f, 1.00f)*/
-      };
+        10f * new Vector2(2.00f, 1.00f)
+      };*/
       cookie.MaxDepth = 7;
 
       Stopwatch sw = new Stopwatch();
@@ -58,23 +50,23 @@ namespace ThereBeMonsters
       cookie.Run();
       sw.Stop();
       Console.WriteLine(string.Format("Gasket generator run time: {0}ms", sw.ElapsedMilliseconds));
-
+      /*
       ColorCircle painter = new ColorCircle();
       painter.Circles = CirlceFilter(cookie.Circles);
-      painter.ColorMap = new uint[512,512];
+      painter.ColorMap = new uint[512, 512];
       painter.BlendFunc = Blend32bppFunc.Additive;
       painter.BlendFuncSrcFactor = 1f;
       painter.BlendFuncDstFactor = 1f;
       painter.Color = Color.Pink;
       painter.Run();
-
-/*
+      */
+      
       ExtrudeCirclesToHeight extruder = new ExtrudeCirclesToHeight();
       extruder.CapMode = ExtrudeCirclesToHeight.Cap.Hemisphere;
       extruder.Circles = CirlceFilter(cookie.Circles);
       extruder.HeightMap = new byte[1024, 1024];
       extruder.ScaleMode = ExtrudeCirclesToHeight.Scale.None;
-      extruder.BlendFunc = Blend8bppFunctions.Additive;
+      extruder.BlendFunc = Blend8bppFunc.Additive;
       extruder.BlendFuncSrcFactor = 1f;
       extruder.BlendFuncDstFactor = 1f;
         
@@ -83,10 +75,10 @@ namespace ThereBeMonsters
       extruder.Run();
       sw.Stop();
       Console.WriteLine(string.Format("Extruder run time: {0}ms", sw.ElapsedMilliseconds));
-        */
+      
       TexturePreview preview = new TexturePreview();
-      //preview.HeightMap = extruder.HeightMap;
-      preview.ColorMap = painter.ColorMap;
+      preview.HeightMap = extruder.HeightMap;
+      //preview.ColorMap = painter.ColorMap;
       preview.Run();
     }
   }

@@ -20,10 +20,12 @@ namespace ThereBeMonsters.Back_end.Modules
             PointInput.Main();
 
             isInOrder();
+            Convex();
 
             Shape = shape;
         }
 
+        #region inputCheck
         public void isInOrder()
         {
             int i, j, k;
@@ -48,7 +50,37 @@ namespace ThereBeMonsters.Back_end.Modules
             else
                 Console.WriteLine("You are a bad person, put in CCW or CW!!!!");
         }
-        
+
+
+        public static void Convex()
+        {
+            int i, j, k;
+            int flag = 0;
+            double z;
+
+            for (i = 0; i < 8; i++)
+            {
+                j = (i + 1) % 8;
+                k = (i + 2) % 8;
+                z = (shape[j].X - shape[i].X) * (shape[k].Y - shape[j].Y);
+                z -= (shape[j].Y - shape[i].Y) * (shape[k].Y - shape[j].Y);
+                if (z < 0)
+                    flag |= 1;
+                else if (z > 0)
+                    flag |= 2;
+                if (flag == 3)
+                {
+                    Console.WriteLine("Concave");
+                    return;
+                }
+            }
+            if (flag != 0)
+                Console.WriteLine("Convex");
+            else
+                return;
+        }
+        #endregion
+
         #region Get Points
         class PointInput : GameWindow
     {
@@ -59,7 +91,7 @@ namespace ThereBeMonsters.Back_end.Modules
         protected override void OnLoad(EventArgs e)
         {
             GL.Enable(EnableCap.Texture2D);
-            GL.Viewport(0, 0, 1600, 900);
+            GL.Viewport(ClientRectangle);
             GL.ClearColor(Color.Black);
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();

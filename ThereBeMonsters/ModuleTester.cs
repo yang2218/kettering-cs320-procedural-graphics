@@ -24,9 +24,20 @@ namespace ThereBeMonsters
 
     public static void Main()
     {
+       InitShape shape = new InitShape();
+       shape.Run();
       Gasket cookie = new Gasket();
       cookie.InitialShapePoints = new List<Vector2> {
-        new Vector2(0f, 0f), 
+          shape.Shape[0],
+          shape.Shape[1],
+          shape.Shape[2],
+          shape.Shape[3],
+          shape.Shape[4],
+          shape.Shape[5],
+          shape.Shape[6],
+          shape.Shape[7]
+        
+          /*new Vector2(0f, 0f), 
         new Vector2(0f, 1f),
         new Vector2(1f, 1f),
         new Vector2(1f, 0f),

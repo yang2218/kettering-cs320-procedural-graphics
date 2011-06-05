@@ -12,16 +12,45 @@ namespace ThereBeMonsters.Back_end.Modules
     class InitShape : Module
     {
         [Parameter("Initial Shape")]
-        public Vector2[] Shape { private get; set; }
+        public Vector2[] Shape { get; set; }
 
         public static Vector2[] shape = new Vector2[8];
         public override void Run()
         {
             PointInput.Main();
+
+            isInOrder();
+
             Shape = shape;
         }
 
-    class PointInput : GameWindow
+        public void isInOrder()
+        {
+            int i, j, k;
+            int count = 0;
+            double z;
+
+            for (i = 0; i < 8; i++)
+            {
+                j = (i + 1) % 8;
+                k = (i + 2) % 8;
+                z = (shape[j].X - shape[i].X) * (shape[k].Y - shape[j].Y);
+                z -= (shape[j].Y - shape[i].Y) * (shape[k].X - shape[j].X);
+                if (z < 0)
+                    count--;
+                else if (z > 0)
+                    count++;
+            }
+            if (count < 0)
+                Console.WriteLine("Counter Clock Wise");
+            else if (count > 0)
+                Console.WriteLine("Clockwise");
+            else
+                Console.WriteLine("You are a bad person, put in CCW or CW!!!!");
+        }
+        
+        #region Get Points
+        class PointInput : GameWindow
     {
 
         private MouseDevice mouse;
@@ -84,5 +113,6 @@ namespace ThereBeMonsters.Back_end.Modules
             }
         }
     }
-  }
+        #endregion
+    }
 }

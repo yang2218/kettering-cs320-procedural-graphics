@@ -13,6 +13,7 @@ namespace ThereBeMonsters.Front_end.Controls
     public string ParameterName { get; private set; }
     bool IsOutput;
     public Point Offset { get; private set; }
+    ConnectorControl CurrentConnectorControl;
 
     public BubbleControl(ModuleNodeControl nodeControl, 
                          string parameterName, 
@@ -77,6 +78,8 @@ namespace ThereBeMonsters.Front_end.Controls
             // create connection control to follow mouse coursor
 
             // when released, try to find the bubble under the mouse
+            CurrentConnectorControl = new ConnectorControl(this, null);
+            NodeControl.Parent.AddControl(CurrentConnectorControl, new Point(0,0));
             Context.CaptureMouse();
           }
           else
@@ -88,17 +91,30 @@ namespace ThereBeMonsters.Front_end.Controls
           }
         }
 
-        if(ms.HasReleasedButton(MouseButton.Left))
+        Point thisOffset = ms.Position + this.Offset + NodeControl.Position;
+        if(ms.HasReleasedButton(MouseButton.Left) && Context.HasMouse && CurrentConnectorControl != null)
         {
-          if (IsOutput)
+          ModuleNodeControl node = NodeControl.Parent.GetNodeForPoint(thisOffset);
+          if (node != null)
           {
-            //uncapture mouse
-            Context.ReleaseMouse();
-
+            BubbleControl bc = NodeControl.GetBubbleForPoint(ms.Position - node.Position);
+            if(bc != null)
+            {
+              CurrentConnectorControl.RBubble = bc;
+              node.Node[bc.ParameterName] = new ParameterWireup(node.Node.ModuleId,bc.ParameterName);
+            }
+            else
+            {
+              NodeControl.Parent.RemoveControl(CurrentConnectorControl);
+              CurrentConnectorControl = null;
+            }
           }
           else
           {
+            NodeControl.Parent.RemoveControl(CurrentConnectorControl);
+            CurrentConnectorControl = null;
           }
+          Context.ReleaseMouse();
         }
       }
     }

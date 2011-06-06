@@ -113,6 +113,22 @@ namespace ThereBeMonsters.Front_end
       //   then go through the dictionary and see if there's a bubble
       //   whose offset is near the point's .Y
 
+      foreach (BubbleControl bc in LeftBubbleControls.Values)
+      {
+        if(new Rectangle(bc.Offset.X - 6, bc.Offset.Y - 6, 12, 12).In(p))
+        {
+          return bc;
+        }
+      }
+
+      foreach (BubbleControl bc in RightBubbleControls.Values)
+      {
+        if (new Rectangle(bc.Offset.X - 6, bc.Offset.Y - 6, 12, 12).In(p))
+        {
+          return bc;
+        }
+      }
+
       return null;
     }
 

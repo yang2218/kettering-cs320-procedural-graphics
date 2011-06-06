@@ -61,13 +61,10 @@ namespace ThereBeMonsters.Front_end.Controls
 
     private bool _checkForRemoval;
 
-    public ConnectorControl(BubbleControl lBubble, Point lOffset,
-      BubbleControl rBubble, Point rOffset)
+    public ConnectorControl(BubbleControl lBubble, BubbleControl rBubble)
     {
       this.LBubble = lBubble;
       this.RBubble = rBubble;
-      this.LOffset = lOffset;
-      this.ROffset = rOffset;
     }
 
     public void ClearPath(object sender, ModuleMovedEventArgs e)

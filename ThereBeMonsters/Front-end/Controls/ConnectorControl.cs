@@ -198,24 +198,34 @@ namespace ThereBeMonsters.Front_end.Controls
 
     private void RecalculatePath()
     {
-      // TODO: use OpenTK.BeizerCurve to generate a bunch of points to put in _path
-      // construct a BeizerCurve
-      // first point:
-      //   if LBubble is null, just use LOffset
-      //   otherwise, use LBubble's position + LOFfset
-      // second point: just a little to the right of first point
-      // third point: just a little to the left of the fourth point
-      // fourth point: like first point, but for right bubble/offset
+      Vector2[] points = new Vector2[4];
 
-      // call calclength, use t increment of about 3/length (careful for length==0!)
-      // call calcpoint for each t in [0..1] by above increment, add to _path
-
-      _path.Add(LBubble != null
+      points[0] =
+        LBubble != null
         ? (LBubble.NodeControl.Position + LBubble.Offset)
-        : _mousePos);
-      _path.Add(RBubble != null
+        : _mousePos;
+
+      points[3] =
+        RBubble != null
         ? (RBubble.NodeControl.Position + RBubble.Offset)
-        : _mousePos);
+        : _mousePos;
+
+      float midpoint = (points[0].X + points[3].X) / 2;
+      points[1] = new Vector2(midpoint, points[0].Y);
+      points[2] = new Vector2(midpoint, points[3].Y);
+
+      OpenTK.BezierCurve test = new BezierCurve(points);
+
+      float length = test.CalculateLength(.1f);
+      float increment =
+        length != 0f
+        ? (3f / length)
+        : (3f / 1f);
+
+      for (float t = 0; t < 1; t += increment)
+      {
+        _path.Add(test.CalculatePoint(t));
+      }
     }
   }
 }

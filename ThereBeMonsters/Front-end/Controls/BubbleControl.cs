@@ -4,27 +4,33 @@ using OpenTKGUI;
 using OpenTK;
 using ThereBeMonsters.Back_end;
 using OpenTK.Input;
+using OpenTK.Graphics.OpenGL;
 
 namespace ThereBeMonsters.Front_end.Controls
 {
-  public class BubbleControl : Label
+  public class BubbleControl : Control
   {
+    public static readonly Color defaultColor = Color.RGB(0.2, 0.2, 0.8),
+      goodColor = Color.RGB(0.2, 0.8, 0.2),
+      badColor = Color.RGB(0.8, 0.2, 0.2);
+
     public ModuleNodeControl NodeControl { get; private set; }
     public string ParameterName { get; private set; }
-    bool IsOutput;
+    public bool IsOutput { get; private set; }
     public Point Offset { get; private set; }
-    ConnectorControl CurrentConnectorControl;
+    public ConnectorControl Connector { get; set; }
+    public Color Color { get; set; }
 
-    public BubbleControl(ModuleNodeControl nodeControl, 
-                         string parameterName, 
-                         bool isOutput, 
+    public BubbleControl(ModuleNodeControl nodeControl,
+                         string parameterName,
+                         bool isOutput,
                          Point offset)
-      : base("o",Color.RGB(.5,0,0))
     {
       NodeControl = nodeControl;
       ParameterName = parameterName;
       IsOutput = isOutput;
       Offset = offset;
+      Color = Color.RGB(0.2, 0.2, 0.8);
 
       if (isOutput == false)
       {
@@ -40,83 +46,45 @@ namespace ThereBeMonsters.Front_end.Controls
       }
 
       object value = NodeControl.Node[ParameterName];
-      if (value == null || value.GetType() != typeof(ParameterWireup))
-      {
-        // TODO: remove connector
-      }
-      else
+      if (value != null && value.GetType() == typeof(ParameterWireup) && Connector == null)
       {
         ParameterWireup pw = (ParameterWireup)value;
-        // TODO: move connector's far endpoint
+        BubbleControl bc = NodeControl.Parent[pw.srcId][pw.srcParam, true];
+        /*Connector =*/ new ConnectorControl(bc, this);
       }
     }
 
     public override void Update(GUIControlContext Context, double Time)
     {
-      // input buble can have only 1 link
-      // output bubble can have as many links as it wants
-
-      // disconnect only using input bubbles
-      
-      // connect only from output to inputs
-
-      // start out only support click drag from output to input
-
-      // Bubble responsible for changing the model, not connectors
-
-      //nodeControl.Node[parameterName].GetType()==typeof(ParameterWireup);
-
       OpenTKGUI.MouseState ms = Context.MouseState;
-      if(ms == null) return;
-
-      if(new Rectangle(0,0,12,12).In(ms.Position))
+      if (ms == null)
       {
-        if(ms.HasPushedButton(MouseButton.Left))
-        {
-          if(IsOutput)
-          {
-            // create connection control to follow mouse coursor
-
-            // when released, try to find the bubble under the mouse
-            CurrentConnectorControl = new ConnectorControl(this, null);
-            NodeControl.Parent.AddControl(CurrentConnectorControl, new Point(0,0));
-            Context.CaptureMouse();
-          }
-          else
-          {
-            // if connection, unconnect and have it follow the mouse
-            NodeControl.Node[ParameterName] = null;
-            // otherrwise, create connection
-            // when releasd and find the bubble under the cursor
-          }
-        }
-
-        Point thisOffset = ms.Position + this.Offset + NodeControl.Position;
-        if(ms.HasReleasedButton(MouseButton.Left) && Context.HasMouse && CurrentConnectorControl != null)
-        {
-          ModuleNodeControl node = NodeControl.Parent.GetNodeForPoint(thisOffset);
-          if (node != null)
-          {
-            BubbleControl bc = NodeControl.GetBubbleForPoint(ms.Position - node.Position);
-            if(bc != null)
-            {
-              CurrentConnectorControl.RBubble = bc;
-              node.Node[bc.ParameterName] = new ParameterWireup(node.Node.ModuleId,bc.ParameterName);
-            }
-            else
-            {
-              NodeControl.Parent.RemoveControl(CurrentConnectorControl);
-              CurrentConnectorControl = null;
-            }
-          }
-          else
-          {
-            NodeControl.Parent.RemoveControl(CurrentConnectorControl);
-            CurrentConnectorControl = null;
-          }
-          Context.ReleaseMouse();
-        }
+        return;
       }
+
+      if (IsOutput && ms.HasPushedButton(MouseButton.Left))
+      {
+        /*Connector =*/ new ConnectorControl(this, null);
+      }
+    }
+
+    public override void Render(GUIRenderContext Context)
+    {
+      base.Render(Context);
+
+      Context.DrawSolid(Color.RGB(0.8, 0.8, 0.8), new Rectangle(this.Size));
+      GL.Begin(BeginMode.TriangleFan);
+      GL.Color4(this.Color);
+      GL.Vertex2((Vector2)this.Size / 2f);
+      GL.Color4(Color.RGB(0.8, 0.8, 0.8));
+      double half = this.Size.X / 2.0;
+      double yoff = this.Size.Y / 2.0;
+      for (float t = 0; t <= MathHelper.TwoPi + 0.001; t += MathHelper.PiOver6)
+      {
+        GL.Vertex2(half + Math.Cos(t) * half, yoff + Math.Sin(t) * half);
+      }
+
+      GL.End();
     }
   }
 }

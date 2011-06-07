@@ -8,6 +8,8 @@ namespace ThereBeMonsters.Front_end.Controls
 {
   public class EnumControl : EditorControl
   {
+    private Textbox _textbox;
+
     public override double PreferredHeight
     {
       get { return 20.0; }
@@ -16,9 +18,9 @@ namespace ThereBeMonsters.Front_end.Controls
     public EnumControl(ModuleNodeControl parentNode, string paramName)
       : base(parentNode, paramName)
     {
-      Textbox t = new Textbox();
-      t.Text = (ModuleParameterValue ?? string.Empty).ToString();
-      PopupContainer pc = new PopupContainer(t);
+      _textbox = new Textbox();
+      _textbox.Text = (ModuleParameterValue ?? string.Empty).ToString();
+      PopupContainer pc = new PopupContainer(_textbox);
       List<MenuItem> options = new List<MenuItem>();
       Type type = ThereBeMonsters.Back_end.Module.GetModuleParameters(NodeControl.Node.ModuleType)[ParameterName].Type;
       foreach (MemberInfo mi in type.GetMembers(BindingFlags.Static | BindingFlags.Public))
@@ -31,7 +33,6 @@ namespace ThereBeMonsters.Front_end.Controls
 
         options.Add(MenuItem.Create(fi.Name, () =>
         {
-          t.Text = fi.Name;
           ModuleParameterValue = fi.GetValue(null);
         }));
       }
@@ -41,6 +42,15 @@ namespace ThereBeMonsters.Front_end.Controls
 
     public override void OnValueChanged(object sender, ModuleParameterEventArgs e)
     {
+      Enum val = ModuleParameterValue as Enum;
+      if (val != null)
+      {
+        _textbox.Text = val.ToString();
+      }
+      else
+      {
+        _textbox.Text = string.Empty;
+      }
     }
   }
 }

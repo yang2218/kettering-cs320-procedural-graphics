@@ -12,13 +12,15 @@ namespace ThereBeMonsters.Front_end.Controls
       get { return 20.0; }
     }
 
+    private Textbox _textbox;
+
     public FloatControl(ModuleNodeControl parentNode, string paramName)
       : base(parentNode, paramName)
     {
-      Textbox t = new Textbox();
-      t.Text = (ModuleParameterValue ?? string.Empty).ToString();
-      Client = t;
-      t.TextEntered += (text) =>
+      _textbox = new Textbox();
+      _textbox.Text = (ModuleParameterValue ?? string.Empty).ToString();
+      Client = _textbox;
+      _textbox.TextEntered += (text) =>
       {
         float value;
         if (float.TryParse(text, out value))
@@ -30,6 +32,15 @@ namespace ThereBeMonsters.Front_end.Controls
 
     public override void OnValueChanged(object sender, ModuleParameterEventArgs e)
     {
+      float? val = ModuleParameterValue as float?;
+      if (val.HasValue)
+      {
+        _textbox.Text = val.Value.ToString();
+      }
+      else
+      {
+        _textbox.Text = string.Empty;
+      }
     }
   }
 }

@@ -12,7 +12,8 @@ namespace ThereBeMonsters.Front_end.Controls
   {
     public static readonly Color defaultColor = Color.RGB(0.2, 0.2, 0.8),
       goodColor = Color.RGB(0.2, 0.8, 0.2),
-      badColor = Color.RGB(0.8, 0.2, 0.2);
+      badColor = Color.RGB(0.8, 0.2, 0.2),
+      maybeColor = Color.RGB(0.8, 0.8, 0.2);
 
     public ModuleNodeControl NodeControl { get; private set; }
     public string ParameterName { get; private set; }
@@ -62,9 +63,17 @@ namespace ThereBeMonsters.Front_end.Controls
         return;
       }
 
-      if (IsOutput && ms.HasPushedButton(MouseButton.Left))
+      if (ms.HasPushedButton(MouseButton.Left))
       {
-        /*Connector =*/ new ConnectorControl(this, null);
+        if (Connector == null)
+        {
+          new ConnectorControl(IsOutput ? this : null, IsOutput ? null : this);
+        }
+        else
+        {
+          Connector.RBubble = null;
+          NodeControl.Node[ParameterName] = null;
+        }
       }
     }
 

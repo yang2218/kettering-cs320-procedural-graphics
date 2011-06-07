@@ -12,13 +12,15 @@ namespace ThereBeMonsters.Front_end.Controls
       get { return 20; }
     }
 
+    private Textbox _textbox;
+
     public IntControl(ModuleNodeControl parentNode, string paramName)
       : base(parentNode, paramName)
     {
-      Textbox t = new Textbox();
-      Client = t;
-      t.Text = (ModuleParameterValue ?? string.Empty).ToString();
-      t.TextEntered += (text) =>
+      _textbox = new Textbox();
+      Client = _textbox;
+      _textbox.Text = (ModuleParameterValue ?? string.Empty).ToString();
+      _textbox.TextEntered += (text) =>
       {
         int value;
         if (int.TryParse(text, out value))
@@ -31,6 +33,15 @@ namespace ThereBeMonsters.Front_end.Controls
 
     public override void OnValueChanged(object sender, ModuleParameterEventArgs e)
     {
+      int? val = ModuleParameterValue as int?;
+      if (val.HasValue)
+      {
+        _textbox.Text = val.Value.ToString();
+      }
+      else
+      {
+        _textbox.Text = string.Empty;
+      }
     }
   }
 }

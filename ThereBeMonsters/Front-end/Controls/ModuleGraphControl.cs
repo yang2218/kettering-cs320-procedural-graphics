@@ -29,6 +29,7 @@ namespace ThereBeMonsters.Front_end
       if (ms.HasPushedButton(OpenTK.Input.MouseButton.Middle))
       {
         _dragOffset = this.Offset + ms.Position;
+        Context.CaptureMouse();
       }
       else if (ms.IsButtonDown(OpenTK.Input.MouseButton.Middle))
       {
@@ -42,6 +43,10 @@ namespace ThereBeMonsters.Front_end
         this.Offset = p;
 
         // TODO: if position near the edge, teleport mouse cursor to other edge
+      }
+      else if (ms.HasReleasedButton(OpenTK.Input.MouseButton.Middle))
+      {
+        Context.ReleaseMouse();
       }
     }
   }
@@ -110,6 +115,11 @@ namespace ThereBeMonsters.Front_end
         foreach (ModuleNode node in _graph.Nodes.Values)
         {
           OnModuleAdded(_graph, new ModuleEventArgs(node.ModuleId));
+        }
+
+        foreach (ModuleNode node in _graph.Nodes.Values)
+        {
+          node.ForceParameterUpdate();
         }
       }
     }

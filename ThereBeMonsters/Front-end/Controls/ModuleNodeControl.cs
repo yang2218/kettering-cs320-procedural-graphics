@@ -39,6 +39,8 @@ namespace ThereBeMonsters.Front_end
       }
     }
 
+    private double _closeGrase;
+
     public ModuleNodeControl(ModuleGraphControl parent, ModuleNode node)
       : base(new FlowContainer(Axis.Vertical), node.ModuleType.Name)
     {
@@ -80,7 +82,7 @@ namespace ThereBeMonsters.Front_end
         if ((kvp.Value.Direction & Module.Parameter.IODirection.INPUT) > 0)
         {
           bubble = new BubbleControl(this, kvp.Key, false,
-            new Point(borderSize + 6, flow.SuggestLength + 20 + titleSize));
+            new Point(borderSize + 6, flow.SuggestLength + titleSize + borderSize + 4));
           LeftBubbleControls[kvp.Key] = bubble;
           horiz.AddChild(bubble, 12);
         }
@@ -95,7 +97,7 @@ namespace ThereBeMonsters.Front_end
         if ((kvp.Value.Direction & Module.Parameter.IODirection.OUTPUT) > 0)
         {
           bubble = new BubbleControl(this, kvp.Key, true,
-            new Point(borderSize + 150 - 6, flow.SuggestLength + titleSize + borderSize));
+            new Point(borderSize + 150 - 6, flow.SuggestLength + titleSize + borderSize + 4));
           RightBubbleControls[kvp.Key] = bubble;
           horiz.AddChild(bubble, 12);
         }
@@ -155,7 +157,6 @@ namespace ThereBeMonsters.Front_end
       return null;
     }
 
-    private double _closeGrase;
     private void ConfirmedClose()
     {
       if (_closeGrase > 0.0)

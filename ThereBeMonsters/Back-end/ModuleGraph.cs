@@ -290,6 +290,14 @@ namespace ThereBeMonsters.Back_end
         ));
       }
     }
+
+    public void ForceParameterUpdate()
+    {
+      foreach (string param in Wireups.Keys)
+      {
+        ParameterUpdated(this, new ModuleParameterEventArgs(param));
+      }
+    }
   }
 
   // hack for serializing/deserializing the ModuleNode dictionary in ModuleGraph

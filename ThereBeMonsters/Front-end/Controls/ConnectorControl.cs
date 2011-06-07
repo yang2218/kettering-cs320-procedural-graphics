@@ -45,6 +45,7 @@ namespace ThereBeMonsters.Front_end.Controls
         {
           _rBubble.NodeControl.Node.Moved -= ClearPath;
           _rBubble.NodeControl.Node.ParameterUpdated -= OnParameterChanged;
+          _rBubble.Connector = null;
         }
 
         _rBubble = value;
@@ -53,6 +54,7 @@ namespace ThereBeMonsters.Front_end.Controls
         {
           _rBubble.NodeControl.Node.Moved += ClearPath;
           _rBubble.NodeControl.Node.ParameterUpdated += OnParameterChanged;
+          _rBubble.Connector = this;
         }
       }
     }
@@ -114,9 +116,9 @@ namespace ThereBeMonsters.Front_end.Controls
       _mousePos = ms.Position;
       _path.Clear();
 
-      ModuleNodeControl node;
+      ModuleNodeControl node = (LBubble ?? RBubble).NodeControl.Parent.GetNodeForPoint(ms.Position);
       BubbleControl bc = null;
-      if ((node = (LBubble ?? RBubble).NodeControl.Parent.GetNodeForPoint(ms.Position)) != null)
+      if (node != null)
       {
         bc = node.GetBubbleForPoint(ms.Position - node.Position);
         if (bc != _mouseOverBubble)
@@ -129,17 +131,37 @@ namespace ThereBeMonsters.Front_end.Controls
           _mouseOverBubble = bc;
           if (bc != null)
           {
-            bc.Color = BubbleControl.goodColor;
+            Type t1, t2;
+            t1 = Module.GetModuleParameters(bc.NodeControl.Node.ModuleType)[bc.ParameterName].Type;
+            t2 = Module.GetModuleParameters((LBubble ?? RBubble)
+              .NodeControl.Node.ModuleType)[(LBubble ?? RBubble).ParameterName].Type;
+
+            bc.Color = (bc.IsOutput != (LBubble ?? RBubble).IsOutput
+              && (LBubble ?? RBubble).NodeControl != bc.NodeControl)
+              ? ((t1 == t2)
+               ? BubbleControl.goodColor
+               : BubbleControl.maybeColor)
+              : BubbleControl.badColor;
           }
         }
       }
+      else if (_mouseOverBubble != null)
+      {
+        _mouseOverBubble.Color = BubbleControl.defaultColor;
+        _mouseOverBubble = null;
+      }
+
 
       if (ms.HasReleasedButton(OpenTK.Input.MouseButton.Left) && _clickOrDragGrace < 0.0)
       {
-        if (bc != null)
+        if (bc != null
+          && bc.IsOutput != (LBubble ?? RBubble).IsOutput
+          && (LBubble ?? RBubble).NodeControl != bc.NodeControl)
         {
           LBubble = LBubble ?? bc;
           RBubble = RBubble ?? bc;
+          RBubble.NodeControl.Node[RBubble.ParameterName]
+            = new ParameterWireup(LBubble.NodeControl.Node.ModuleId, LBubble.ParameterName);
         }
         else
         {
@@ -148,6 +170,10 @@ namespace ThereBeMonsters.Front_end.Controls
         }
 
         Context.ReleaseMouse();
+        if (_mouseOverBubble != null)
+        {
+          _mouseOverBubble.Color = BubbleControl.defaultColor;
+        }
       }
     }
 

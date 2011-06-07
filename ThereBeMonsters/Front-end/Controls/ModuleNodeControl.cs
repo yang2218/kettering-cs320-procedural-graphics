@@ -16,6 +16,29 @@ namespace ThereBeMonsters.Front_end
     public Dictionary<string, BubbleControl> LeftBubbleControls { get; private set; }
     public Dictionary<string, BubbleControl> RightBubbleControls { get; private set; }
 
+    public EditorControl this[string paramName]
+    {
+      get
+      {
+        return EditorControls[paramName];
+      }
+    }
+
+    public BubbleControl this[string paramName, bool right]
+    {
+      get
+      {
+        if (right)
+        {
+          return RightBubbleControls[paramName];
+        }
+        else
+        {
+          return LeftBubbleControls[paramName];
+        }
+      }
+    }
+
     public ModuleNodeControl(ModuleGraphControl parent, ModuleNode node)
       : base(new FlowContainer(Axis.Vertical), node.ModuleType.Name)
     {
@@ -57,7 +80,7 @@ namespace ThereBeMonsters.Front_end
         if ((kvp.Value.Direction & Module.Parameter.IODirection.INPUT) > 0)
         {
           bubble = new BubbleControl(this, kvp.Key, false,
-            new Point(borderSize + 6, flow.SuggestLength + 10 + titleSize));
+            new Point(borderSize + 6, flow.SuggestLength + 20 + titleSize));
           LeftBubbleControls[kvp.Key] = bubble;
           horiz.AddChild(bubble, 12);
         }
@@ -72,7 +95,7 @@ namespace ThereBeMonsters.Front_end
         if ((kvp.Value.Direction & Module.Parameter.IODirection.OUTPUT) > 0)
         {
           bubble = new BubbleControl(this, kvp.Key, true,
-            new Point(borderSize + 150 - 6, flow.SuggestLength + 10 + titleSize));
+            new Point(borderSize + 150 - 6, flow.SuggestLength + titleSize + borderSize));
           RightBubbleControls[kvp.Key] = bubble;
           horiz.AddChild(bubble, 12);
         }

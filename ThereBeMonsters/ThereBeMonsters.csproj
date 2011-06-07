@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>ThereBeMonsters.ModuleTester</StartupObject>
+    <StartupObject>ThereBeMonsters.Front_end.MainWindow</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <None Include="OpenTK.dll" />

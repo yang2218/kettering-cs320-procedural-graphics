@@ -132,6 +132,7 @@ namespace ThereBeMonsters.Back_end
           typeof(Modules.ExtrudeCirclesToHeight),
           typeof(Modules.Gasket),
           typeof(Modules.InitMapsModule),
+          typeof(Modules.InitShape),
           typeof(Modules.TexturePreview),
           typeof(Modules.WriteToConsole)
         };

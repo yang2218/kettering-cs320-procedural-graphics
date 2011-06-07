@@ -114,6 +114,14 @@ namespace ThereBeMonsters.Front_end
       }
     }
 
+    public ModuleNodeControl this[string moduleId]
+    {
+      get
+      {
+        return _idMap[moduleId];
+      }
+    }
+
     private Dictionary<string, ModuleNodeControl> _idMap
       = new Dictionary<string, ModuleNodeControl>();
 
@@ -131,9 +139,11 @@ namespace ThereBeMonsters.Front_end
 
     public ModuleNodeControl GetNodeForPoint(Point p)
     {
+      Rectangle r;
       foreach (ModuleNodeControl node in _idMap.Values)
       {
-        if (node.ClientRectangle.In(p))
+        r = new Rectangle(node.Position + node.ClientRectangle.Location, node.ClientRectangle.Size);
+        if (r.In(p))
         {
           return node;
         }

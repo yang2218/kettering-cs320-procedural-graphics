@@ -101,8 +101,18 @@ namespace ThereBeMonsters.Front_end
       extruder.BlendFuncDstFactor = 1f;
       extruder.Run();
 
+      ColorCircle painter = new ColorCircle();
+      painter.Circles = CirlceFilter(cookie.Circles);
+      painter.ColorMap = new uint[64, 64];
+      painter.BlendFunc = Blend32bppFunc.Additive;
+      painter.BlendFuncSrcFactor = 1f;
+      painter.BlendFuncDstFactor = 1f;
+      //painter.Color = Color.Pink;
+      painter.Run();
+
       CreateTerrain creator = new CreateTerrain();
       creator.HeightMap = extruder.HeightMap;
+      creator.ColorMap = painter.ColorMap;
       creator.Run();
 
     }
@@ -125,7 +135,7 @@ namespace ThereBeMonsters.Front_end
 
     private Control SetupControls()
     {
-      GraphControl = new ModuleGraphControl(ModuleGraph.LoadFromXml("save.xml"));
+      GraphControl = new ModuleGraphControl(ModuleGraph.LoadFromXml("TestGraph2.xml"));
       ModuleGraphWindowControl wc = new ModuleGraphWindowControl(GraphControl);
       wc.FullSize = new Point(double.MaxValue, double.MaxValue);
       wc.Offset = new Point(0, 0);

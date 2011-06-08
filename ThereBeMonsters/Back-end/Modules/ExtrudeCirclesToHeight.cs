@@ -59,6 +59,7 @@ namespace ThereBeMonsters.Back_end.Modules
     public float BlendFuncDstFactor { private get; set; }
 
     private static byte[] lookupTable = {};
+    private static Cap lastCapMode;
 
     public override void Run()
     {
@@ -71,8 +72,9 @@ namespace ThereBeMonsters.Back_end.Modules
 
       // generate lookup table
       int tableSize = (int)Math.Sqrt(res * res * 2);
-      if (lookupTable.Length != tableSize)
+      if (lookupTable.Length != tableSize || CapMode != lastCapMode)
       {
+        lastCapMode = CapMode;
         lookupTable = new byte[tableSize];
         for (int i = 0; i < lookupTable.Length; i++)
         {

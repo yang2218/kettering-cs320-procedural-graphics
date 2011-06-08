@@ -50,7 +50,7 @@ namespace ThereBeMonsters
       //preview.ColorMap = painter.ColorMap;
       p.Run();
 
-      return;
+      //return;
 
       InitShape shape = new InitShape();
       shape.Run();

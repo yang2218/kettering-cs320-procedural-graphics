@@ -55,6 +55,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
@@ -64,6 +65,7 @@
     <Compile Include="Back-end\Modules\InitMapsModule.cs" />
     <Compile Include="Back-end\Modules\InitShape.cs" />
     <Compile Include="Back-end\Modules\TexturePreview.cs" />
+    <Compile Include="Front-end\Controls\BoolEditor.cs" />
     <Compile Include="Front-end\Controls\BubbleControl.cs" />
     <Compile Include="Front-end\Controls\ConnectorControl.cs" />
     <Compile Include="Front-end\Controls\EditorControl.cs" />
@@ -79,24 +81,17 @@
     <Compile Include="Front-end\Controls\IntControl.cs" />
     <Compile Include="Front-end\Controls\StringControl.cs" />
     <Compile Include="Front-end\OpenGL\Camera.cs" />
-    <Compile Include="Front-end\OpenGL\Entity.cs" />
     <Compile Include="FloatExtensions.cs" />
     <Compile Include="Front-end\Main.cs" />
-    <Compile Include="Front-end\OpenGL\Material.cs" />
     <Compile Include="Front-end\Controls\ModuleGraphControl.cs" />
     <Compile Include="Front-end\Controls\ModuleNodeControl.cs" />
-    <Compile Include="Front-end\OpenGL\Scene.cs" />
-    <Compile Include="Front-end\OpenGL\TestEntity.cs" />
-    <Compile Include="Front-end\OpenGL\Texture.cs" />
-    <Compile Include="Front-end\OpenGL\Transform.cs" />
-    <Compile Include="Front-end\OpenGL\VertexData.cs" />
-    <Compile Include="Front-end\OpenGL\VertexPosData.cs" />
-    <Compile Include="Front-end\OpenGL\VertexPosUVData.cs" />
-    <Compile Include="Front-end\OpenGL\Viewport.cs" />
-    <Compile Include="Front-end\Controls\ViewportPlaceholder.cs" />
+    <Compile Include="Front-end\Controls\Viewport.cs" />
     <Compile Include="ModuleTester.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="oblongGasketLogo.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="OpenTKGUI.dll" />
     <Content Include="TestGraph2.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

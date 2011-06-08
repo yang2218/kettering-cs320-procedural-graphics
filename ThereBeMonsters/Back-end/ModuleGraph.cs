@@ -420,7 +420,7 @@ namespace ThereBeMonsters.Back_end
 
         foreach (string key in removeKeys)
         {
-          n.Wireups.Remove(key);
+          n[key] = null;
         }
 
         removeKeys.Clear();

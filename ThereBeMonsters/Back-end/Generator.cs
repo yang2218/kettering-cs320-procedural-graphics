@@ -163,7 +163,7 @@ namespace ThereBeMonsters.Back_end
       {
         foreach (ModuleNode dependee in dependeeList)
         {
-          if (visited.Contains(node) == false)
+          if (visited.Contains(dependee) == false)
           {
             DFSVisit(dependee, visited, dependancies, runQueue);
           }

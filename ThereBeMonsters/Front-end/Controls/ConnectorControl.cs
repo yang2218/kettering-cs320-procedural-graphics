@@ -104,7 +104,7 @@ namespace ThereBeMonsters.Front_end.Controls
 
       if (Context.HasMouse == false)
       {
-        if (LBubble == null || RBubble == null)
+        if ((LBubble == null) ^ (RBubble == null))
         {
           Context.CaptureMouse();
         }
@@ -226,6 +226,12 @@ namespace ThereBeMonsters.Front_end.Controls
       {
         _path.Add(test.CalculatePoint(t));
       }
+    }
+
+    public void Remove()
+    {
+      (LBubble ?? RBubble).NodeControl.Parent.RemoveControl(this);
+      LBubble = RBubble = null;
     }
   }
 }

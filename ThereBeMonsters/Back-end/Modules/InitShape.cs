@@ -4,25 +4,57 @@ using OpenTK;
 using OpenTK.Input;
 using OpenTK.Graphics.OpenGL;
 using System.Collections.Generic;
+using OpenTK.Graphics;
+using ThereBeMonsters.Front_end;
 
 namespace ThereBeMonsters.Back_end.Modules
 {
   [Module("Initial Shape")]
-  class InitShape : Module
+  public class InitShape : Module
   {
+    [NonParameter]
+    public static List<Vector2> LastShape { get; private set; }
+
     [Parameter("Initial Shape")]
     public List<Vector2> Shape { get; private set; }
 
+    public bool UseLastShape { private get; set; }
+
     public override void Run()
     {
-      using (PointInput window = new PointInput())
+      if (UseLastShape == false || LastShape == null)
       {
-        window.Title = "RAWR";
-        window.Size = new Size(900, 900);
-        window.X = 2;
-        window.Y = 2;
-        window.Run(30.0, 0.0);
-        Shape = window.Shape;
+        IGraphicsContext context = GraphicsContext.CurrentContext;
+        using (PointInput window = new PointInput())
+        {
+          window.Title = "RAWR";
+          window.Size = new Size(900, 900);
+          window.X = 2;
+          window.Y = 2;
+          window.Run(30.0, 0.0);
+          Shape = window.Shape;
+        }
+
+        if (context != null)
+        {
+          context.MakeCurrent(MainWindow.Active.WindowInfo);
+        }
+      }
+      else
+      {
+        Shape = LastShape;
+      }
+
+      if (Shape.Count < 3)
+      {
+        // no way to abort graph from running, so make a default shape
+        Shape = new List<Vector2>
+        {
+          new Vector2(0f, 0f), 
+          new Vector2(0f, 1f),
+          new Vector2(1f, 1f),
+          new Vector2(1f, 0f)
+        };
       }
 
       Vector2 min = new Vector2(float.MaxValue, float.MaxValue), max = Vector2.Zero;
@@ -45,6 +77,8 @@ namespace ThereBeMonsters.Back_end.Modules
       Convex();
 
       Shape.Add(Shape[0]);
+
+      LastShape = Shape;
     }
 
     #region inputCheck
@@ -136,6 +170,11 @@ namespace ThereBeMonsters.Back_end.Modules
         if (Shape.Count > 0)
         {
           Draw();
+        }
+
+        if (Keyboard[Key.Escape])
+        {
+          Exit();
         }
 
         this.SwapBuffers();

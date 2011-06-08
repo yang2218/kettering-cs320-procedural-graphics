@@ -93,18 +93,16 @@ namespace ThereBeMonsters.Back_end.Modules
       public PreviewWindow(uint[,] map)
       {
         Title = "Texture Preview";
-        ClientSize = new Size(map.GetLength(0), map.GetLength(1));
+        ClientSize = new Size(map.GetLength(0) * 16, map.GetLength(1) * 16);
         this.map = map;
       }
 
       protected override void OnLoad(EventArgs e)
       {
-        GL.Viewport(ClientRectangle);
-
         GL.ClearColor(System.Drawing.Color.Black);
 
-        GL.MatrixMode(MatrixMode.Projection);
-        GL.Ortho(-0.5, 0.5, -0.5, 0.5, -1, 1);
+        GL.MatrixMode(MatrixMode.Modelview);
+        GL.LoadIdentity();
 
         textureId = GL.GenTexture();
         GL.BindTexture(TextureTarget.Texture2D, textureId);
@@ -115,6 +113,16 @@ namespace ThereBeMonsters.Back_end.Modules
 
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+      }
+
+      protected override void OnResize(EventArgs e)
+      {
+        base.OnResize(e);
+
+        GL.Viewport(ClientRectangle);
+        GL.MatrixMode(MatrixMode.Projection);
+        GL.LoadIdentity();
+        GL.Ortho(-0.5, 0.5, -0.5, 0.5, -1, 1);
       }
 
       protected override void OnUpdateFrame(FrameEventArgs e)

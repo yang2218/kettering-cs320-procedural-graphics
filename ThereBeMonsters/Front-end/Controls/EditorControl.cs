@@ -9,6 +9,7 @@ namespace ThereBeMonsters.Front_end.Controls
   {
     public static Dictionary<Type, Type> _editorRegistry =
       new Dictionary<Type, Type> {
+        {typeof(bool), typeof(BoolEditor)},
         {typeof(Enum), typeof(EnumControl)},
         {typeof(float), typeof(FloatControl)},
         {typeof(int), typeof(IntControl)},

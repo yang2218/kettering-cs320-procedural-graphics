@@ -184,7 +184,11 @@ namespace ThereBeMonsters.Back_end.Modules
           //Console.WriteLine("RADIUS: " + radius);
           //Store circle in list
           Vector3 firstCircle = new Vector3(centroid.X, centroid.Y, radius);
-          circles.Add(firstCircle / width);
+          Vector3 circleCanidate = firstCircle / width;
+          if (circleCanidate.Z >= 0f && circleCanidate.Z < 1f)
+          {
+            circles.Add(circleCanidate);
+          }
 
           //Find that arcpoint
           //This doesn't handle vertical or horizontal lines

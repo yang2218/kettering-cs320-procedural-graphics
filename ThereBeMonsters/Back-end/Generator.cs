@@ -48,7 +48,7 @@ namespace ThereBeMonsters.Back_end
         {
           if (node.Wireups.TryGetValue(param.Name, out value))
           {
-            if (value.GetType() == typeof(ParameterWireup))
+            if (value != null && value.GetType() == typeof(ParameterWireup))
             {
               pw = (ParameterWireup)value;
               module[param.Name] = outputCache[pw];

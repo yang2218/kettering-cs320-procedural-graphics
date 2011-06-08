@@ -6,6 +6,7 @@ using OpenTKGUI;
 using ThereBeMonsters.Front_end.OpenGL;
 using ThereBeMonsters.Back_end.Modules;
 using ThereBeMonsters.Back_end;
+using System.IO;
 
 namespace ThereBeMonsters.Front_end
 {
@@ -101,47 +102,6 @@ namespace ThereBeMonsters.Front_end
       }
     }
 
-    public static void GenerateTest()
-    {
-      Gasket cookie = new Gasket();
-      cookie.InitialShapePoints = new List<Vector2> {
-        new Vector2(0f, 0f),
-        new Vector2(1f, 0f),
-        new Vector2(1f, 1f),
-        new Vector2(0f, 1f),
-        new Vector2(0f, 0f)
-      };
-      cookie.MaxDepth = 7;
-      cookie.Run();
-
-      ExtrudeCirclesToHeight extruder = new ExtrudeCirclesToHeight();
-      extruder.CapMode = ExtrudeCirclesToHeight.Cap.Hemisphere;
-      extruder.Circles = CirlceFilter(cookie.Circles);
-      extruder.HeightMap = new byte[512, 512];
-      extruder.ScaleMode = ExtrudeCirclesToHeight.Scale.Quadradic;
-      extruder.BlendFunc = Blend8bppFunc.Additive;
-      extruder.BlendFuncSrcFactor = 1f;
-      extruder.BlendFuncDstFactor = 1f;
-      extruder.Run();
-
-      ColorCircle painter = new ColorCircle();
-      painter.Circles = CirlceFilter(cookie.Circles);
-      painter.ColorMap = new uint[512, 512];
-      painter.BlendFunc = Blend32bppFunc.Additive;
-      painter.BlendFuncSrcFactor = 1f;
-      painter.BlendFuncDstFactor = 1f;
-      //painter.Color = Color.Pink;
-      painter.Run();
-
-      CreateTerrain creator = new CreateTerrain();
-      creator.HeightMap = extruder.HeightMap;
-      creator.ColorMap = painter.ColorMap;
-      creator.BaseScale = 10f;
-      creator.HeightScale = 5f;
-      creator.Run();
-
-    }
-
     public MainWindow()
       : base(() => { return null; }, "Don't Blow a Gasket!")
     {
@@ -160,7 +120,22 @@ namespace ThereBeMonsters.Front_end
 
     private Control SetupControls()
     {
-      GraphControl = new ModuleGraphControl(ModuleGraph.LoadFromXml("save.xml"));
+      ModuleGraph graph;
+
+      if (File.Exists("lastSession.xml"))
+      {
+        graph = ModuleGraph.LoadFromXml("lastSession.xml");
+      }
+      else if (File.Exists("default.xml"))
+      {
+        graph = ModuleGraph.LoadFromXml("default.xml");
+      }
+      else
+      {
+        graph = new ModuleGraph();
+      }
+
+      GraphControl = new ModuleGraphControl(graph);
       ModuleGraphWindowControl wc = new ModuleGraphWindowControl(GraphControl);
       wc.FullSize = new Point(float.MaxValue, float.MaxValue);
       wc.Offset = new Point(0, 0);
@@ -200,7 +175,7 @@ namespace ThereBeMonsters.Front_end
       b = new Button("Load Module Graph");
       b.Click += () =>
         {
-          ModuleGraph graph = null;
+          graph = null;
           try
           {
             System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog();
@@ -257,7 +232,7 @@ namespace ThereBeMonsters.Front_end
     protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
     {
       base.OnClosing(e);
-      GraphControl.Graph.SaveToXml("save.xml");
+      GraphControl.Graph.SaveToXml("lastSession.xml");
     }
 
     protected override void OnRenderFrame(FrameEventArgs e)

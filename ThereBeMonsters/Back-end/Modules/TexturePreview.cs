@@ -10,6 +10,7 @@ using OpenTKGUI;
 
 namespace ThereBeMonsters.Back_end.Modules
 {
+  [Module(Reusable = false)]
   public class TexturePreview : Module
   {
     public class PreviewControl : EditorControl

@@ -63,6 +63,7 @@ namespace ThereBeMonsters.Front_end
       {
         node.ModuleId = text;
         // TODO validate uniquness and non-empty
+        // TODO: change any wireup references from old id to new id
       };
 
       double borderSize = this.ClientRectangle.TopLeft.X;

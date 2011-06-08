@@ -170,7 +170,10 @@ namespace ThereBeMonsters.Front_end
 
     public void OnRemoved()
     {
-      // TODO: cleanup?
+      foreach (BubbleControl bc in LeftBubbleControls.Values)
+      {
+        bc.OnRemove();
+      }
     }
 
     private Vector2 _lastPostion;

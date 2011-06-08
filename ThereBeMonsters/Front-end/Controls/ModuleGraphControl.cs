@@ -59,7 +59,7 @@ namespace ThereBeMonsters.Front_end
     private int _serialNum;
 
     public ModuleGraphBackground(ModuleGraphControl parent)
-      : base(new Blank(Color.RGB(0.2, 0.2, 0.2)))
+      : base(new Blank(Color.RGB(0, 0, 0)))
     {
       this.Parent = parent;
       this.ShowOnRightClick = true;
@@ -105,7 +105,13 @@ namespace ThereBeMonsters.Front_end
           _graph.ModuleMoved -= OnModuleMoved;
         }
 
-        // TODO: remove all child controls
+        foreach (ModuleNodeControl control in _idMap.Values)
+        {
+          control.OnRemoved();
+          this.RemoveControl(control);
+        }
+
+        _idMap.Clear();
 
         _graph = value;
         _graph.ModuleAdded += OnModuleAdded;
@@ -181,6 +187,7 @@ namespace ThereBeMonsters.Front_end
     {
       _idMap[e.ModuleId].OnRemoved();
       this.RemoveControl(_idMap[e.ModuleId]);
+      _idMap.Remove(e.ModuleId);
     }
   }
 }

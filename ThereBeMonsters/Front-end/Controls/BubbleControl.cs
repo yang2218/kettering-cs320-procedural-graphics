@@ -95,5 +95,13 @@ namespace ThereBeMonsters.Front_end.Controls
 
       GL.End();
     }
+
+    internal void OnRemove()
+    {
+      if (Connector != null)
+      {
+        Connector.Remove();
+      }
+    }
   }
 }

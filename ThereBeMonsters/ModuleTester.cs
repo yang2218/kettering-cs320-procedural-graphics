@@ -24,6 +24,34 @@ namespace ThereBeMonsters
 
     public static void Main()
     {
+      Gasket g = new Gasket();
+      g.InitialShapePoints = new List<Vector2> {
+        new Vector2(0f, 0f),
+        new Vector2(1f, 0f),
+        new Vector2(1f, 1f),
+        new Vector2(0f, 1f),
+        new Vector2(0f, 0f)
+      };
+      g.MaxDepth = 8;
+      g.Run();
+
+      ExtrudeCirclesToHeight e = new ExtrudeCirclesToHeight();
+      e.CapMode = ExtrudeCirclesToHeight.Cap.Hemisphere;
+      e.Circles = CirlceFilter(g.Circles);
+      e.HeightMap = new byte[64, 64];
+      e.ScaleMode = ExtrudeCirclesToHeight.Scale.Quadradic;
+      e.BlendFunc = Blend8bppFunc.Additive;
+      e.BlendFuncSrcFactor = 1f;
+      e.BlendFuncDstFactor = 1f;
+      e.Run();
+
+      TexturePreview p = new TexturePreview();
+      p.HeightMap = e.HeightMap;
+      //preview.ColorMap = painter.ColorMap;
+      p.Run();
+
+      return;
+
       InitShape shape = new InitShape();
       shape.Run();
 

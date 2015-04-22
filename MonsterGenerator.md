@@ -1,0 +1,14 @@
+# Structure of a Monster #
+A hierarchical model where each node starts off with a base mesh, and has modifications (styles; e.g. color, scale, etc.). Subtrees attach to their parent node via one or more attachment points. Subtrees may be just one node for decoration (e.g. a spike) or have it's own subtree of nodes (e.g. a limb). For now, each component has it's own mesh.
+
+# Generation Overview #
+The process recursively builds the monster tree using a set of production rules, which are randomly picked based on a context stored with the node, and optionally the context in parent nodes. There are three generators: the content, decoration, and structural generators. To start, an empty node is created as the root node, and added to the content generator's queue:
+
+## Content generator ##
+The content generator looks at the content production rules that the current context meets the requirements of, e.g. rules that generate "upper limb" require that "body" be in the context of the direct parent, or "leg" be somewhere in the context in order to generate a "foot". Once the set of possible content production rules are gathered, one is randomly chosen (perhaps with weighted chances, etc.) The chosen rule defines a mesh for the node, and adds to the node's context, e.g. describes what kind of part was chosen so that the decorative and structural generators can pick appropriate rules for expanding on the current node. The node is added to the decorator queue.
+
+## Decorator ##
+The decorator adds styles to the node, such as color, scale, etc., based on the decorator rules that the context satisfies. Multiple decoration rules can be picked in this stage, although there should be some mutual exclusion, e.g. once a decorator rule is chosen that adds color to the part, it will color the part, and add to the context that a color style has been defined. If the stage decides to pick another rule, all the other color rules will be excluded because their predicate requires "color" to be not defined in the current node's context. The node is added to the structural generator's queue.
+
+## Structural generator ##
+The structural stage generates the child nodes. One structural production rule is chosen randomly (based on the context). Each child node has an attachment point to the parent and a transform defining it's position and orientation, so that content generators can always generate parts in the same position and orientation. A Child node may be bound to more than one attachment points; this is to support symmetry: the subtree is simply re-rendered at the other attachment points at runtime. Other pieces of context are added to the new child nodes, to define the purpose of the attachment (e.g. these nodes should be legs, this (or these) should be heads, etc.). Once the structural rule is finished, the new nodes are added to the content generator queue.

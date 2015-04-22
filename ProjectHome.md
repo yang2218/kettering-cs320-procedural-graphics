@@ -1,0 +1,1 @@
+A project for a computer graphics undergrad class; a modular procedural generation framework will comprise the back-end of the project along with several modules for generating procedural terrain and fractals. An OpenGL-based front-end will display height-map based terrain generated and possibly other geometry from the back-end.
